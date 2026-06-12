@@ -1,121 +1,66 @@
-# Mantle Sentinel
-Multi-Agent Monitoring System for Intelligent Alert Analysis
----
-## Overview
-Mantle Sentinel is a hackathon project exploring how multiple specialized AI agents can collaboratively analyze operational alerts and produce explainable consensus decisions.
-The system simulates a monitoring environment where alerts are routed to expert agents, evaluated independently, and aggregated into a final recommendation.
----
-## Problem
-Modern monitoring systems generate excessive alert volume.
-Operators experience:
-- Alert fatigue
-- False positives
-- Context switching
-- Delayed incident response
-Mantle Sentinel explores whether a group of specialized AI agents can improve signal quality through consensus reasoning.
----
-## Core Concepts
-### Router Agent
-Classifies incoming alerts.
-Determines which specialist agents should analyze them.
-### Specialist Agents
-Security Agent
-Infrastructure Agent
-Operations Agent
-Each agent independently evaluates the alert.
-### Consensus Engine
-Aggregates agent outputs.
-Produces:
-- Final severity
-- Final confidence
-- Human-readable explanation
-### Memory Engine
-Stores prior alert evaluations.
-Allows future retrieval and context enrichment.
----
-## Architecture
-```text
-Alert
-  ↓
-Router Agent
-  ↓
-Specialist Agents
-  ↓
-Consensus Engine
-  ↓
-Memory Engine
-  ↓
-Dashboard
+# Mantle Sentinel — HDC Behavioral DNA Agent
+
+Real-time **behavioral drift detection** for Mantle smart contracts. Sentinel learns a contract's
+behavioral fingerprint ("DNA") as a hyperdimensional vector and raises explainable alerts when the
+live transaction stream stops looking like the contract it learned.
+
+> Первое применение Hyperdimensional Computing для поведенческих отпечатков DeFi-контрактов на
+> Mantle: BOCPD заменяет магические пороги на байесовскую детекцию смены режима, а Dream Mode
+> обновляет память агента ночью.
+
+## Why
+
+Exploits rarely announce themselves, but they almost always *behave differently*: new selectors,
+new caller patterns, shifted gas profiles, timing bursts, mutated calldata. Signature-based tools
+miss novel attacks; pure-LLM monitors are slow and expensive. Sentinel detects *change itself* —
+cheap, deterministic, per-transaction — and only then asks an LLM to explain it.
+
+## Pipeline
+
 ```
----
-## Technology Stack
-### Frontend
-- Next.js
-- TypeScript
-- Tailwind
-- shadcn/ui
-### Backend
-- FastAPI
-- Python
-- Pydantic
-### Storage
-- SQLite
-### Deployment
-- Vercel
-- Railway
----
-## Repository Structure
-```text
-mantle-sentinel/
-frontend/
-backend/
-docs/
-frontend/contracts/
-docs/
+tx → Tier 0 timing pre-filter → Tier 1 Shannon entropy → Tier 2 HDC encode (D=10,000)
+   → drift = max(norm(hamming), norm(timing)) → Tier 3 detector (static θ / BOCPD)
+   → Tier 4 DNA drift explainer → Tier 5 Z.ai GLM → Telegram + on-chain SentinelAlertRegistry
 ```
----
-## MVP Features
-- Alert ingestion
-- Schema validation
-- Agent routing
-- Multi-agent analysis
-- Consensus generation
-- Memory storage
-- Monitoring dashboard
-- Public website
----
-## Documentation
-Architecture:
-docs/ARCHITECTURE_FREEZE.md
-Implementation:
-docs/MVP_IMPLEMENTATION_FREEZE.md
-Math:
-docs/MVP_MATH_SPEC.md
-Website:
-docs/WEBSITE_IMPLEMENTATION_PLAN.md
-Team:
-docs/TEAM_CHARTER.md
-Freeze:
-docs/FINAL_FREEZE.md
----
-## Local Development
-Frontend:
+
+Details: [`docs/ARCHITECTURE_FREEZE.md`](docs/ARCHITECTURE_FREEZE.md) ·
+math: [`docs/MVP_MATH_SPEC.md`](docs/MVP_MATH_SPEC.md) ·
+evaluation: [`docs/BENCHMARK_PROTOCOL.md`](docs/BENCHMARK_PROTOCOL.md)
+
+## What makes it interesting
+
+- **HDC behavioral fingerprints** — a contract's normal behavior compressed into one bipolar
+  hypervector; structural deviation = Hamming distance. No training, no GPU, microsecond updates.
+- **Explainable by construction** — feature-ablation attribution names *what* drifted
+  (caller / selector / gas / value / timing) before any LLM is involved.
+- **Deterministic replays** — same snapshot + seed ⇒ byte-identical alerts (CI-enforced).
+- **Measured, not vibed** — detection delay (blocks) and false-positive episodes/day against a
+  frequency baseline at a matched FP budget; scenarios S1–S8 in the benchmark protocol.
+
+## Repository layout
+
+```
+sentinel/    detection pipeline (numpy-only, Python 3.11+)
+bench/       snapshots, injectors, scoring, REPORT.md
+contracts/   alert.schema.json + SentinelAlertRegistry.sol (Mantle alert anchor)
+tests/       unit + golden-file determinism tests
+docs/        frozen specs, tasks, decisions, status log
+```
+
+## Run
+
 ```bash
-cd frontend
-npm install
-npm run dev
+make check                                   # lint + tests
+python -m sentinel replay --snapshot bench/data/<contract>/raw.jsonl
+python -m sentinel replay --snapshot ... --inject S1   # injected incident demo
 ```
-Backend:
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
----
-## License
-MIT
----
+
 ## Status
-Hackathon MVP
-Architecture Frozen
-Implementation In Progress
+
+Hackathon MVP (Mantle Turing Test Hackathon 2026, Track 02 — AI Alpha & Data).
+Backlog: [`docs/TASKS.md`](docs/TASKS.md) · log: [`docs/status/LOG.md`](docs/status/LOG.md).
+Historical GPT design drafts live in `docs/archive/gpt_drafts/` and are **not** source of truth.
+
+## License
+
+MIT

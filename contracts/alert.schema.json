@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mantle Sentinel Alert",
+  "type": "object",
+  "required": [
+    "alert_id",
+    "ts",
+    "block",
+    "contract",
+    "alert_type",
+    "drift",
+    "branch"
+  ],
+  "properties": {
+    "alert_id": {
+      "type": "string"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "block": {
+      "type": "integer"
+    },
+    "contract": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$"
+    },
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "spam_attack",
+        "entropy_anomaly",
+        "regime_shift"
+      ]
+    },
+    "drift": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "branch": {
+      "type": "string",
+      "enum": [
+        "hamming",
+        "timing",
+        "entropy",
+        "spam"
+      ]
+    },
+    "top_features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "contribution"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "caller",
+              "selector",
+              "gas",
+              "value",
+              "timing"
+            ]
+          },
+          "contribution": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "window_stats": {
+      "type": "object"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Z.ai GLM output (alert-only, strict template)"
+    },
+    "onchain_tx": {
+      "type": "string",
+      "description": "SentinelAlertRegistry anchor tx hash"
+    }
+  },
+  "additionalProperties": false
+}

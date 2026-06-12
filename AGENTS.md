@@ -10,8 +10,8 @@ Ship a submission-ready MVP for the **Mantle Turing Test Hackathon 2026, Phase I
 
 ## Hard rules
 
-1. **Architecture is frozen.** Tiers 1–6 as specified in `docs/PROJECT_CONTEXT.md` / `docs/ARCHITECTURE_FREEZE.md`. Never redesign, never add subsystems, never swap algorithms. If a spec gap blocks you, implement the simplest compliant interpretation, note it in your status file, and move on.
-2. **MVP scope is `docs/MVP_IMPLEMENTATION_FREEZE.md`:** P0 = Tier 1 (entropy) + Tier 2 (HDC encoder) + Tier 3 (drift) + Tier 4 static threshold + Tier 5 interpreter + Alert JSON. BOCPD, Dream Mode, Z.ai, live stream are **deferred** — do not build them until P0 replay works end-to-end.
+1. **Architecture is frozen.** Pipeline tiers as specified in `docs/ARCHITECTURE_FREEZE.md`. Never redesign, never add subsystems, never swap algorithms. If a spec gap blocks you, implement the simplest compliant interpretation, note it in your status file, and move on.
+2. **MVP scope is `docs/MVP_IMPLEMENTATION_FREEZE.md`:** P0 = Tier 0 (spam pre-filter) + entropy + HDC encoder + drift + static threshold + interpreter + Alert JSON; then Z.ai/Telegram/on-chain anchor per TASKS. BOCPD, Dream Mode, live stream are **deferred** — do not build them until P0 replay works end-to-end.
 3. **Work the task board top-down:** `docs/TASKS.md`. Never invent work; if blocked, take the next unblocked task.
 4. **Every implementation choice that fills a spec gap** goes into `docs/DECISIONS.md` as one line: `D-NN | date | gap | choice | rationale`. This is what the curator audits.
 

@@ -1,224 +1,76 @@
-# Mantle Sentinel
-# Architecture Freeze v1.0
-Status: FROZEN
-Date: Hackathon Build Freeze
----
-## Purpose
-This document defines the frozen MVP architecture.
-Anything not listed here is outside MVP scope.
----
-# System Overview
-Mantle Sentinel consists of six layers:
-```text
-Observation Layer
-        ↓
-Prediction Layer
-        ↓
-Debate Layer
-        ↓
-Memory Layer
-        ↓
-Evolution Layer
-        ↓
-Alert Layer
-        ↓
-Dashboard
+# ARCHITECTURE_FREEZE.md — Mantle Sentinel: HDC Behavioral DNA Agent
+
+Status: **FROZEN** (panel consensus, 2026-06-13). Only the Project Lead can unfreeze.
+Math defaults: `docs/MVP_MATH_SPEC.md`. Scope: `docs/MVP_IMPLEMENTATION_FREEZE.md`. Tasks: `docs/TASKS.md`.
+
+## Real-time pipeline (per transaction)
+
 ```
-Each layer produces visible artifacts.
----
-# Layer 1 — Observation Layer
-Purpose:
-Generate structured observations.
-Input:
-- external events
-- simulated events
-- scheduled events
-Output:
-```json
-{
-  "event_id":"evt_001",
-  "type":"game",
-  "subject":"LAL vs DEN",
-  "timestamp":"2026-06-01T12:00:00Z"
-}
+Incoming Mantle transaction
+        │
+        ▼
+Tier 0: Timing Pre-filter
+        interval < MIN_INTERVAL (sustained) → Alert "spam_attack"
+        │
+        ▼
+Tier 1: Shannon Entropy (hard threshold, per-selector baseline)
+        |H(calldata) − mean| > 4σ → Alert "entropy_anomaly"
+        │
+        ▼
+Tier 2: HDC Encode (D = 10,000 bipolar)
+        V_tx  = hdc_encode(metadata)
+        hamming = distance(V_win, P_baseline) / D
+        timing  = robust deviation of log Δt
+        drift   = max(norm(hamming), norm(timing))
+        │
+        ▼
+Tier 3: Detector
+        MVP: static threshold θ + hysteresis  → Alert "regime_shift"
+        Full: BOCPD, P(changepoint|drift) > 0.95 (pluggable module, same interface)
+        │
+        ▼
+Tier 4: DNA Drift Explainer (alert-only)
+        feature-ablation contributions: {caller, selector, gas, value, timing}
+        │
+        ▼
+Tier 5: Z.ai GLM (alert-only, strict template) → Telegram + on-chain log (SentinelAlertRegistry)
 ```
-MVP Source:
-Mock Generator
-No external integrations required.
----
-# Layer 2 — Prediction Layer
-Purpose:
-Generate agent predictions.
-Input:
-Observation
-Output:
-```json
-{
-  "agent_id":"bolt",
-  "prediction":"LAL -3.5",
-  "confidence":82,
-  "reasoning":"pace mismatch"
-}
+
+## Nightly cycle (00:00 UTC — full version, deferred)
+
+```python
+V_new = sign(lam * V_old + sum(V_safe_txs))   # lam = alpha * N, alpha = 0.5 (D-04)
+bocpd_model.update_priors(safe_signals)
 ```
-Rules:
-- deterministic
-- explainable
-- reproducible
-No LLM required.
-Prediction templates are sufficient.
----
-# Layer 3 — Debate Layer
-Purpose:
-Compare predictions.
-Detect:
-- agreement
-- disagreement
-- conflict
-Example:
-Agent A
-LAL -3.5
-Agent B
-LAL +1.0
-Result:
-```json
-{
-  "type":"disagreement",
-  "severity":"high"
-}
-```
-Visible in dashboard.
----
-# Layer 4 — Memory Layer
-Purpose:
-Store history.
-Memory Unit:
-```json
-{
-  "memory_id":"mem_001",
-  "agent_id":"bolt",
-  "event_type":"prediction",
-  "timestamp":"..."
-}
-```
-Storage:
-PostgreSQL
-Optional:
-NetworkX graph representation.
-Required MVP Features:
-- insert memory
-- retrieve memory
-- count memories
-No semantic retrieval.
-No vector database.
----
-# Layer 5 — Evolution Layer
-Purpose:
-Track agent progression.
-Triggers:
-- prediction count
-- accuracy threshold
-- memory count
-Example:
-```json
-{
-  "agent_id":"bolt",
-  "old_level":2,
-  "new_level":3
-}
-```
-Evolution must be visible.
-No autonomous self-modification.
----
-# Layer 6 — Alert Layer
-Purpose:
-Generate notable events.
-Alert Types:
-1. Confidence Spike
-2. Strong Disagreement
-3. Evolution Event
-4. Activity Surge
-Output:
-```json
-{
-  "alert_type":"evolution",
-  "severity":"medium"
-}
-```
-All alerts visible.
----
-# Dashboard
-Primary User Interface
-Sections:
-1. Agent Overview
-2. Predictions Feed
-3. Disagreement Feed
-4. Evolution Feed
-5. Alert Feed
----
-# Agent Model
-Required Fields
-```json
-{
-  "id":"bolt",
-  "name":"Bolt",
-  "level":2,
-  "confidence":82,
-  "memory_count":123
-}
-```
-Optional Fields
-```json
-{
-  "style":"balanced",
-  "risk":0.4
-}
-```
----
-# Storage
-PostgreSQL
-Tables:
-agents
-predictions
-memories
-evolution_events
-alerts
-No vector DB.
-No graph DB.
----
-# Background Jobs
-Worker Loop
-Interval:
-30 seconds
-Responsibilities:
-- create observations
-- generate predictions
-- run debates
-- update memory
-- emit alerts
-Single worker process.
----
-# API
-Read APIs only.
-GET /agents
-GET /agents/:id
-GET /predictions
-GET /alerts
-GET /evolution
-GET /health
----
-# Explicit Exclusions
-Dream Mode
-BOCPD
-RL
-Fine Tuning
-Autonomous Planning
-Multi Region Deployment
-Microservices
-Kubernetes
-Vector Search
-LLM Tool Use
-Production Scaling
----
-# Architecture Decision
-Visible behavior > sophisticated implementation.
-Everything must be observable.
+
+## Component roles
+
+| Component | Role | Catches | Repo module | Task |
+|---|---|---|---|---|
+| Timing pre-filter (T0) | Hard pre-filter | Spam / frequency attacks | `sentinel/prefilter.py` | T-05b |
+| Shannon entropy (T1) | Hard pre-filter | Payload/calldata mutation | `sentinel/entropy.py` | T-05 |
+| HDC encoder (T2) | Memory + encoder | Behavioral fingerprint | `sentinel/hdc.py` | T-03 |
+| Hamming + timing drift (T2) | Detector signal | Structural deviation | `sentinel/drift.py` | T-04 |
+| Static threshold / BOCPD (T3) | Adaptive threshold | Regime shift | `sentinel/detector.py` | T-06 / T-17 |
+| DNA Drift explainer (T4) | Explainer | What exactly changed | `sentinel/interpreter.py` | T-07 |
+| Z.ai GLM (T5) | Interpreter | Human-readable alert | `sentinel/explain_zai.py` | T-19 |
+| Telegram delivery (T5) | Alert channel | — | `sentinel/notify_telegram.py` | T-21 |
+| On-chain log (T5) | Alert anchor | — | `contracts/SentinelAlertRegistry.sol` | T-13 |
+| Dream Mode | Lifecycle | Agent memory update | deferred | T-18 |
+
+## Rejected approaches (confirmed on data)
+
+TDA, Transfer Entropy, Tensor Networks, Spectral Role Fingerprinting, Hyperbolic Geometry — did not survive validation on real Mantle data. Do not reintroduce.
+
+## MVP vs full version
+
+- **MVP (days 1–3):** Tier 0 + Shannon + HDC + static threshold + explainer + Z.ai + Telegram + Alert JSON.
+- **Full (days 4–5):** + BOCPD + Dream Mode. BOCPD is a swappable module behind the T-06 interface — if time runs out, fallback to the static threshold with no rewrite.
+
+## Innovation statement
+
+"Mantle Sentinel — первое применение Hyperdimensional Computing для поведенческих отпечатков DeFi-контрактов на Mantle, где BOCPD заменяет магические пороги на байесовскую детекцию смены режима, а Dream Mode обновляет память агента ночью."
+
+## Freeze rules
+
+No new subsystems, no algorithm swaps, no framework/storage changes without a `D-NN` entry approved by the Project Lead. Spec gaps: simplest compliant interpretation + `D-NN` note, keep moving.
