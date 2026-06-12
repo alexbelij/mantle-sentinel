@@ -1,0 +1,47 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Prediction",
+    "type": "object",
+    "required": [
+        "id",
+        "alert_id",
+        "agent_id",
+        "severity",
+        "confidence",
+        "reasoning",
+        "timestamp"
+    ],
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "alert_id": {
+            "type": "string"
+        },
+        "agent_id": {
+            "type": "string"
+        },
+        "severity": {
+            "type": "string",
+            "enum": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+            ]
+        },
+        "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "reasoning": {
+            "type": "string"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time"
+        }
+    },
+    "additionalProperties": false
+}
