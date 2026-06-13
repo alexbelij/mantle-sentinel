@@ -18,8 +18,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-ZAI_BASE_URL = os.getenv("ZAI_BASE_URL", "https://api.z.ai/v1")
-ZAI_MODEL = os.getenv("ZAI_MODEL", "z-ai/z-ai-preview")
+# Verified working Z.ai endpoint + free-tier model (override via env).
+# glm-4.5-flash is free; glm-4.6 / glm-4.5-air require a paid resource package (429).
+ZAI_BASE_URL = os.getenv("ZAI_BASE_URL", "https://api.z.ai/api/paas/v4")
+ZAI_MODEL = os.getenv("ZAI_MODEL", "glm-4.5-flash")
 _TIMEOUT = 10  # seconds
 
 
@@ -82,7 +84,10 @@ def explain_alert(alert: "Alert", dry_run: bool = False) -> str:
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": user_msg},
                 ],
-                "max_tokens": 200,
+                # GLM-4.5 family are reasoning models: the hidden thinking phase
+                # consumes completion tokens, so a small cap (e.g. 200) can truncate
+                # the visible answer to empty. Give enough room for thinking + answer.
+                "max_tokens": 800,
                 "temperature": 0.3,
             },
             timeout=_TIMEOUT,

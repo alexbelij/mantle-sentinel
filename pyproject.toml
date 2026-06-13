@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.26",
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]
@@ -13,6 +14,10 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.5",
     "jsonschema>=4.0",
+]
+live = [
+    "web3>=7.0",
+    "eth-account>=0.13",
 ]
 
 [build-system]
