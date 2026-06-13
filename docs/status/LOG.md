@@ -17,3 +17,4 @@
 
 2026-06-13 09:10 | T-02 | branch task/T-02-data | done | Etherscan V2 capture script (urllib, chainid 5000) -> raw.jsonl + sha256; captured LB Router (3618 tx) + USDC.e (3993 tx)
 2026-06-13 09:15 | spike | branch task/T-02-data | done | D-08 viability spike on REAL data: mechanism works (S1 -> drift 1.0, detected; deterministic), but 0-FP NOT met under frozen theta/k (router 14 / token 5 regime episodes; separation 3-4.3x). See docs/status/SPIKE.md + plots. FLAGGED to Lead: needs per-selector prototypes / Dream Mode / theta recalibration.
+2026-06-13 11:xx | REVIEW | PR #1 | APPROVE-WITH-NOTES | Curator: viability spike CONDITIONAL PASS. Core HDC mechanism works (separation 3-4.3x, S1 always detected). FP gate revised per D-10: 14 clean regime episodes on LB Router (high), 5 on USDC.e (acceptable). D-11: demo uses USDC.e. Code quality HIGH. Next: T-09+T-10+T-13b+T-13c+T-19+T-21 on new branch, then merge to main.
