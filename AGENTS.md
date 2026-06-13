@@ -51,3 +51,19 @@ frontend/            # demo UI (only after P0 pipeline works)
 ## Submission requirements (from hackathon rules — these are P0, not nice-to-have)
 
 By **June 15**: X thread with `#MantleAIHackathon` containing pitch, **demo video**, GitHub link, and a **Mantle contract address**. The contract-address requirement is tracked as task T-13 — escalate to Project Lead immediately if unresolved by June 14 morning.
+
+## Environment variables
+
+All sensitive credentials are provided as env vars — never commit raw values.
+
+| Variable | Used by | Description |
+|---|---|---|
+| `SENTINEL_PRIVATE_KEY` | T-13b/T-13c | Throwaway Mantle Sepolia testnet wallet private key |
+| `MANTLE_RPC_SEPOLIA` | T-13b/T-13c | `https://rpc.sepolia.mantle.xyz` |
+| `MANTLE_RPC_MAINNET` | data capture | `https://rpc.mantle.xyz` |
+| `ETHERSCAN_API_KEY` | T-02 | Etherscan V2 key for Mantle (chainid 5000) |
+| `ZAI_API_KEY` | T-19 | Z.ai API key |
+| `ZAI_ENDPOINT` | T-19 | `https://api.z.ai/api/paas/v4` |
+| `TELEGRAM_BOT_TOKEN` | T-21 | `@MantleSentinelBot` bot token |
+
+In tests: mock all external calls (`--dry-run` flag or `SENTINEL_DRY_RUN=1`). Never make live calls in CI.
