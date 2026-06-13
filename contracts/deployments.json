@@ -1,0 +1,14 @@
+{
+  "mainnet": {
+    "address": "0x593C9a4dd6806510e379e30481eaCd27d2016FbE",
+    "chainId": 5000,
+    "block": 96624965,
+    "txHash": "0xac6ff2a2f4cbb7e7d8ac37fe1094f1f7a52b4bf144931932fdbbd11a3bcd4d1b"
+  },
+  "testnet": {
+    "address": "0xA7892870ff26eeed03b5d07D2e50C7753727E557",
+    "chainId": 5003,
+    "block": 39917790,
+    "txHash": "0x458f7557b684e7636f10772431dcf6d6fdd3f48014e3feca52c0619d8b7b1faf"
+  }
+}
