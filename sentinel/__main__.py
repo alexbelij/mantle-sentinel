@@ -19,8 +19,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
     replay = sub.add_parser("replay", help="replay a snapshot through the pipeline")
     replay.add_argument("--snapshot", required=True, help="path to raw.jsonl snapshot")
-    replay.add_argument("--inject", default=None, help="scenario id (S1, S3, S5, S7)")
-    replay.add_argument("--onset", type=int, default=None, help="injection onset block")
+    replay.add_argument("--inject", default=None, help="scenario id (e.g. S1)")
+    replay.add_argument("--onset", type=float, default=0.5, help="injection onset fraction [0,1]")
     replay.add_argument("--seed", type=int, default=1, help="injection seed")
     replay.add_argument("--out", default=None, help="path to write alerts JSON")
     return parser
@@ -36,14 +36,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "replay":
         # Imported lazily so `--version` works before heavy modules exist.
-        from sentinel.replay import run_replay
+        from sentinel.replay import run_replay_file
 
-        alerts = run_replay(
-            snapshot=args.snapshot,
+        alerts = run_replay_file(
+            args.snapshot,
             inject=args.inject,
-            onset=args.onset,
-            seed=args.seed,
             out=args.out,
+            onset_frac=args.onset,
+            seed=args.seed,
         )
         print(f"{len(alerts)} alert(s)")
         return 0
