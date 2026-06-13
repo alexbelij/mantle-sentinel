@@ -14,10 +14,15 @@ import numpy as np
 
 from bench.injector import inject_s1_selector_flood
 from bench.snapshot import load_snapshot
+from sentinel.config import WARMUP_FRAC
 from sentinel.pipeline import build_pipeline, split_warmup
 
 
 def _run(test_records: list[dict], warmup: list[dict], contract: str):
+    # T-23: build_pipeline fits all baselines (SpamPrefilter, EntropyFilter,
+    # FeatureExtractor, etc.) exclusively on the warmup split.  We must NOT
+    # pass full records here — only the warmup slice — to avoid leaking test
+    # data into the baseline statistics (data-leakage guard).
     pipe = build_pipeline(contract, warmup)
     drifts: list[float] = []
     alerts: list[dict] = []
@@ -38,7 +43,10 @@ def main() -> int:
 
     records = sorted(load_snapshot(args.snapshot), key=lambda r: (int(r["block_number"]), r["tx_hash"]))
     contract = records[0]["contract"]
-    warmup, test = split_warmup(records)
+
+    # T-24: use WARMUP_FRAC from config for consistent split across pipeline
+    # and bench scripts. Do NOT hardcode a fraction here.
+    warmup, test = split_warmup(records, frac=WARMUP_FRAC)
 
     clean_d, clean_alerts = _run(test, warmup, contract)
     inj_d, inj_alerts = _run(inject_s1_selector_flood(test, onset_frac=0.5, seed=7), warmup, contract)
@@ -50,6 +58,7 @@ def main() -> int:
 
     print(f"contract={contract}")
     print(f"warmup={len(warmup)} test={len(test)} windows={len(clean_d)}")
+    print(f"WARMUP_FRAC={WARMUP_FRAC}")
     print(f"CLEAN drift  median={np.median(clean_d):.3f} p90={np.quantile(clean_d,.9):.3f} "
           f"p99={np.quantile(clean_d,.99):.3f} max={clean_d.max():.3f}")
     print(f"CLEAN false-positive regime episodes = {len(clean_eps)}  (alerts={len(clean_regime)})")
