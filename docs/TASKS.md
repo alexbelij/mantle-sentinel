@@ -5,6 +5,10 @@ Work strictly top-down within a priority band. Acceptance criteria are testable 
 
 ## P0 — Pipeline core (no demo without these)
 
+> **VIABILITY SPIKE (run FIRST, go/no-go before full build):** execute a minimal T-02 → T-03 → T-04 on ONE active Mantle contract: pull ~2,000 real txs, build the HDC prototype on the first 80% (warm-up), compute drift on the held-out 20% clean traffic, then inject one S1 selector flood.
+> **Pass:** clean-traffic drift p99 < 0.3 with 0 false alerts AND injected drift > 0.7 within 2 windows (clear separation). Report the two numbers + a drift plot in LOG.md at the **June 14 12:00 Minsk checkpoint**. Pass ⇒ proceed to the full pipeline. Fail ⇒ adjust features/normalization or escalate before investing further. (D-08)
+
+
 - [ ] **T-01 Scaffold + CI** — package layout per AGENTS.md, `make check` (ruff + pytest), master seed config.
   *Accept:* `make check` green on empty test suite; `python -m sentinel --version` works.
 - [ ] **T-02 Data capture** — script pulling N days of tx history for 1–3 Mantle contracts via RPC into `bench/data/{contract}/raw.jsonl` (schema in BENCHMARK_PROTOCOL §1.2) + SHA-256 manifest.
@@ -35,10 +39,17 @@ Work strictly top-down within a priority band. Acceptance criteria are testable 
 
 ## P0-SUBMIT — Submission package (parallel track, hard deadline June 15)
 
-- [ ] **T-13 Mantle contract address** — submission requires a deployed Mantle contract. Minimal compliant option: an on-chain `SentinelAlertRegistry` (event-emitting alert anchor, ~30 lines Solidity) deployed to Mantle mainnet/testnet, with the replay pipeline writing one real alert hash to it. **Requires Project Lead approval (new on-chain component).** Escalate June 14 AM if unapproved.
+- [ ] **T-13 Mantle contract address (DECIDED: mainnet)** — `SentinelAlertRegistry` (event-emitting alert anchor, ~30 lines Solidity). **Final deploy to Mantle MAINNET, done manually by the Project Lead from his own wallet** — the deploy key is NOT given to any agent. Agents prepare/verify the contract + deploy script; Lead runs the final deploy and pastes the address back. Pipeline writes one real alert hash to it for the submission.
 - [ ] **T-14 Demo video (≤3 min)** — recorded replay: clean traffic → injected incident → alert → interpreter explanation. Screen capture + voiceover/captions. Script in `docs/DEMO_SCRIPT.md` (write it first, 1 page).
 - [ ] **T-15 README for judges** — what/why/how-to-run in 1 screen, architecture diagram, headline numbers from T-12, partner-tool usage section (Z.ai explanation layer; Mantle RPC; note Z.ai is a judge-affiliated tool).
 - [ ] **T-16 DoraHacks BUIDL page + X thread draft** — pitch text, links, hashtag `#MantleAIHackathon`. Draft goes to Project Lead for posting; agents do not post socials.
+
+## P0-DEMO — Live self-attack on testnet (scenario B, the hero video)
+
+- [ ] **T-13b Victim contract (testnet)** — deploy a small self-owned target contract to Mantle Sepolia testnet (funded via faucet). We attack only our OWN contract — never third-party. Deploy key is a throwaway testnet key.
+  *Accept:* contract live on Sepolia explorer; address recorded in LOG.md.
+- [ ] **T-13c Self-attack script** — a "normal user" warm-up script then an anomaly script (selector flood / gas spike / mutated calldata) hitting T-13b on testnet; Sentinel reads the live RPC stream and raises an alert.
+  *Accept:* live run produces a true alert → on-chain anchor write (testnet) → Telegram message → explorer tx hash; whole loop recorded for the demo video.
 
 ## P2 — Only if P0+P0-SUBMIT are done
 

@@ -47,7 +47,7 @@ Goal: high-quality oversight at near-zero curator token cost. Everything async, 
 
 - **Blocked > 2h on a spec gap:** make the simplest compliant choice, log `D-NN`, continue. Do not wait.
 - **Blocked on access/approval (deploy keys, contract decision T-13, posting):** write `[!]` in LOG.md **and** notify Project Lead immediately — these cannot be self-served.
-- **June 14, 12:00 Minsk:** mandatory go/no-go checkpoint. Developer posts a submission-readiness summary in LOG.md; curator audits against the P0-SUBMIT list.
+- **June 14, 12:00 Minsk:** mandatory go/no-go checkpoint. Developer posts a submission-readiness summary in LOG.md **including the viability-spike result (clean drift p99, FP count, injected drift; see TASKS P0 gate, D-08)**; curator audits against the P0-SUBMIT list and the spike pass-criteria.
 
 ## Token-economy norms (both agents)
 
