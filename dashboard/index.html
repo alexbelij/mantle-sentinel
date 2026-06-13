@@ -185,7 +185,8 @@
   }
   function row(i, a) {
     const drift = Number(a.driftScore) / 1e6;
-    const dt = new Date(Number(a.timestamp) * 1000).toISOString().replace("T", " ").slice(0, 19);
+    const ts = Number(a.timestamp);
+    const dt = ts > 0 ? new Date(ts * 1000).toISOString().replace("T", " ").slice(0, 19) : "pending";
     const t = tag(a.alertType);
     return `<tr class="row">
       <td class="muted">${i}</td>
