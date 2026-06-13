@@ -10,5 +10,11 @@
     "chainId": 5003,
     "block": 39917790,
     "txHash": "0x458f7557b684e7636f10772431dcf6d6fdd3f48014e3feca52c0619d8b7b1faf"
+  },
+  "victim_testnet": {
+    "address": "0x1f88f063C00893642Ca4a74FE4d25Bf20c468E64",
+    "chainId": 5003,
+    "block": 39920014,
+    "txHash": "0x2973f810616fa19318490be6877710b5c640bed29e28bb1bea8d5d90fa188eee"
   }
 }
