@@ -1,1 +1,11 @@
 tmp/*
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+bench/runs/
+# Snapshots are large; only the SHA-256 manifest is committed (BENCHMARK_PROTOCOL §1.2)
+bench/data/**/raw.jsonl
+.env
