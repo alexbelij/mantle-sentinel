@@ -48,6 +48,7 @@ class Pipeline:
         self._vec_window: deque = deque(maxlen=WINDOW)
         self._spam_ep = EpisodeTracker(prefix="spam")
         self._entropy_ep = EpisodeTracker(prefix="entropy")
+        self.last_drift: float | None = None  # observability (spike/metrics)
 
     def process_tx(self, r: RawTx) -> list[Alert]:
         alerts: list[Alert] = []
@@ -78,6 +79,7 @@ class Pipeline:
             return alerts
         v_win = self.space.bundle(list(self._vec_window))
         dr = self.tracker.update(v_win, dt)
+        self.last_drift = dr.drift
 
         # Tier 3 — static detector
         trig = self.detector.process(dr.drift, ts)

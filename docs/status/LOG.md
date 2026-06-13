@@ -14,3 +14,6 @@
 2026-06-13 08:00 | T-07 | branch task/T-07-interpreter | done | Tier 5 feature-ablation interpreter (top-2 attribution) + Alert JSON (jsonschema-validated against contracts/alert.schema.json); 7 tests
 2026-06-13 08:20 | T-08 | branch task/T-08-replay | done | end-to-end pipeline (Tier0->5 single entrypoint) + FeatureExtractor (quantile buckets, streaming novelty) + replay harness + S1 injector + synthetic snapshot; determinism byte-identical; CLI `python -m sentinel replay`; 3 tests. Total 35 tests, ruff clean
 2026-06-13 08:20 | T-02 | - | in-progress | Etherscan V2 key received (chainid 5000); capturing real snapshot next for viability spike
+
+2026-06-13 09:10 | T-02 | branch task/T-02-data | done | Etherscan V2 capture script (urllib, chainid 5000) -> raw.jsonl + sha256; captured LB Router (3618 tx) + USDC.e (3993 tx)
+2026-06-13 09:15 | spike | branch task/T-02-data | done | D-08 viability spike on REAL data: mechanism works (S1 -> drift 1.0, detected; deterministic), but 0-FP NOT met under frozen theta/k (router 14 / token 5 regime episodes; separation 3-4.3x). See docs/status/SPIKE.md + plots. FLAGGED to Lead: needs per-selector prototypes / Dream Mode / theta recalibration.
