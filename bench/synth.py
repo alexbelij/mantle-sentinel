@@ -67,6 +67,33 @@ def selector_flood(n: int, seed: int = 1) -> list[tuple[TxFeatures, float]]:
     return out
 
 
+def channel_window(channel: str, n: int, seed: int = 0) -> list[tuple[TxFeatures, float]]:
+    """A window of otherwise-normal traffic with exactly ONE feature channel
+    perturbed — mirrors the per-channel injector (S1/S3/S4/S5). Used to verify the
+    interpreter attributes drift to the right channel."""
+    rng = np.random.default_rng(seed)
+    base = stationary_stream(n, seed=seed)
+    out: list[tuple[TxFeatures, float]] = []
+    for feat, dt in base:
+        kw: dict = {}
+        if channel == "selector":
+            kw["selector"] = NOVEL_SELECTOR
+        elif channel == "gas":
+            kw["gas_bucket"] = 15
+        elif channel == "value":
+            kw["value_bucket"] = 15
+        elif channel == "timing":
+            kw["timing_bucket"] = 0
+            dt = float(abs(rng.normal(2.0, 0.3))) + 0.05
+        elif channel == "caller":
+            kw["caller_novel"] = 1
+            kw["caller_freq_tier"] = 0
+            kw["caller_is_contract"] = 1
+        feat = TxFeatures(**{**feat.__dict__, **kw})
+        out.append((feat, dt))
+    return out
+
+
 def sliding_windows(
     encoded: list[np.ndarray], window: int
 ) -> Iterator[tuple[int, np.ndarray]]:
