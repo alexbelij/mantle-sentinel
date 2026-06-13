@@ -38,6 +38,10 @@ class StaticThresholdDetector:
         if drift > self.theta:
             self._consec += 1
         else:
+            # T-22 fix: reset _fired when drift drops below threshold so that
+            # a *new* episode (after the current one ends) can be detected.
+            # Without this reset, _fired stays True forever after the first
+            # episode and silently suppresses all subsequent detections.
             self._consec = 0
             self._fired = False
             return None
@@ -47,3 +51,8 @@ class StaticThresholdDetector:
             episode_id, is_new = self._episodes.assign(ts)
             return Trigger(ts=ts, drift=drift, episode_id=episode_id, new_episode=is_new)
         return None
+
+    def reset(self) -> None:
+        """Explicitly reset detector state (e.g. when starting a new evaluation run)."""
+        self._consec = 0
+        self._fired = False
