@@ -16,9 +16,11 @@ from sentinel.detector import StaticThresholdDetector
 from sentinel.drift import DriftTracker
 from sentinel.entropy import EntropyFilter
 from sentinel.episodes import EpisodeTracker
+from sentinel.explain_zai import explain_alert
 from sentinel.features import FeatureExtractor, RawTx
 from sentinel.hdc import HDCSpace
 from sentinel.interpreter import Interpreter, ProtoSet
+from sentinel.notify_telegram import notify_telegram
 from sentinel.prefilter import SpamPrefilter
 
 
@@ -63,7 +65,7 @@ class Pipeline:
             ep, _ = self._spam_ep.assign(ts)
             alerts.append(self._mk(block, ts, "spam_attack", "spam", 1.0, [], ep, {"interval": dt}))
         if spam.is_spam:
-            return alerts  # excluded from all baselines/windows
+            return self._enrich(alerts)  # excluded from all baselines/windows
 
         # Tier 1 — entropy (independent sensor, bypasses Tier 4)
         if self.entropy.check(calldata):
@@ -76,7 +78,7 @@ class Pipeline:
         self._feat_window.append(feat)
         self._vec_window.append(self.space.encode_tx(feat))
         if len(self._vec_window) < WINDOW:
-            return alerts
+            return self._enrich(alerts)
         v_win = self.space.bundle(list(self._vec_window))
         dr = self.tracker.update(v_win, dt)
         self.last_drift = dr.drift
@@ -84,7 +86,7 @@ class Pipeline:
         # Tier 3 — static detector
         trig = self.detector.process(dr.drift, ts)
         if trig is None:
-            return alerts
+            return self._enrich(alerts)
 
         # Tier 4/5 — interpreter
         top = self.interpreter.attribute(list(self._feat_window), dr.branch)
@@ -94,6 +96,13 @@ class Pipeline:
                 {"hamming": round(dr.hamming, 6), "timing": round(dr.timing, 6)},
             )
         )
+        return self._enrich(alerts)
+
+    def _enrich(self, alerts: list[Alert]) -> list[Alert]:
+        """Attach Z.ai explanation and send Telegram notification for each alert."""
+        for a in alerts:
+            a.explanation = explain_alert(a)
+            notify_telegram(a)
         return alerts
 
     def _mk(self, block, ts, alert_type, branch, drift, top, episode_id, window_stats) -> Alert:
