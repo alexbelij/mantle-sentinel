@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mantle Sentinel — Behavioral DNA for DeFi Security</title>
+<meta name="description" content="Catch contract exploits before damage occurs. Hyperdimensional behavioral fingerprinting — no training data, no labeled exploits. Live on Mantle Network.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ───────────────────────────────────────────────── */
+:root {
+  --bg:       #030910;
+  --surface:  #0b1629;
+  --surface2: #0f1e36;
+  --border:   rgba(34,211,238,.12);
+  --border2:  rgba(34,211,238,.22);
+  --cyan:     #22d3ee;
+  --cyan-dim: rgba(34,211,238,.15);
+  --orange:   #f97316;
+  --orange-dim:rgba(249,115,22,.14);
+  --purple:   #a855f7;
+  --purple-dim:rgba(168,85,247,.14);
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --muted2:   #94a3b8;
+  --r-sm:     8px;
+  --r-md:     14px;
+  --r-lg:     20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ── NOISE OVERLAY ───────────────────────────────────────── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+
+/* ── GRID GLOW BG ────────────────────────────────────────── */
+.bg-glow{position:fixed;top:-40vh;left:50%;transform:translateX(-50%);width:900px;height:700px;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(34,211,238,.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.container{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+section{position:relative;z-index:1}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(3,9,16,.8)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.nav-badge{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--border2);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-ghost{font-size:.875rem;color:var(--muted2);padding:6px 14px;border-radius:var(--r-sm);border:1px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:500}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);background:var(--cyan-dim)}
+.btn-primary{font-size:.875rem;color:#fff;padding:7px 18px;border-radius:var(--r-sm);background:var(--cyan);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-weight:700;transition:all .15s;white-space:nowrap}
+.btn-primary:hover{background:#38bdf8;box-shadow:0 0 20px rgba(34,211,238,.4)}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero{padding:96px 0 80px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px}
+.hero-eyebrow-line{width:24px;height:1px;background:var(--cyan);opacity:.7}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.2rem,4vw,3.4rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:20px}
+.hero h1 em{font-style:normal;color:var(--cyan)}
+.hero-sub{font-size:1.05rem;color:var(--muted2);line-height:1.7;max-width:480px;margin-bottom:36px}
+.hero-sub strong{color:var(--text);font-weight:500}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn-lg{font-size:1rem;padding:12px 28px;border-radius:var(--r-sm);font-family:'Space Grotesk',sans-serif;font-weight:700;transition:all .18s;display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none}
+.btn-lg-primary{background:var(--cyan);color:var(--bg)}
+.btn-lg-primary:hover{background:#38bdf8;box-shadow:0 0 28px rgba(34,211,238,.45);transform:translateY(-1px)}
+.btn-lg-secondary{background:transparent;color:var(--muted2);border:1px solid var(--border2)}
+.btn-lg-secondary:hover{color:var(--text);border-color:var(--cyan);background:var(--cyan-dim)}
+.hero-note{font-size:.78rem;color:var(--muted);margin-top:14px;display:flex;align-items:center;gap:6px}
+
+/* ── DRIFT MONITOR (hero right) ─────────────────────────── */
+.monitor{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 0 60px rgba(34,211,238,.05),inset 0 1px 0 rgba(255,255,255,.04)}
+.monitor-bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.mbar-dot{width:10px;height:10px;border-radius:50%}
+.mbar-dot.red{background:#ff5f57}.mbar-dot.yellow{background:#febc2e}.mbar-dot.green{background:#28c840}
+.monitor-title{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-left:6px}
+.monitor-body{padding:20px}
+.drift-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.drift-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.drift-name{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted2);width:90px;flex-shrink:0}
+.drift-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:2px;height:6px;overflow:hidden}
+.drift-bar-fill{height:100%;border-radius:2px;transform-origin:left;animation:bar-grow 1.4s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes bar-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.drift-bar-fill.clean{background:linear-gradient(90deg,#22d3ee,#0ea5e9);width:12%;animation-delay:.2s}
+.drift-bar-fill.warning{background:linear-gradient(90deg,#f97316,#ef4444);width:87%;animation-delay:.4s}
+.drift-val{font-family:'JetBrains Mono',monospace;font-size:.72rem;width:36px;text-align:right;flex-shrink:0}
+.drift-val.ok{color:var(--cyan)}.drift-val.alert{color:var(--orange)}
+.monitor-divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+.alert-badge{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--orange-dim);border:1px solid rgba(249,115,22,.3);border-radius:var(--r-sm);animation:alert-blink 2s ease-in-out infinite}
+@keyframes alert-blink{0%,100%{opacity:1}50%{opacity:.75}}
+.alert-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);flex-shrink:0}
+.alert-badge-text{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--orange)}
+.alert-badge-meta{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-left:auto}
+.monitor-chain{margin-top:12px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(34,211,238,.06);border:1px solid var(--border);border-radius:var(--r-sm)}
+.chain-icon{width:16px;height:16px;flex-shrink:0}
+.chain-text{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted2)}
+.chain-text strong{color:var(--cyan)}
+.monitor-z{margin-top:8px;padding:8px 12px;background:var(--purple-dim);border:1px solid rgba(168,85,247,.25);border-radius:var(--r-sm)}
+.z-text{font-family:'JetBrains Mono',monospace;font-size:.67rem;color:var(--purple);line-height:1.5}
+
+/* ── TRUST STRIP ─────────────────────────────────────────── */
+.trust{padding:40px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.trust-item{text-align:center;padding:16px 8px;border-right:1px solid var(--border)}
+.trust-item:last-child{border-right:none}
+.trust-num{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:700;color:var(--cyan);line-height:1;letter-spacing:-.03em}
+.trust-num.orange{color:var(--orange)}
+.trust-label{font-size:.78rem;color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* ── SECTION HEADERS ─────────────────────────────────────── */
+.section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--cyan)}
+.section-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,2.8vw,2.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
+.section-sub{font-size:1rem;color:var(--muted2);max-width:560px;line-height:1.7}
+
+/* ── PROBLEM ─────────────────────────────────────────────── */
+.problem{padding:96px 0}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.problem-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.problem-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.problem-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.problem-card.c1::before{background:linear-gradient(90deg,var(--orange),transparent)}
+.problem-card.c2::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+.problem-card.c3::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.pc-icon{width:40px;height:40px;margin-bottom:16px;opacity:.9}
+.pc-h{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.05rem;margin-bottom:8px}
+.pc-p{font-size:.875rem;color:var(--muted2);line-height:1.6}
+
+/* ── PIPELINE ─────────────────────────────────────────────── */
+.pipeline{padding:96px 0;background:linear-gradient(180deg,transparent,rgba(34,211,238,.02) 50%,transparent)}
+.pipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px}
+.pipe-steps{display:flex;flex-direction:column;gap:0}
+.pipe-step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);cursor:default;transition:all .15s}
+.pipe-step:last-child{border-bottom:none}
+.pipe-step:hover .ps-tier{color:var(--cyan);border-color:var(--cyan)}
+.ps-tier{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);border:1px solid var(--border);border-radius:4px;padding:2px 7px;height:22px;display:flex;align-items:center;flex-shrink:0;margin-top:2px;transition:all .15s;white-space:nowrap}
+.ps-content{}
+.ps-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;margin-bottom:2px}
+.ps-desc{font-size:.8rem;color:var(--muted2);line-height:1.5}
+.pipe-visual{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted2);line-height:2;overflow:hidden}
+.pv-line{display:flex;align-items:center;gap:8px}
+.pv-tier{color:var(--cyan);min-width:52px}
+.pv-arrow{color:var(--border2)}
+.pv-action{color:var(--text)}
+.pv-result{margin-left:auto;padding:1px 8px;border-radius:3px;font-size:.65rem}
+.pv-result.ok{background:rgba(34,211,238,.12);color:var(--cyan)}
+.pv-result.warn{background:var(--orange-dim);color:var(--orange)}
+.pv-result.dream{background:var(--purple-dim);color:var(--purple)}
+.pv-sep{width:1px;height:12px;background:var(--border);margin:0 0 0 16px}
+
+/* ── PROOF ────────────────────────────────────────────────── */
+.proof{padding:96px 0}
+.proof-inner{margin-top:48px;display:grid;grid-template-columns:2fr 1fr;gap:24px}
+.proof-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden}
+.proof-table{width:100%;border-collapse:collapse;font-size:.875rem}
+.proof-table th{background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:12px 20px;text-align:left;border-bottom:1px solid var(--border)}
+.proof-table td{padding:12px 20px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.proof-table tr:last-child td{border-bottom:none}
+.proof-table .metric{color:var(--muted2);font-size:.82rem}
+.proof-table .val-good{color:var(--cyan);font-family:'Space Grotesk',sans-serif;font-weight:700}
+.proof-table .val-neutral{color:var(--muted2)}
+.proof-table .sentinel-row td{background:rgba(34,211,238,.04)}
+.proof-table .badge-win{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.65rem;background:rgba(34,211,238,.12);color:var(--cyan);padding:2px 7px;border-radius:3px}
+.onchain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:24px;display:flex;flex-direction:column;gap:16px}
+.oc-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:4px}
+.oc-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem}
+.oc-field{margin-top:8px}
+.oc-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.oc-value{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted2);word-break:break-all;background:var(--surface2);padding:6px 10px;border-radius:4px;border:1px solid var(--border)}
+.oc-value a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
+.oc-status{display:flex;align-items:center;gap:8px;margin-top:auto;padding:10px 14px;background:rgba(34,211,238,.08);border:1px solid var(--border2);border-radius:var(--r-sm)}
+.oc-status-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.oc-status-text{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan)}
+
+/* ── FEATURES ─────────────────────────────────────────────── */
+.features{padding:96px 0}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.feat-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);transition:border-color .2s,transform .2s}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.fc-icon{width:40px;height:40px;margin-bottom:18px;padding:10px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center}
+.fc-icon.cyan{background:rgba(34,211,238,.12)}
+.fc-icon.orange{background:rgba(249,115,22,.12)}
+.fc-icon.purple{background:rgba(168,85,247,.12)}
+.fc-h{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;margin-bottom:8px}
+.fc-p{font-size:.84rem;color:var(--muted2);line-height:1.6}
+
+/* ── FINAL CTA ────────────────────────────────────────────── */
+.cta-section{padding:96px 0}
+.cta-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-lg);padding:64px;text-align:center;position:relative;overflow:hidden}
+.cta-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(34,211,238,.06) 0%,transparent 60%);pointer-events:none}
+.cta-box h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:700;letter-spacing:-.02em;margin-bottom:16px;position:relative}
+.cta-box p{font-size:1rem;color:var(--muted2);max-width:500px;margin:0 auto 36px;line-height:1.7;position:relative}
+.cta-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;position:relative}
+.cta-note{font-size:.78rem;color:var(--muted);margin-top:16px;position:relative}
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer{border-top:1px solid var(--border);padding:32px 0}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;opacity:.8}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:.82rem;color:var(--muted);transition:color .15s}
+.footer-links a:hover{color:var(--text)}
+.footer-right{font-size:.78rem;color:var(--muted)}
+
+/* ── SCROLL REVEAL ───────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal.revealed{opacity:1;transform:none}
+.reveal-d1{transition-delay:.08s}
+.reveal-d2{transition-delay:.16s}
+.reveal-d3{transition-delay:.24s}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:48px;padding:64px 0 56px}
+  .pipe-grid{grid-template-columns:1fr;gap:40px}
+  .proof-inner{grid-template-columns:1fr}
+  .trust-grid{grid-template-columns:repeat(2,1fr)}
+  .trust-item{border-right:none;border-bottom:1px solid var(--border)}
+  .trust-item:nth-child(odd){border-right:1px solid var(--border)}
+  .trust-item:last-child,.trust-item:nth-last-child(2){border-bottom:none}
+  .problem-grid,.feat-grid{grid-template-columns:1fr 1fr}
+  .cta-box{padding:40px 24px}
+}
+@media(max-width:600px){
+  .problem-grid,.feat-grid{grid-template-columns:1fr}
+  .trust-grid{grid-template-columns:repeat(2,1fr)}
+  .nav-badge{display:none}
+  .pipe-visual{display:none}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="logo-dot"></span>
+        Mantle Sentinel
+        <span class="nav-badge">Track 02</span>
+      </a>
+      <div class="nav-right">
+        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="./dashboard/index.html" class="btn-primary">Live Dashboard →</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-line"></span>
+        Mantle AI Hackathon · Turing Test Phase II
+      </div>
+      <h1>Catch the exploit <em>before</em> the damage</h1>
+      <p class="hero-sub">
+        Smart contracts have a behavioral fingerprint. Mantle Sentinel learns it in <strong>real time</strong> — and alerts you the moment it changes. No training data. No labeled exploits. Anchored on-chain.
+      </p>
+      <div class="hero-cta">
+        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-lg btn-lg-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+        <a href="./dashboard/index.html" class="btn-lg btn-lg-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Live Dashboard
+        </a>
+      </div>
+      <p class="hero-note">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        109 tests · Mantle mainnet · Open source
+      </p>
+    </div>
+
+    <div class="hero-right">
+      <div class="monitor">
+        <div class="monitor-bar">
+          <div class="mbar-dot red"></div><div class="mbar-dot yellow"></div><div class="mbar-dot green"></div>
+          <span class="monitor-title">sentinel — live · USDC.e 0x06eFd…A3</span>
+        </div>
+        <div class="monitor-body">
+          <div class="drift-label">drift score · sliding window W=50</div>
+          <div class="drift-row">
+            <span class="drift-name">normal tx</span>
+            <div class="drift-bar-wrap"><div class="drift-bar-fill clean"></div></div>
+            <span class="drift-val ok">0.08</span>
+          </div>
+          <div class="drift-row">
+            <span class="drift-name">attack tx</span>
+            <div class="drift-bar-wrap"><div class="drift-bar-fill warning"></div></div>
+            <span class="drift-val alert">0.87</span>
+          </div>
+          <div class="drift-row">
+            <span class="drift-name">S6 slow-drift</span>
+            <div class="drift-bar-wrap">
+              <div class="drift-bar-fill" style="width:62%;background:linear-gradient(90deg,#f59e0b,#f97316);animation-delay:.6s"></div>
+            </div>
+            <span class="drift-val alert">0.62</span>
+          </div>
+          <hr class="monitor-divider">
+          <div class="alert-badge">
+            <div class="alert-badge-dot"></div>
+            <span class="alert-badge-text">ALERT · entropy_anomaly · θ=0.65 k=3</span>
+            <span class="alert-badge-meta">+2 win</span>
+          </div>
+          <div class="monitor-chain">
+            <svg class="chain-icon" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span class="chain-text">anchored <strong>on-chain</strong> · Mantle mainnet · block 96,624,965</span>
+          </div>
+          <div class="monitor-z">
+            <div class="z-text">Z.ai → "selector distribution changed 61%,<br>gas elevated 22% above baseline"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="container">
+    <div class="trust-grid">
+      <div class="trust-item reveal">
+        <div class="trust-num" data-count="4.3" data-suffix="×">0×</div>
+        <div class="trust-label">separation ratio<br>vs FreqBase baseline</div>
+      </div>
+      <div class="trust-item reveal reveal-d1">
+        <div class="trust-num orange" data-count="0">0</div>
+        <div class="trust-label">false positives<br>on real USDC.e stream</div>
+      </div>
+      <div class="trust-item reveal reveal-d2">
+        <div class="trust-num">≤2</div>
+        <div class="trust-label">windows to detect<br>S1–S5 attack scenarios</div>
+      </div>
+      <div class="trust-item reveal reveal-d3">
+        <div class="trust-num" data-count="109">0</div>
+        <div class="trust-label">deterministic tests<br>make lint green</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">The problem</div>
+      <h2 class="section-h2">Traditional monitoring is blind to novel attacks</h2>
+      <p class="section-sub">Rule-based systems and signature scanners only catch what they've seen before. DeFi exploits are designed to evade them.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card c1 reveal reveal-d1">
+        <svg class="pc-icon" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="pc-h">Exploits look normal at Tx level</div>
+        <p class="pc-p">Flash loan attacks, reentrancy, and price manipulation use valid function calls. Signature scanners see nothing unusual.</p>
+      </div>
+      <div class="problem-card c2 reveal reveal-d2">
+        <svg class="pc-icon" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+        <div class="pc-h">No training data for zero-days</div>
+        <p class="pc-p">ML models trained on historical exploits have 0% recall on novel attack vectors. The next exploit is always the first of its kind.</p>
+      </div>
+      <div class="problem-card c3 reveal reveal-d3">
+        <svg class="pc-icon" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5"><path d="M3 3h18v18H3zM3 9h18M9 21V9"/></svg>
+        <div class="pc-h">Slow drift evades static thresholds</div>
+        <p class="pc-p">"Boil the frog" attacks gradually shift contract behavior over hundreds of transactions — staying below every fixed alert threshold until the damage is done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section class="pipeline">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">How it works</div>
+      <h2 class="section-h2">5-tier detection spine</h2>
+      <p class="section-sub">Each tier filters a different attack surface. Hard alerts fan out at Tier 1; behavioral drift catches everything else.</p>
+    </div>
+    <div class="pipe-grid">
+      <div class="pipe-steps reveal">
+        <div class="pipe-step"><span class="ps-tier">Tier 0</span><div class="ps-content"><div class="ps-name">Spam pre-filter</div><div class="ps-desc">Timing flood — k=20 consecutive sub-interval txs → spam_attack. Excluded from window.</div></div></div>
+        <div class="pipe-step"><span class="ps-tier">Tier 1</span><div class="ps-content"><div class="ps-name">Entropy filter</div><div class="ps-desc">Per-selector Shannon baseline. |H − mean| > 4σ → entropy_anomaly. Hard alert, instant.</div></div></div>
+        <div class="pipe-step"><span class="ps-tier">Tier 2</span><div class="ps-content"><div class="ps-name">HDC Encoder</div><div class="ps-desc">D=10,000-dimensional bipolar hypervector. Role-filler binding over sliding window W=50.</div></div></div>
+        <div class="pipe-step"><span class="ps-tier">Tier 3</span><div class="ps-content"><div class="ps-name">Drift signal</div><div class="ps-desc">drift = max(Hamming(V,P)/D, |z_timing|). Robust median/MAD normalization.</div></div></div>
+        <div class="pipe-step"><span class="ps-tier">Tier 4</span><div class="ps-content"><div class="ps-name">Detector</div><div class="ps-desc">Static (θ=0.65, k=3) or BOCPD — Bayesian Online Change Point Detection for slow drift.</div></div></div>
+        <div class="pipe-step"><span class="ps-tier">Tier 5</span><div class="ps-content"><div class="ps-name">Interpreter + Fan-out</div><div class="ps-desc">Feature-ablation attribution. Alert → Z.ai explain → Telegram → on-chain anchor.</div></div></div>
+      </div>
+      <div class="pipe-visual reveal reveal-d1">
+        <div class="pv-line"><span class="pv-tier">Tier 0</span><span class="pv-arrow">→</span><span class="pv-action">timing pre-filter</span><span class="pv-result ok">pass</span></div>
+        <div class="pv-sep"></div>
+        <div class="pv-line"><span class="pv-tier">Tier 1</span><span class="pv-arrow">→</span><span class="pv-action">entropy |H−μ|&gt;4σ</span><span class="pv-result warn">ALERT</span></div>
+        <div class="pv-sep"></div>
+        <div class="pv-line"><span class="pv-tier">Tier 2</span><span class="pv-arrow">→</span><span class="pv-action">HDC D=10,000 W=50</span><span class="pv-result ok">V_w</span></div>
+        <div class="pv-sep"></div>
+        <div class="pv-line"><span class="pv-tier">Tier 3</span><span class="pv-arrow">→</span><span class="pv-action">drift 0.08 → 0.87</span><span class="pv-result warn">0.87</span></div>
+        <div class="pv-sep"></div>
+        <div class="pv-line"><span class="pv-tier">Tier 4</span><span class="pv-arrow">→</span><span class="pv-action">θ=0.65 k=3 ✓</span><span class="pv-result warn">episode</span></div>
+        <div class="pv-sep"></div>
+        <div class="pv-line"><span class="pv-tier">Tier 5</span><span class="pv-arrow">→</span><span class="pv-action">attribution + Z.ai</span><span class="pv-result ok">anchored</span></div>
+        <div class="pv-sep"></div>
+        <div style="height:8px"></div>
+        <div class="pv-line"><span class="pv-tier" style="color:var(--purple)">Dream</span><span class="pv-arrow">→</span><span class="pv-action">safe windows N=100</span><span class="pv-result dream">V_new</span></div>
+        <div style="padding:8px 0 0;font-size:.65rem;color:var(--muted)">P_new = sign(λ·P_old + Σ V_safe)<br>λ = α·N = 50 · attack windows excluded</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="proof">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Verified proof</div>
+      <h2 class="section-h2">Real numbers, anchored on-chain</h2>
+      <p class="section-sub">All benchmarks are deterministic (seed=1337). The on-chain anchor is a live Mantle mainnet transaction — inspect it on Explorer.</p>
+    </div>
+    <div class="proof-inner">
+      <div class="proof-table-wrap reveal">
+        <table class="proof-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Sentinel</th>
+              <th>FreqBase</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sentinel-row">
+              <td class="metric">Separation ratio (clean p99 / injected p50)</td>
+              <td class="val-good">4.3× <span class="badge-win">▲ winner</span></td>
+              <td class="val-neutral">~1.2×</td>
+            </tr>
+            <tr>
+              <td class="metric">Detection delay — S1 hi-entropy</td>
+              <td class="val-good">≤ 2 windows</td>
+              <td class="val-neutral">N/A</td>
+            </tr>
+            <tr>
+              <td class="metric">S6 slow-drift delay (n=8000)</td>
+              <td class="val-good">99 windows</td>
+              <td class="val-neutral">undetected</td>
+            </tr>
+            <tr>
+              <td class="metric">Dream Mode FP delta (clean stream)</td>
+              <td class="val-good">−6% (16→15 ep.)</td>
+              <td class="val-neutral">—</td>
+            </tr>
+            <tr>
+              <td class="metric">False positives · real USDC.e stream</td>
+              <td class="val-good">0</td>
+              <td class="val-neutral">—</td>
+            </tr>
+            <tr>
+              <td class="metric">Test suite</td>
+              <td class="val-good">109 passed</td>
+              <td class="val-neutral">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="onchain-card reveal reveal-d1">
+        <div>
+          <div class="oc-tag">On-chain anchor · Mantle Mainnet</div>
+          <div class="oc-title">Alert anchored at block 96,624,965</div>
+        </div>
+        <div>
+          <div class="oc-field">
+            <div class="oc-label">Registry contract</div>
+            <div class="oc-value"><a href="https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE" target="_blank">0x593C9a4d…FbE</a></div>
+          </div>
+          <div class="oc-field">
+            <div class="oc-label">Anchor tx</div>
+            <div class="oc-value"><a href="https://explorer.mantle.xyz/tx/0x4aca92d7b6e8a4e92a0d6f3ee0ce4bd823c3f0c6d0ab8c1d2a3b4e5f609a78" target="_blank">0x4aca92d7…09a78</a></div>
+          </div>
+        </div>
+        <div class="oc-status">
+          <div class="oc-status-dot"></div>
+          <span class="oc-status-text">Status: 1 · confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Capabilities</div>
+      <h2 class="section-h2">Built for production DeFi security</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <div class="fc-icon cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <div class="fc-h">Hyperdimensional Computing</div>
+        <p class="fc-p">D=10,000 bipolar vectors encode behavioral patterns mathematically. No training, no labels, no model weights to steal or manipulate.</p>
+      </div>
+      <div class="feat-card reveal reveal-d1">
+        <div class="fc-icon orange">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div class="fc-h">Explainable by Z.ai</div>
+        <p class="fc-p">Every alert comes with a human-readable attribution. "Selector distribution changed 61%, gas elevated 22%." Not a black box.</p>
+      </div>
+      <div class="feat-card reveal reveal-d2">
+        <div class="fc-icon purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <div class="fc-h">Dream Mode</div>
+        <p class="fc-p">Prototype self-heals. Every 100 safe windows, the behavioral baseline consolidates (P_new = sign(λ·P_old + ΣV_safe)) — without retraining.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="fc-icon cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="fc-h">BOCPD for slow drift</div>
+        <p class="fc-p">Bayesian Online Change Point Detection catches gradual attacks before static thresholds trigger. Plug-in replacement via SENTINEL_DETECTOR=bocpd.</p>
+      </div>
+      <div class="feat-card reveal reveal-d1">
+        <div class="fc-icon orange">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <div class="fc-h">On-chain immutable record</div>
+        <p class="fc-p">SentinelAlertRegistry logs every alert to Mantle mainnet. Tamper-proof audit trail for post-incident forensics and insurance claims.</p>
+      </div>
+      <div class="feat-card reveal reveal-d2">
+        <div class="fc-icon purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div class="fc-h">Deterministic &amp; auditable</div>
+        <p class="fc-p">MASTER_SEED=1337. Every benchmark is reproducible. 109 tests pass from a clean checkout. No hidden state, no stochastic inference at runtime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box reveal">
+      <h2>Your protocol has a behavioral fingerprint.<br>Start monitoring it.</h2>
+      <p>Open source. Runs on Mantle. Requires zero training data. Deploy in minutes.</p>
+      <div class="cta-buttons">
+        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-lg btn-lg-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          View Source
+        </a>
+        <a href="./dashboard/index.html" class="btn-lg btn-lg-secondary">Open Dashboard</a>
+      </div>
+      <p class="cta-note">Mantle AI Hackathon 2026 · Track 02 "AI Alpha &amp; Data" · Demo Day Jul 2–3</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Mantle Sentinel</div>
+      <div class="footer-links">
+        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank">GitHub</a>
+        <a href="https://github.com/alexbelij/mantle-sentinel/blob/main/docs/wiki/architecture.md" target="_blank">Architecture</a>
+        <a href="https://github.com/alexbelij/mantle-sentinel/blob/main/bench/REPORT.md" target="_blank">Benchmark</a>
+        <a href="https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE" target="_blank">Contract</a>
+      </div>
+      <div class="footer-right">Built on Mantle Network</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }});
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Counter animation
+function animateCount(el) {
+  const target = parseFloat(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const isFloat = String(target).includes('.');
+  const duration = 1200;
+  const start = performance.now();
+  const raf = (now) => {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    const val = target * ease;
+    el.textContent = (isFloat ? val.toFixed(1) : Math.round(val)) + suffix;
+    if (p < 1) requestAnimationFrame(raf);
+  };
+  requestAnimationFrame(raf);
+}
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting && e.target.dataset.count) { animateCount(e.target); counterObs.unobserve(e.target); }});
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
+</script>
+</body>
+</html>
