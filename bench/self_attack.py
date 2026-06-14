@@ -28,7 +28,7 @@ SEL_LOG_ALERT = "0xe6e7b44b"        # logAlert(uint256,uint32,bytes4)
 SEL_GET_ALERT_COUNT = "0x40411fc8"  # getAlertCount()
 
 # Mantle mainnet SentinelAlertRegistry (T-13)
-MAINNET_REGISTRY = "0x593C9a4dd6806510e379e30481eaCd27d2016FbE"
+MAINNET_REGISTRY = "0x0899E1507CFfefF8620455721F5bd528Bb072187"
 MAINNET_RPC = "https://rpc.mantle.xyz"
 
 # 4-byte on-chain tags per alert type (bytes4)
@@ -184,7 +184,7 @@ def run_dry_run(victim_addr: str, verbose: bool = True) -> dict:
     # In dry-run, skip on-chain alert logging
     print("\n(dry-run: skipped on-chain alert logging to SentinelAlertRegistry)")
     print("In live mode, would call logAlert() on mainnet registry")
-    print("Registry: 0x593C9a4dd6806510e379e30481eaCd27d2016FbE (Mantle mainnet)")
+    print("Registry: 0x0899E1507CFfefF8620455721F5bd528Bb072187 (Mantle mainnet)")
 
     return {
         "alerts": [a.to_dict() for a in all_alerts],

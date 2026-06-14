@@ -9,3 +9,8 @@ bench/runs/
 # Snapshots are large; only the SHA-256 manifest is committed (BENCHMARK_PROTOCOL §1.2)
 bench/data/**/raw.jsonl
 .env
+*.env
+cache/
+out/
+foundry.lock
+broadcast/

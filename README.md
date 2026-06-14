@@ -1,7 +1,7 @@
 # Mantle Sentinel — Behavioral DNA Agent for DeFi Security
 
 > **Hackathon:** Mantle AI Hackathon — Turing Test Phase II · Track 02 AI Alpha & Data  
-> **Live contract:** [`0x593C9a4dd6806510e379e30481eaCd27d2016FbE`](https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE) (Mantle mainnet)
+> **Live contract:** [`0x0899E1507CFfefF8620455721F5bd528Bb072187`](https://explorer.mantle.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187) (Mantle mainnet)
 
 ---
 
@@ -133,9 +133,9 @@ python bench/self_attack.py --dry-run
 
 ### SentinelAlertRegistry (Mantle mainnet)
 ```
-Address:  0x593C9a4dd6806510e379e30481eaCd27d2016FbE
+Address:  0x0899E1507CFfefF8620455721F5bd528Bb072187
 Chain:    Mantle mainnet (chainId 5000)
-Explorer: https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE
+Explorer: https://explorer.mantle.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187
 ```
 
 Every confirmed drift alert is anchored on-chain via `logAlert(windowId, driftScore, alertType)`.  
