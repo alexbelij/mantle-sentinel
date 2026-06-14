@@ -5,6 +5,7 @@ unseeded randomness or wall-clock dependence into the pipeline.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 
 # Global master seed — every random hypervector is derived from this (MVP_MATH_SPEC).
@@ -36,6 +37,17 @@ LEN_BUCKET_EDGES = (4, 36, 100, 516)
 THETA = 0.65             # drift alert threshold
 K_HYSTERESIS = 3         # consecutive windows above theta
 EPISODE_COLLAPSE_S = 600  # 10 minutes
+
+# Tier 4 — detector selection. The frozen default is the static θ/k detector;
+# BOCPD (T-17) is an opt-in drop-in behind the same `process(drift, ts)` interface,
+# selectable at runtime via the SENTINEL_DETECTOR env var without touching the spec.
+DEFAULT_DETECTOR = "static"          # {"static", "bocpd"}
+SENTINEL_DETECTOR = os.getenv("SENTINEL_DETECTOR", DEFAULT_DETECTOR)
+
+
+def detector_name() -> str:
+    """Resolve the active Tier-4 detector name from the env (read fresh each call)."""
+    return os.getenv("SENTINEL_DETECTOR", DEFAULT_DETECTOR).strip().lower()
 
 # Replay / benchmark splits (fractions of the snapshot, strict time order)
 WARMUP_FRAC = 0.4

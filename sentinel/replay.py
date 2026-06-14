@@ -19,6 +19,7 @@ def run_replay(
     inject: str | None = None,
     onset_frac: float = 0.5,
     seed: int = 0,
+    detector: str | None = None,
 ) -> list[dict]:
     """Return the ordered list of alert dicts produced over the test split."""
     records = sorted(records, key=lambda r: (int(r["block_number"]), r.get("tx_hash", "")))
@@ -32,7 +33,7 @@ def run_replay(
         test = INJECTORS[inject](test, onset_frac=onset_frac, seed=seed)
 
     contract = records[0].get("contract", "0x") if records else "0x"
-    pipe = build_pipeline(contract, warmup)
+    pipe = build_pipeline(contract, warmup, detector=detector)
     alerts: list[dict] = []
     for r in test:
         for a in pipe.process_tx(r):
@@ -41,8 +42,10 @@ def run_replay(
 
 
 def run_replay_file(path: str | Path, inject: str | None = None, out: str | Path | None = None,
-                    onset_frac: float = 0.5, seed: int = 0) -> list[dict]:
-    alerts = run_replay(_load(path), inject=inject, onset_frac=onset_frac, seed=seed)
+                    onset_frac: float = 0.5, seed: int = 0,
+                    detector: str | None = None) -> list[dict]:
+    alerts = run_replay(_load(path), inject=inject, onset_frac=onset_frac, seed=seed,
+                        detector=detector)
     if out:
         Path(out).write_text(json.dumps(alerts, indent=2, sort_keys=True) + "\n")
     return alerts

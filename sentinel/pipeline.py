@@ -11,7 +11,8 @@ from __future__ import annotations
 from collections import deque
 
 from sentinel.alert import Alert, iso_ts, make_alert_id
-from sentinel.config import WARMUP_FRAC, WINDOW
+from sentinel.bocpd import BOCPDDetector
+from sentinel.config import WARMUP_FRAC, WINDOW, detector_name
 from sentinel.detector import StaticThresholdDetector
 from sentinel.drift import DriftTracker
 from sentinel.entropy import EntropyFilter
@@ -32,7 +33,7 @@ class Pipeline:
         space: HDCSpace,
         protoset: ProtoSet,
         tracker: DriftTracker,
-        detector: StaticThresholdDetector,
+        detector: StaticThresholdDetector | BOCPDDetector,
         entropy: EntropyFilter,
         prefilter: SpamPrefilter,
         interpreter: Interpreter,
@@ -120,8 +121,22 @@ class Pipeline:
         )
 
 
-def build_pipeline(contract: str, warmup: list[RawTx]) -> Pipeline:
-    """Construct a pipeline whose baselines are all fit/frozen on the warm-up split."""
+def _make_detector(name: str | None) -> StaticThresholdDetector | BOCPDDetector:
+    """Select the Tier-4 detector ('static' | 'bocpd'); falls back to env, then static."""
+    kind = (name or detector_name()).strip().lower()
+    if kind == "bocpd":
+        return BOCPDDetector()
+    return StaticThresholdDetector()
+
+
+def build_pipeline(
+    contract: str, warmup: list[RawTx], detector: str | None = None
+) -> Pipeline:
+    """Construct a pipeline whose baselines are all fit/frozen on the warm-up split.
+
+    ``detector`` selects the Tier-4 detector ('static' | 'bocpd'); when None it is
+    resolved from the SENTINEL_DETECTOR env var (frozen default: 'static').
+    """
     extractor = FeatureExtractor().fit(warmup)
     space = HDCSpace()
 
@@ -137,7 +152,7 @@ def build_pipeline(contract: str, warmup: list[RawTx]) -> Pipeline:
     entropy = EntropyFilter().fit([r.get("calldata", "0x") or "0x" for r in warmup])
     prefilter = SpamPrefilter().fit([d for d in warm_dts if d > 0])
     tracker = DriftTracker(space, protoset.full)
-    detector = StaticThresholdDetector()
+    detector_obj = _make_detector(detector)
     interpreter = Interpreter(protoset)
 
     # seed the drift normalizer on warm-up windows (no alerts recorded)
@@ -149,7 +164,7 @@ def build_pipeline(contract: str, warmup: list[RawTx]) -> Pipeline:
             tracker.update(space.bundle(list(win)), warm_dts[i])
 
     return Pipeline(
-        contract, extractor, space, protoset, tracker, detector, entropy, prefilter, interpreter
+        contract, extractor, space, protoset, tracker, detector_obj, entropy, prefilter, interpreter
     )
 
 

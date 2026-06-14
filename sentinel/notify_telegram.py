@@ -19,7 +19,7 @@ TELEGRAM_CHAT_ID = int(os.getenv("TELEGRAM_CHAT_ID", "-5274090071"))
 _TIMEOUT = 10  # seconds
 
 
-def _format_message(alert: "Alert") -> str:
+def _format_message(alert: Alert) -> str:
     """Build the HTML-formatted Telegram message body."""
     short_addr = f"{alert.contract[:10]}...{alert.contract[-6:]}"
     lines = [
@@ -40,7 +40,7 @@ def _format_message(alert: "Alert") -> str:
     return "\n".join(lines)
 
 
-def notify_telegram(alert: "Alert", dry_run: bool = False) -> bool:
+def notify_telegram(alert: Alert, dry_run: bool = False) -> bool:
     """Send *alert* to the configured Telegram group.
 
     Parameters
@@ -64,7 +64,7 @@ def notify_telegram(alert: "Alert", dry_run: bool = False) -> bool:
         return True
 
     try:
-        import httpx  # noqa: delay import
+        import httpx  # local import keeps module import-light
 
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         payload = {

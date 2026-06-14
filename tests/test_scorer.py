@@ -1,8 +1,8 @@
 """T-10: Tests for detection scorer."""
 from __future__ import annotations
 
-from sentinel.alert import Alert
 from bench.scorer import detection_delay, false_positive_rate
+from sentinel.alert import Alert
 
 
 def _make_alert(block: int, episode_id: str = "ep-1", alert_type: str = "regime_shift") -> Alert:

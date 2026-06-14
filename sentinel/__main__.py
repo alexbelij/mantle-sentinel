@@ -23,6 +23,10 @@ def _build_parser() -> argparse.ArgumentParser:
     replay.add_argument("--onset", type=float, default=0.5, help="injection onset fraction [0,1]")
     replay.add_argument("--seed", type=int, default=1, help="injection seed")
     replay.add_argument("--out", default=None, help="path to write alerts JSON")
+    replay.add_argument(
+        "--detector", default=None, choices=["static", "bocpd"],
+        help="Tier-4 detector; overrides SENTINEL_DETECTOR env (default: static)",
+    )
     return parser
 
 
@@ -44,6 +48,7 @@ def main(argv: list[str] | None = None) -> int:
             out=args.out,
             onset_frac=args.onset,
             seed=args.seed,
+            detector=args.detector,
         )
         print(f"{len(alerts)} alert(s)")
         return 0
