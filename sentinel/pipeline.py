@@ -10,10 +10,13 @@ from __future__ import annotations
 
 from collections import deque
 
+import numpy as np
+
 from sentinel.alert import Alert, iso_ts, make_alert_id
 from sentinel.bocpd import BOCPDDetector
 from sentinel.config import WARMUP_FRAC, WINDOW, detector_name
 from sentinel.detector import StaticThresholdDetector
+from sentinel.dream import dream_update
 from sentinel.drift import DriftTracker
 from sentinel.entropy import EntropyFilter
 from sentinel.episodes import EpisodeTracker
@@ -37,6 +40,9 @@ class Pipeline:
         entropy: EntropyFilter,
         prefilter: SpamPrefilter,
         interpreter: Interpreter,
+        dream_mode: bool = False,
+        n_dream: int = 100,
+        alpha_dream: float = 0.5,
     ):
         self.contract = contract.lower()
         self.extractor = extractor
@@ -52,6 +58,18 @@ class Pipeline:
         self._spam_ep = EpisodeTracker(prefix="spam")
         self._entropy_ep = EpisodeTracker(prefix="entropy")
         self.last_drift: float | None = None  # observability (spike/metrics)
+
+        # Dream Mode (T-18, MVP_MATH_SPEC §6): periodically consolidate "safe"
+        # window vectors back into the drift prototype so the baseline tracks slow,
+        # legitimate drift. A window is safe iff the Tier-4 detector did not fire AND
+        # its drift is below the recent median (proxy for the spec's ±50-block locale).
+        self.dream_mode = bool(dream_mode)
+        self.n_dream = int(n_dream)
+        self.alpha_dream = float(alpha_dream)
+        self._safe_buf: list[np.ndarray] = []
+        self._drift_hist: deque[float] = deque(maxlen=100)
+        self._dream_min_hist = WINDOW  # need a stable median before consolidating
+        self.dream_count = 0  # observability: number of consolidations performed
 
     def process_tx(self, r: RawTx) -> list[Alert]:
         alerts: list[Alert] = []
@@ -86,6 +104,11 @@ class Pipeline:
 
         # Tier 3 — static detector
         trig = self.detector.process(dr.drift, ts)
+
+        # Dream Mode — consolidate safe windows into the prototype (opt-in)
+        if self.dream_mode:
+            self._dream_step(v_win, dr.drift, fired=trig is not None)
+
         if trig is None:
             return self._enrich(alerts)
 
@@ -98,6 +121,33 @@ class Pipeline:
             )
         )
         return self._enrich(alerts)
+
+    def _dream_step(self, v_win: np.ndarray, drift: float, fired: bool) -> None:
+        """Accumulate safe window vectors and consolidate every ``n_dream`` of them.
+
+        ``λ = alpha_dream · N`` (D-04). Consolidation replaces the drift prototype
+        with ``sign(λ·V_old + Σ V_safe)``. An alert clears the pending batch so attack
+        windows are never folded into the baseline.
+        """
+        if fired:
+            self._safe_buf.clear()
+            self._drift_hist.append(drift)
+            return
+        med = (
+            float(np.median(self._drift_hist))
+            if len(self._drift_hist) >= self._dream_min_hist
+            else None
+        )
+        self._drift_hist.append(drift)
+        if med is None or drift >= med:
+            return  # not a "safe" (below-median) window
+        self._safe_buf.append(v_win)
+        if len(self._safe_buf) >= self.n_dream:
+            self.tracker.prototype = dream_update(
+                self.tracker.prototype, self._safe_buf, alpha=self.alpha_dream
+            )
+            self._safe_buf.clear()
+            self.dream_count += 1
 
     def _enrich(self, alerts: list[Alert]) -> list[Alert]:
         """Attach Z.ai explanation and send Telegram notification for each alert."""
@@ -130,12 +180,18 @@ def _make_detector(name: str | None) -> StaticThresholdDetector | BOCPDDetector:
 
 
 def build_pipeline(
-    contract: str, warmup: list[RawTx], detector: str | None = None
+    contract: str,
+    warmup: list[RawTx],
+    detector: str | None = None,
+    dream_mode: bool = False,
+    n_dream: int = 100,
 ) -> Pipeline:
     """Construct a pipeline whose baselines are all fit/frozen on the warm-up split.
 
     ``detector`` selects the Tier-4 detector ('static' | 'bocpd'); when None it is
     resolved from the SENTINEL_DETECTOR env var (frozen default: 'static').
+    ``dream_mode`` enables periodic Dream-Mode consolidation of the drift prototype
+    every ``n_dream`` safe windows (MVP_MATH_SPEC §6); off by default (frozen behaviour).
     """
     extractor = FeatureExtractor().fit(warmup)
     space = HDCSpace()
@@ -164,7 +220,8 @@ def build_pipeline(
             tracker.update(space.bundle(list(win)), warm_dts[i])
 
     return Pipeline(
-        contract, extractor, space, protoset, tracker, detector_obj, entropy, prefilter, interpreter
+        contract, extractor, space, protoset, tracker, detector_obj, entropy, prefilter, interpreter,
+        dream_mode=dream_mode, n_dream=n_dream,
     )
 
 

@@ -37,3 +37,46 @@ def test_determinism_byte_identical():
     a = json.dumps(run_replay(records, inject="S1", seed=1), sort_keys=True)
     b = json.dumps(run_replay(records, inject="S1", seed=1), sort_keys=True)
     assert a == b, "replay is not deterministic"
+
+
+# --- T-18d: Dream-Mode prototype consolidation in the live pipeline -------------
+
+def _regime(alerts):
+    return [a for a in alerts if a["alert_type"] == "regime_shift"]
+
+
+def test_dream_mode_clean_zero_fp():
+    """Dream Mode on a clean stream raises no regime FP and actually consolidates."""
+    from sentinel.pipeline import build_pipeline, split_warmup
+
+    records = synth_records(3000, seed=3)
+    warm, test = split_warmup(records)
+    pipe = build_pipeline(records[0].get("contract", "0x"), warm, dream_mode=True)
+    regime = []
+    for r in test:
+        regime += [a.to_dict() for a in pipe.process_tx(r) if a.alert_type == "regime_shift"]
+    assert regime == [], f"dream-mode clean replay raised {len(regime)} regime_shift FP"
+    assert pipe.dream_count > 0, "dream consolidation never fired on a clean stream"
+
+
+def test_dream_mode_no_fp_regression():
+    """Enabling Dream Mode must never increase the clean false-positive count."""
+    records = synth_records(3000, seed=11)
+    base = len(_regime(run_replay(records, dream_mode=False)))
+    dream = len(_regime(run_replay(records, dream_mode=True)))
+    assert dream <= base, f"dream mode increased clean FP ({base} -> {dream})"
+
+
+def test_dream_mode_still_detects_attack():
+    records = synth_records(3000, seed=11)
+    alerts = run_replay(records, inject="S1", onset_frac=0.5, seed=7, dream_mode=True)
+    assert _regime(alerts), "dream mode suppressed the injected S1 attack"
+
+
+def test_dream_mode_deterministic():
+    import json
+
+    records = synth_records(1500, seed=3)
+    a = json.dumps(run_replay(records, inject="S1", seed=1, dream_mode=True), sort_keys=True)
+    b = json.dumps(run_replay(records, inject="S1", seed=1, dream_mode=True), sort_keys=True)
+    assert a == b, "dream-mode replay is not deterministic"
