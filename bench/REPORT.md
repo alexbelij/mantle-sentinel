@@ -28,6 +28,12 @@ across the whole post-onset span. Reproduce: `python -m bench.dream_bench` (dete
 Snapshot: n=8000 synthetic txs, seed=7, onset=0.5 (drift is computed on a sliding W=50 bundle
 per tx; "Consolidations" = number of `dream_update` folds performed).
 
+> Note on the CLEAN rows: the 15–16 "episodes" are not contract-day false positives — they
+> are the static θ=0.65 detector firing on synthetic baseline noise, i.e. an FP rate ≈0.2% of
+> windows on the pinned synthetic stream. On real Mantle USDC.e data the measured FP is 0
+> episodes (see Headline Numbers / `docs/BENCHMARK_PROTOCOL.md`). The point of this A/B is the
+> *delta* from Dream Mode, which is ≤0 on clean traffic.
+
 | Scenario | Dream | Alerts | Episodes | Det. delay (win) | Consolidations | Detected |
 |----------|-------|--------|----------|------------------|----------------|----------|
 | CLEAN | OFF | 23 | 16 | — | 0 | — |

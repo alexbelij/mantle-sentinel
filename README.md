@@ -36,21 +36,77 @@ Signature-based tools miss novel attacks. Pure-LLM monitors are slow ($$$). Sent
 
 ---
 
-## Pipeline (5 tiers, no GPU)
+## Architecture (5 tiers, no GPU)
+
+Every transaction streams through a deterministic, microsecond-per-tx detection
+spine. The two **hard pre-filters** (Tier 0–1) short-circuit obvious spam and
+payload mutation; the **HDC core** (Tier 2–3) turns behavior into a single drift
+scalar; the **detector** (Tier 4) decides; and only on a confirmed alert does the
+**explainer fan-out** (Tier 5 → Z.ai → Telegram + on-chain) run. The `LLM` is
+never in the detection loop — attribution is computed algebraically *before* Z.ai
+is called.
 
 ```
-tx stream
-  → Tier 0  Spam pre-filter      (MIN_INTERVAL rule, excludes MEV bursts)
-  → Tier 1  Shannon entropy      (per-selector, length-conditioned baseline)
-  → Tier 2  HDC encode           (D=10,000 bipolar; role-filler binding; window bundle W=50)
-  → Tier 3  Drift signal         (Hamming dist + timing dev → normalize → max → [0,1])
-  → Tier 4  Detector             (static θ=0.65 + hysteresis k=3 + episode collapse)
-  → Tier 5  DNA explainer        (feature-ablation attribution: names what drifted)
-  → Z.ai    LLM explainer        (strict template: restates Tier 5 findings in plain English)
-  → Telegram alert + on-chain anchor (SentinelAlertRegistry)
+                         ┌──────────────────────────────────────────┐
+   Mantle tx stream ───► │            DETECTION SPINE                │
+   (block, caller,       │      (deterministic · per-tx · no GPU)    │
+    selector, calldata,  └──────────────────────────────────────────┘
+    gas, value)
+        │
+        ▼
+  ┌─────────────────┐  sustained interval < MIN_INTERVAL
+  │ Tier 0  Spam     │ ─────────────────────────────────────►╮
+  │ pre-filter       │  (excludes MEV bursts; K_SPAM=20)      │
+  └────────┬─────────┘                                        │
+           ▼                                                  │
+  ┌─────────────────┐  |H(calldata) − μ| > 4σ                 │
+  │ Tier 1  Shannon  │ ─────────────────────────────────────►┤
+  │ entropy          │  (per-selector, length-conditioned)    │  hard
+  └────────┬─────────┘                                        │  alerts
+           ▼                                                  │  (spam_attack /
+  ┌─────────────────┐                                         │   entropy_anomaly)
+  │ Tier 2  HDC      │  V_tx = bind(role ⊗ filler), D=10,000   │
+  │ encode + bundle  │  V_win = bundle(last W=50)              │
+  └────────┬─────────┘                                         │
+           ▼                                                  │
+  ┌─────────────────┐  hamming(V_win, P_baseline)/D           │
+  │ Tier 3  Drift    │  ⊕ timing deviation → normalize → max   │
+  │ signal  [0,1]    │  ──────────────► drift ─────┐           │
+  └────────┬─────────┘                             │           │
+           ▼                                       │           │
+  ┌─────────────────┐  static θ=0.65 + hysteresis  │           │
+  │ Tier 4  Detector │  k=3 + episode collapse      │           │
+  │ (BOCPD opt-in)   │  ──► regime_shift?           │           │
+  └────────┬─────────┘                             │           │
+           │ alert only                            │           │
+           ▼                                       │           │
+  ┌─────────────────┐  feature-ablation over       │           │
+  │ Tier 5  DNA      │  {caller,selector,gas,       │           │
+  │ explainer        │   value,timing} → top_features│          │
+  └────────┬─────────┘                             │           │
+           ▼                                       │           │
+  ┌─────────────────┐  strict template restates    │           │
+  │ Z.ai GLM         │  Tier-5 findings (no guess)  │           │
+  └────────┬─────────┘                             │           │
+           ▼                                       │           │
+  ┌───────────────────────────────────────┐       │           │
+  │  Telegram alert   +   on-chain anchor  │ ◄─────┴───────────┘
+  │                       (SentinelAlert-  │   confirmed alerts
+  │                        Registry, 5000) │
+  └───────────────────────────────────────┘
+
+  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ Dream Mode (V2, opt-in) ─ ─ ─ ─ ─ ─ ─ ─ ─ ─
+  When Tier 4 is silent AND drift < running median (last W=100 windows),
+  the window is buffered; every n_dream=100 safe windows the baseline
+  self-updates:   P_baseline ← sign(λ·P_old + Σ V_safe)
+  ──────────────────────────────────────────► feeds back into Tier 3
+  Any alert clears the buffer, so rising-drift attack windows are never
+  folded into normal (verified on the S6 "boil-the-frog" attack).
 ```
 
-**Key property:** Tier 5 attribution is computed algebraically (ablate-and-measure), not by LLM — the explanation is already structured before Z.ai is called.
+**Key property:** Tier 5 attribution is computed algebraically (ablate-and-measure),
+not by an LLM — the structured explanation exists *before* Z.ai is ever called, so
+the model restates findings rather than inventing them.
 
 ---
 
@@ -131,7 +187,14 @@ See [`bench/REPORT.md`](bench/REPORT.md) for full results.
 | S1 selector flood | New selectors dominate | ✅ Yes | 2 windows |
 | S3 gas shift | Gas 5× above baseline | ✅ Yes | 3 windows |
 | S5 timing burst | Near-zero inter-tx interval | ✅ Yes | 2 windows |
+| S6 slow drift | "Boil-the-frog" gas + calldata ramp | ✅ Yes | slow ramp |
 | S7 payload mutation | Randomized calldata | ✅ Yes | 4 windows |
+
+The **S6 slow-drift** scenario doubles as an adversarial test of *Dream Mode*: the
+attack creeps in gradually to try to be absorbed into the baseline. The rolling-median
+safe-window gate keeps it out — Dream Mode performed 19–23 prototype consolidations yet
+added **zero** clean false positives and detected S6 in both modes (delay essentially
+unchanged). See the **Dream-Mode A/B** section in [`bench/REPORT.md`](bench/REPORT.md).
 
 ---
 
@@ -141,13 +204,13 @@ See [`bench/REPORT.md`](bench/REPORT.md) for full results.
 V_new = sign(λ · V_old + Σ V_safe)
 ```
 
-After each safe epoch, the prototype updates toward new normal traffic — enabling continuous adaptation to protocol upgrades without retraining. λ is relative to N (frozen per D-11 consensus).
+After each safe epoch, the prototype updates toward new normal traffic — enabling continuous adaptation to protocol upgrades without retraining. λ is relative to N (D-04). The "safe window" rule (detector silent **and** drift below the running median over the last W=100 windows) is fixed in **D-12**; opt-in via `--dream-mode`, off by default.
 
 ---
 
 ## Architecture Decisions
 
-See [`docs/DECISIONS.md`](docs/DECISIONS.md) for all major decisions (D-01 through D-11).  
+See [`docs/DECISIONS.md`](docs/DECISIONS.md) for all major decisions (D-01 through D-12).  
 Architecture is frozen per [`docs/ARCHITECTURE_FREEZE.md`](docs/ARCHITECTURE_FREEZE.md).
 
 ---
