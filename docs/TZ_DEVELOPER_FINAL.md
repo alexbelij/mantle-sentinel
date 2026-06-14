@@ -3,7 +3,14 @@
 
 **Дедлайн:** Jun 15 23:59 (DoraHacks submission)
 **Demo Day:** Jul 2–3
-**Контракт уже задеплоен Curator Viktor** → адрес ниже (обновить если деплой выполнен повторно)
+
+**⚠️ КОНТРАКТ v2 УЖЕ ЗАДЕПЛОЕН Curator Viktor:**
+- Mainnet (5000): `0x0899E1507CFfefF8620455721F5bd528Bb072187`
+- Testnet (5003): `0x2543Cc701632b105eE3DB75345140a7357664389`
+- Deployer: `0x419E59C9A0C825491477BE7bfDD7B0A17E9aF5CD`
+- НЕ ДЕПЛОИТЬ ПОВТОРНО. Использовать эти адреса.
+
+**⚠️ ПРАВИЛО: после каждой ITERATION → отчёт Curator Viktor → ждать APPROVE перед следующей.**
 
 ---
 
@@ -155,22 +162,9 @@ contract SentinelAlertRegistry {
 
 ---
 
-## ITERATION 1 (~60 мин) — КОНТРАКТ + ОЧИСТКА
+## ITERATION 1 (~40 мин) — ОЧИСТКА + ТЕСТЫ
 
-> Приоритет P0. Выполнить ПЕРВОЙ, потому что новый адрес контракта нужен всем остальным.
-
-### [1a] Заменить контракт и передеплоить
-
-1. Полностью заменить содержимое `contracts/SentinelAlertRegistry.sol` текстом выше
-2. Обновить `foundry.toml` — добавить:
-   ```toml
-   [profile.default]
-   solc_version = "0.8.28"
-   ```
-3. Задеплоить на Mantle mainnet (5000) и Sepolia (5003).  
-   Деплой через `deploy.py` — но сначала пункт [1d].
-4. После деплоя обновить `contracts/deployments.json` с новыми адресами и `contracts/abi.json`.
-5. **Прислать мне (Curator) новый адрес mainnet-контракта.** Я обновлю SKILL.md.
+> [1a] ДЕПЛОЙ — ✅ ВЫПОЛНЕН Curator Viktor. Адреса: см. выше. `contracts/SentinelAlertRegistry.sol`, `contracts/deployments.json`, `contracts/abi.json` — УЖЕ В РЕПО с актуальными данными. НЕ ТРОГАТЬ.
 
 ### [1b] Удалить Foundry-шаблон
 
@@ -272,7 +266,7 @@ SENTINEL_PRIVATE_KEY=0xYOUR_PRIVATE_KEY_HERE
 
 ### [1e] Обновить `self_attack.py` и pipeline
 
-Везде где используется старый адрес контракта — заменить на новый из `contracts/deployments.json`.
+Везде где используется старый адрес контракта — заменить на новый: `0x0899E1507CFfefF8620455721F5bd528Bb072187`
 
 **Проверка:**
 ```bash
@@ -280,6 +274,12 @@ forge test  # должно быть 6 passed
 forge build # должно быть OK
 python3 -m pytest src/ -q  # 84 passed
 ```
+
+### ⛔ CHECKPOINT: отчёт Curator Viktor
+После iter.1 — прислать:
+1. `forge test` output (6 passed?)
+2. Что удалено/изменено
+3. Ждать APPROVE перед iter.2
 
 ---
 
@@ -391,6 +391,13 @@ You are a DeFi security analyst...
 <paste real template from code>
 ```
 
+### ⛔ CHECKPOINT: отчёт Curator Viktor
+После iter.2 — прислать:
+1. README.md — ссылка на коммит
+2. CI workflow — работает?
+3. docs/zai_prompt.md — создан?
+4. Ждать APPROVE перед iter.3
+
 ---
 
 ## ITERATION 3 (~30 мин) — LIVE RUN + Z.ai В DEMO
@@ -434,11 +441,21 @@ python3 src/self_attack.py --live
 
 ---
 
+### ⛔ CHECKPOINT: отчёт Curator Viktor
+После iter.3 — прислать:
+1. Новый tx hash от live run
+2. Z.ai-ответ вставлен в landing?
+3. Текст DoraHacks BUIDL — скопировать для проверки
+4. Ждать APPROVE перед iter.4
+
+---
+
 ## ITERATION 4 (~3-4 ч) — LANDING PAGE v4
 
-**Файл:** `landing/index.html` (заменить полностью)  
-**ТЗ:** `/work/projects/mantle_sentinel/TZ_LANDING_V4.md`  
-**Дизайн:** `/work/projects/mantle_sentinel/DESIGN.md`
+**Файл:** `docs/landing/index.html` (заменить полностью)  
+**ТЗ:** `docs/TZ_LANDING_V4.md` (в репо)  
+**Дизайн:** `DESIGN.md` (в корне репо)  
+**Скиллы:** `docs/skills/landing_page_design.md`, `docs/skills/motion_foundations.md`, `docs/skills/frontend_design.md` (в репо)
 
 **Перед деплоем вставить:**
 - Новый адрес контракта (из iter.1)
@@ -452,24 +469,26 @@ python3 src/self_attack.py --live
 ## ПОРЯДОК ВЫПОЛНЕНИЯ
 
 ```
-1. Iter.1  →  получить новый адрес контракта
-2. Iter.2 + Iter.3  →  параллельно (разные части кодовой базы)
-3. После iter.3: обновить DoraHacks BUIDL → подать T-16
-4. Iter.4  →  landing page v4 (можно параллельно с 2+3)
+1. Iter.1  →  контракт уже задеплоен, только очистка+тесты → ОТЧЁТ → APPROVE
+2. Iter.2 + Iter.3  →  параллельно → ОТЧЁТ → APPROVE
+3. После iter.3: обновить DoraHacks BUIDL
+4. Iter.4  →  landing page v4 → ОТЧЁТ → APPROVE
 ```
+
+**⚠️ НЕ ПРОПУСКАТЬ CHECKPOINT'ы. Каждая итерация → отчёт → ожидание APPROVE.**
 
 ---
 
 ## POST-MVP ROADMAP
 
-(Отдельный файл — см. ниже)
+**НЕ ТРОГАТЬ.** Файл `docs/ROADMAP_POST_MVP.md` — только для Curator Viktor.
 
 ---
 
 ## КОНТРОЛЬНЫЙ СПИСОК ДО ДЕДЛАЙНА
 
 ```
-[ ] Контракт v2 задеплоен (новый адрес)
+[✓] Контракт v2 задеплоен (Curator Viktor)
 [ ] Counter.sol + Counter.t.sol удалены
 [ ] test/SentinelAlertRegistry.t.sol: forge test → 6 passed
 [ ] deploy.py: private key → os.environ
