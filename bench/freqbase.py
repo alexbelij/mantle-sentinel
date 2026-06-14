@@ -8,10 +8,10 @@ Used to produce the AB3 comparison table (Sentinel vs FreqBase).
 """
 from __future__ import annotations
 
-from collections import Counter, defaultdict
+from collections import Counter
 
 from sentinel.alert import Alert, iso_ts, make_alert_id
-from sentinel.config import WINDOW, WARMUP_FRAC
+from sentinel.config import WINDOW
 from sentinel.entropy import selector_of
 from sentinel.episodes import EpisodeTracker
 
@@ -31,7 +31,7 @@ class FreqBaseDetector:
         self._episodes = EpisodeTracker(prefix="freqbase")
         self.contract: str = ""
 
-    def fit(self, warmup: list[dict]) -> "FreqBaseDetector":
+    def fit(self, warmup: list[dict]) -> FreqBaseDetector:
         """Compute per-selector average frequency across warmup windows."""
         if warmup:
             self.contract = warmup[0].get("contract", "").lower()

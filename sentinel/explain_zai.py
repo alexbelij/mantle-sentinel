@@ -25,7 +25,7 @@ ZAI_MODEL = os.getenv("ZAI_MODEL", "glm-4.5-flash")
 _TIMEOUT = 10  # seconds
 
 
-def _canned(alert: "Alert") -> str:
+def _canned(alert: Alert) -> str:
     """Pre-generated explanation used in dry-run / fallback mode."""
     feats = ", ".join(f.name for f in (alert.top_features or [])[:2]) or "N/A"
     return (
@@ -35,7 +35,7 @@ def _canned(alert: "Alert") -> str:
     )
 
 
-def explain_alert(alert: "Alert", dry_run: bool = False) -> str:
+def explain_alert(alert: Alert, dry_run: bool = False) -> str:
     """Return a 2-3 sentence plain-English explanation of *alert*.
 
     Parameters
@@ -58,7 +58,7 @@ def explain_alert(alert: "Alert", dry_run: bool = False) -> str:
 
     # --- live call ---
     try:
-        import httpx  # noqa: delay import to keep module light
+        import httpx  # local import keeps module import-light
 
         features_list = [f.name for f in (alert.top_features or [])]
         system_msg = (

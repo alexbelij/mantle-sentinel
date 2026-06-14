@@ -1,5 +1,4 @@
 """Tests for sentinel.notify_telegram — T-21."""
-import os
 
 from sentinel.alert import Alert, FeatureContribution
 from sentinel.notify_telegram import notify_telegram
