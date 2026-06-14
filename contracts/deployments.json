@@ -1,20 +1,18 @@
 {
   "mainnet": {
-    "address": "0x593C9a4dd6806510e379e30481eaCd27d2016FbE",
+    "address": "0x0899E1507CFfefF8620455721F5bd528Bb072187",
     "chainId": 5000,
-    "block": 96624965,
-    "txHash": "0xac6ff2a2f4cbb7e7d8ac37fe1094f1f7a52b4bf144931932fdbbd11a3bcd4d1b"
+    "block": 96672007,
+    "txHash": "0x2b4083179458a9571eaadf69b0ea157bab33f6f91c0dc3f97e658d6875d6a2e7",
+    "gasUsed": 759521,
+    "version": "v2"
   },
   "testnet": {
-    "address": "0xA7892870ff26eeed03b5d07D2e50C7753727E557",
+    "address": "0x2543Cc701632b105eE3DB75345140a7357664389",
     "chainId": 5003,
-    "block": 39917790,
-    "txHash": "0x458f7557b684e7636f10772431dcf6d6fdd3f48014e3feca52c0619d8b7b1faf"
-  },
-  "victim_testnet": {
-    "address": "0x1f88f063C00893642Ca4a74FE4d25Bf20c468E64",
-    "chainId": 5003,
-    "block": 39920014,
-    "txHash": "0x2973f810616fa19318490be6877710b5c640bed29e28bb1bea8d5d90fa188eee"
+    "block": 39964854,
+    "txHash": "b5b694535747db564764662a2293677b28e4845020dae034c01a1e3b4d10bc57",
+    "gasUsed": 759521,
+    "version": "v2"
   }
 }
