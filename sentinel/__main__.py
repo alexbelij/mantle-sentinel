@@ -27,6 +27,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "--detector", default=None, choices=["static", "bocpd"],
         help="Tier-4 detector; overrides SENTINEL_DETECTOR env (default: static)",
     )
+    replay.add_argument(
+        "--dream-mode", action="store_true",
+        help="enable Dream-Mode prototype consolidation (every N=100 safe windows)",
+    )
     return parser
 
 
@@ -49,6 +53,7 @@ def main(argv: list[str] | None = None) -> int:
             onset_frac=args.onset,
             seed=args.seed,
             detector=args.detector,
+            dream_mode=args.dream_mode,
         )
         print(f"{len(alerts)} alert(s)")
         return 0
