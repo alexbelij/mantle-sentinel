@@ -80,3 +80,16 @@ def test_dream_mode_deterministic():
     a = json.dumps(run_replay(records, inject="S1", seed=1, dream_mode=True), sort_keys=True)
     b = json.dumps(run_replay(records, inject="S1", seed=1, dream_mode=True), sort_keys=True)
     assert a == b, "dream-mode replay is not deterministic"
+
+
+# --- T-18e: S6 slow-drift survives Dream Mode (boil-the-frog robustness) --------
+
+def test_s6_slow_drift_detected_with_and_without_dream():
+    """The slow-drift attack must be caught whether or not Dream Mode is active —
+    the rolling-median safe-window gate keeps rising-drift attack windows out of
+    consolidation, so the creeping attack is not folded into the baseline."""
+    records = synth_records(3000, seed=11)
+    base = run_replay(records, inject="S6", onset_frac=0.5, seed=7, dream_mode=False)
+    dream = run_replay(records, inject="S6", onset_frac=0.5, seed=7, dream_mode=True)
+    assert _regime(base), "S6 slow-drift not detected (dream OFF)"
+    assert _regime(dream), "dream mode masked the S6 slow-drift attack"
