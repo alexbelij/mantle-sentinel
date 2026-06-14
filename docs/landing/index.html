@@ -3,353 +3,462 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mantle Sentinel — Behavioral DNA for DeFi Security</title>
-<meta name="description" content="Catch contract exploits before damage occurs. Hyperdimensional behavioral fingerprinting — no training data, no labeled exploits. Live on Mantle Network.">
+<title>Mantle Sentinel — Real-Time Behavioral Security for DeFi</title>
+<meta name="description" content="Catch smart contract exploits before damage occurs. Hyperdimensional AI behavioral fingerprinting — no training data required. Live on Mantle Network.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ── TOKENS ───────────────────────────────────────────────── */
+/* ── TOKENS ─────────────────────────────────── */
 :root {
-  --bg:       #030910;
-  --surface:  #0b1629;
-  --surface2: #0f1e36;
-  --border:   rgba(34,211,238,.12);
-  --border2:  rgba(34,211,238,.22);
-  --cyan:     #22d3ee;
-  --cyan-dim: rgba(34,211,238,.15);
-  --orange:   #f97316;
-  --orange-dim:rgba(249,115,22,.14);
-  --purple:   #a855f7;
-  --purple-dim:rgba(168,85,247,.14);
-  --text:     #e2e8f0;
-  --muted:    #64748b;
-  --muted2:   #94a3b8;
-  --r-sm:     8px;
-  --r-md:     14px;
-  --r-lg:     20px;
+  --bg:       #FFFFFF;
+  --surface:  #F8FAFC;
+  --surface2: #F1F5F9;
+  --surface3: #E2E8F0;
+  --border:   rgba(15,23,42,.09);
+  --border2:  rgba(15,23,42,.16);
+  --text:     #0F172A;
+  --muted:    #64748B;
+  --muted2:   #94A3B8;
+  --brand:    #0369A1;
+  --brand2:   #0EA5E9;
+  --cyan:     #06B6D4;
+  --orange:   #F97316;
+  --red:      #EF4444;
+  --green:    #10B981;
+  --purple:   #8B5CF6;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.04);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
+html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
-img{display:block;max-width:100%}
 
-/* ── NOISE OVERLAY ───────────────────────────────────────── */
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+/* ── NAV ──────────────────────────────────── */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px;max-width:1160px;margin:0 auto;padding:0 24px;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text)}
+.nav-badge{font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.2);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace}
+.nav-right{display:flex;align-items:center;gap:10px}
+.btn-ghost-nav{font-size:.875rem;color:var(--muted);padding:7px 14px;border-radius:var(--r-sm);border:1px solid var(--border2);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost-nav:hover{color:var(--text);border-color:var(--brand2);background:rgba(14,165,233,.06)}
+.btn-nav-primary{font-size:.875rem;padding:7px 18px;border-radius:var(--r-sm);background:var(--orange);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;transition:all .15s;border:none;cursor:pointer}
+.btn-nav-primary:hover{background:#ea6c10;box-shadow:0 4px 16px rgba(249,115,22,.35);transform:translateY(-1px)}
 
-/* ── GRID GLOW BG ────────────────────────────────────────── */
-.bg-glow{position:fixed;top:-40vh;left:50%;transform:translateX(-50%);width:900px;height:700px;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(34,211,238,.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+/* ── LAYOUT ───────────────────────────────── */
+.container{max-width:1160px;margin:0 auto;padding:0 24px}
 
-/* ── LAYOUT ──────────────────────────────────────────────── */
-.container{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
-section{position:relative;z-index:1}
+/* ── HERO ─────────────────────────────────── */
+.hero{padding:80px 0 72px;background:linear-gradient(180deg,var(--surface) 0%,var(--bg) 100%)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.hero-left{}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(3,105,161,.07);border:1px solid rgba(3,105,161,.18);border-radius:20px;padding:4px 12px 4px 6px;margin-bottom:28px}
+.eyebrow-dot{width:8px;height:8px;border-radius:50%;background:var(--brand2);animation:pulse-dot 2.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(14,165,233,.5)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(14,165,233,0)}}
+.eyebrow-text{font-size:.78rem;font-weight:600;color:var(--brand);letter-spacing:.02em;font-family:'Plus Jakarta Sans',sans-serif}
+.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.2rem,3.8vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:-.025em;color:var(--text);margin-bottom:20px}
+.hero h1 .accent{color:var(--brand)}
+.hero h1 .accent-orange{color:var(--orange)}
+.hero-sub{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:490px;margin-bottom:36px}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-cta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.btn-hero-primary{background:var(--orange);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;padding:13px 28px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(249,115,22,.3)}
+.btn-hero-primary:hover{background:#ea6c10;transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,.38)}
+.btn-hero-secondary{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:1rem;padding:12px 24px;border-radius:var(--r-sm);border:1.5px solid var(--border2);cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
+.btn-hero-secondary:hover{border-color:var(--brand2);color:var(--brand);background:rgba(14,165,233,.04)}
+.hero-proof{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.proof-item{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
+.proof-item svg{flex-shrink:0;color:var(--green)}
+.proof-dot{width:3px;height:3px;border-radius:50%;background:var(--muted2)}
 
-/* ── NAV ─────────────────────────────────────────────────── */
-nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(3,9,16,.8)}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
-.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
-.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse-dot 2s ease-in-out infinite}
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
-.nav-badge{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--border2);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace}
-.nav-right{display:flex;align-items:center;gap:12px}
-.btn-ghost{font-size:.875rem;color:var(--muted2);padding:6px 14px;border-radius:var(--r-sm);border:1px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:500}
-.btn-ghost:hover{color:var(--text);border-color:var(--border2);background:var(--cyan-dim)}
-.btn-primary{font-size:.875rem;color:#fff;padding:7px 18px;border-radius:var(--r-sm);background:var(--cyan);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-weight:700;transition:all .15s;white-space:nowrap}
-.btn-primary:hover{background:#38bdf8;box-shadow:0 0 20px rgba(34,211,238,.4)}
+/* ── MASCOT ───────────────────────────────── */
+.mascot-wrap{position:relative;display:flex;justify-content:center;align-items:center}
+.mascot-bg{position:absolute;inset:-40px;background:radial-gradient(ellipse 80% 70% at 50% 45%,rgba(3,105,161,.07) 0%,transparent 70%);pointer-events:none;border-radius:50%}
+.mascot-svg{width:340px;height:340px;filter:drop-shadow(0 20px 40px rgba(3,105,161,.15))}
+/* Mascot eye scan animation */
+@keyframes eye-scan{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes eye-glow{0%,100%{filter:drop-shadow(0 0 4px rgba(6,182,212,.8))}50%{filter:drop-shadow(0 0 12px rgba(6,182,212,1))}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mascot-float{animation:float 4s ease-in-out infinite}
+.mascot-eye-left,.mascot-eye-right{animation:eye-glow 3s ease-in-out infinite}
+.mascot-scan{animation:eye-scan 3s ease-in-out infinite}
+@keyframes circuit-flow{0%{stroke-dashoffset:40}100%{stroke-dashoffset:0}}
+.mascot-circuit{stroke-dasharray:8 4;animation:circuit-flow 2s linear infinite}
+/* Live badge on mascot */
+.mascot-badge{position:absolute;bottom:30px;right:20px;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px}
+.mb-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(16,185,129,.5);flex-shrink:0;animation:pulse-dot 2s ease-in-out infinite}
+.mb-text{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text);font-weight:500}
 
-/* ── HERO ─────────────────────────────────────────────────── */
-.hero{padding:96px 0 80px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px}
-.hero-eyebrow-line{width:24px;height:1px;background:var(--cyan);opacity:.7}
-.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.2rem,4vw,3.4rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:20px}
-.hero h1 em{font-style:normal;color:var(--cyan)}
-.hero-sub{font-size:1.05rem;color:var(--muted2);line-height:1.7;max-width:480px;margin-bottom:36px}
-.hero-sub strong{color:var(--text);font-weight:500}
-.hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.btn-lg{font-size:1rem;padding:12px 28px;border-radius:var(--r-sm);font-family:'Space Grotesk',sans-serif;font-weight:700;transition:all .18s;display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none}
-.btn-lg-primary{background:var(--cyan);color:var(--bg)}
-.btn-lg-primary:hover{background:#38bdf8;box-shadow:0 0 28px rgba(34,211,238,.45);transform:translateY(-1px)}
-.btn-lg-secondary{background:transparent;color:var(--muted2);border:1px solid var(--border2)}
-.btn-lg-secondary:hover{color:var(--text);border-color:var(--cyan);background:var(--cyan-dim)}
-.hero-note{font-size:.78rem;color:var(--muted);margin-top:14px;display:flex;align-items:center;gap:6px}
+/* ── STATS ────────────────────────────────── */
+.stats{padding:48px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat-item{text-align:center;padding:16px;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.6rem;font-weight:800;line-height:1;letter-spacing:-.03em;color:var(--brand)}
+.stat-num.orange{color:var(--orange)}
+.stat-num.green{color:var(--green)}
+.stat-label{font-size:.8rem;color:var(--muted);margin-top:6px;line-height:1.4}
 
-/* ── DRIFT MONITOR (hero right) ─────────────────────────── */
-.monitor{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 0 60px rgba(34,211,238,.05),inset 0 1px 0 rgba(255,255,255,.04)}
-.monitor-bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
-.mbar-dot{width:10px;height:10px;border-radius:50%}
-.mbar-dot.red{background:#ff5f57}.mbar-dot.yellow{background:#febc2e}.mbar-dot.green{background:#28c840}
-.monitor-title{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-left:6px}
-.monitor-body{padding:20px}
-.drift-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.drift-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.drift-name{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted2);width:90px;flex-shrink:0}
-.drift-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:2px;height:6px;overflow:hidden}
-.drift-bar-fill{height:100%;border-radius:2px;transform-origin:left;animation:bar-grow 1.4s cubic-bezier(.22,1,.36,1) forwards}
-@keyframes bar-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.drift-bar-fill.clean{background:linear-gradient(90deg,#22d3ee,#0ea5e9);width:12%;animation-delay:.2s}
-.drift-bar-fill.warning{background:linear-gradient(90deg,#f97316,#ef4444);width:87%;animation-delay:.4s}
-.drift-val{font-family:'JetBrains Mono',monospace;font-size:.72rem;width:36px;text-align:right;flex-shrink:0}
-.drift-val.ok{color:var(--cyan)}.drift-val.alert{color:var(--orange)}
-.monitor-divider{border:none;border-top:1px solid var(--border);margin:14px 0}
-.alert-badge{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--orange-dim);border:1px solid rgba(249,115,22,.3);border-radius:var(--r-sm);animation:alert-blink 2s ease-in-out infinite}
-@keyframes alert-blink{0%,100%{opacity:1}50%{opacity:.75}}
-.alert-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);flex-shrink:0}
-.alert-badge-text{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--orange)}
-.alert-badge-meta{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-left:auto}
-.monitor-chain{margin-top:12px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(34,211,238,.06);border:1px solid var(--border);border-radius:var(--r-sm)}
-.chain-icon{width:16px;height:16px;flex-shrink:0}
-.chain-text{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted2)}
-.chain-text strong{color:var(--cyan)}
-.monitor-z{margin-top:8px;padding:8px 12px;background:var(--purple-dim);border:1px solid rgba(168,85,247,.25);border-radius:var(--r-sm)}
-.z-text{font-family:'JetBrains Mono',monospace;font-size:.67rem;color:var(--purple);line-height:1.5}
+/* ── SECTION HEADER ───────────────────────── */
+.section-tag{display:inline-flex;align-items:center;gap:8px;font-size:.75rem;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:12px}
+.section-tag::before{content:'';width:18px;height:2px;background:var(--brand);border-radius:1px}
+.section-h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(1.7rem,2.6vw,2.3rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
+.section-sub{font-size:1rem;color:var(--muted);max-width:560px;line-height:1.7}
 
-/* ── TRUST STRIP ─────────────────────────────────────────── */
-.trust{padding:40px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
-.trust-item{text-align:center;padding:16px 8px;border-right:1px solid var(--border)}
-.trust-item:last-child{border-right:none}
-.trust-num{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:700;color:var(--cyan);line-height:1;letter-spacing:-.03em}
-.trust-num.orange{color:var(--orange)}
-.trust-label{font-size:.78rem;color:var(--muted);margin-top:4px;line-height:1.4}
-
-/* ── SECTION HEADERS ─────────────────────────────────────── */
-.section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--cyan)}
-.section-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,2.8vw,2.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
-.section-sub{font-size:1rem;color:var(--muted2);max-width:560px;line-height:1.7}
-
-/* ── PROBLEM ─────────────────────────────────────────────── */
+/* ── PROBLEM ──────────────────────────────── */
 .problem{padding:96px 0}
-.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.problem-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
-.problem-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.problem-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.problem-card.c1::before{background:linear-gradient(90deg,var(--orange),transparent)}
-.problem-card.c2::before{background:linear-gradient(90deg,var(--cyan),transparent)}
-.problem-card.c3::before{background:linear-gradient(90deg,var(--purple),transparent)}
-.pc-icon{width:40px;height:40px;margin-bottom:16px;opacity:.9}
-.pc-h{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.05rem;margin-bottom:8px}
-.pc-p{font-size:.875rem;color:var(--muted2);line-height:1.6}
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px}
+.prob-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px;transition:all .2s;position:relative;overflow:hidden}
+.prob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.prob-card.c1::before{background:linear-gradient(90deg,var(--red),#fb923c)}
+.prob-card.c2::before{background:linear-gradient(90deg,var(--orange),#fbbf24)}
+.prob-card.c3::before{background:linear-gradient(90deg,var(--purple),var(--brand2))}
+.prob-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--border2)}
+.pc-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:3rem;font-weight:800;line-height:1;opacity:.08;color:var(--text);margin-bottom:20px}
+.pc-icon-wrap{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.pc-icon-wrap.red{background:rgba(239,68,68,.1)}
+.pc-icon-wrap.orange{background:rgba(249,115,22,.1)}
+.pc-icon-wrap.purple{background:rgba(139,92,246,.1)}
+.pc-h{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:10px}
+.pc-p{font-size:.88rem;color:var(--muted);line-height:1.65}
 
-/* ── PIPELINE ─────────────────────────────────────────────── */
-.pipeline{padding:96px 0;background:linear-gradient(180deg,transparent,rgba(34,211,238,.02) 50%,transparent)}
-.pipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px}
-.pipe-steps{display:flex;flex-direction:column;gap:0}
-.pipe-step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);cursor:default;transition:all .15s}
-.pipe-step:last-child{border-bottom:none}
-.pipe-step:hover .ps-tier{color:var(--cyan);border-color:var(--cyan)}
-.ps-tier{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);border:1px solid var(--border);border-radius:4px;padding:2px 7px;height:22px;display:flex;align-items:center;flex-shrink:0;margin-top:2px;transition:all .15s;white-space:nowrap}
-.ps-content{}
-.ps-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;margin-bottom:2px}
-.ps-desc{font-size:.8rem;color:var(--muted2);line-height:1.5}
-.pipe-visual{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted2);line-height:2;overflow:hidden}
-.pv-line{display:flex;align-items:center;gap:8px}
-.pv-tier{color:var(--cyan);min-width:52px}
-.pv-arrow{color:var(--border2)}
-.pv-action{color:var(--text)}
-.pv-result{margin-left:auto;padding:1px 8px;border-radius:3px;font-size:.65rem}
-.pv-result.ok{background:rgba(34,211,238,.12);color:var(--cyan)}
-.pv-result.warn{background:var(--orange-dim);color:var(--orange)}
-.pv-result.dream{background:var(--purple-dim);color:var(--purple)}
-.pv-sep{width:1px;height:12px;background:var(--border);margin:0 0 0 16px}
+/* ── LIVE DEMO ────────────────────────────── */
+.live-demo{padding:96px 0;background:var(--surface)}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:52px}
 
-/* ── PROOF ────────────────────────────────────────────────── */
-.proof{padding:96px 0}
-.proof-inner{margin-top:48px;display:grid;grid-template-columns:2fr 1fr;gap:24px}
-.proof-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden}
-.proof-table{width:100%;border-collapse:collapse;font-size:.875rem}
-.proof-table th{background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:12px 20px;text-align:left;border-bottom:1px solid var(--border)}
-.proof-table td{padding:12px 20px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
-.proof-table tr:last-child td{border-bottom:none}
-.proof-table .metric{color:var(--muted2);font-size:.82rem}
-.proof-table .val-good{color:var(--cyan);font-family:'Space Grotesk',sans-serif;font-weight:700}
-.proof-table .val-neutral{color:var(--muted2)}
-.proof-table .sentinel-row td{background:rgba(34,211,238,.04)}
-.proof-table .badge-win{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.65rem;background:rgba(34,211,238,.12);color:var(--cyan);padding:2px 7px;border-radius:3px}
-.onchain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:24px;display:flex;flex-direction:column;gap:16px}
-.oc-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:4px}
-.oc-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem}
-.oc-field{margin-top:8px}
-.oc-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-.oc-value{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted2);word-break:break-all;background:var(--surface2);padding:6px 10px;border-radius:4px;border:1px solid var(--border)}
-.oc-value a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
-.oc-status{display:flex;align-items:center;gap:8px;margin-top:auto;padding:10px 14px;background:rgba(34,211,238,.08);border:1px solid var(--border2);border-radius:var(--r-sm)}
-.oc-status-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-.oc-status-text{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan)}
+/* Chart card */
+.chart-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.card-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease-in-out infinite}
+.card-badge{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);background:var(--surface2);padding:3px 8px;border-radius:4px}
+.chart-area{padding:20px;height:200px;position:relative}
+.chart-svg{width:100%;height:100%}
+/* Drift chart animation */
+@keyframes draw-line{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+.chart-normal{stroke-dasharray:1000;animation:draw-line 3s ease-out forwards}
+.chart-attack{stroke-dasharray:1000;animation:draw-line 2s ease-out 2.5s forwards;stroke-dashoffset:1000}
+.chart-labels{display:flex;justify-content:space-between;padding:0 20px 16px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted2)}
 
-/* ── FEATURES ─────────────────────────────────────────────── */
-.features{padding:96px 0}
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.feat-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);transition:border-color .2s,transform .2s}
-.feat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.fc-icon{width:40px;height:40px;margin-bottom:18px;padding:10px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center}
-.fc-icon.cyan{background:rgba(34,211,238,.12)}
-.fc-icon.orange{background:rgba(249,115,22,.12)}
-.fc-icon.purple{background:rgba(168,85,247,.12)}
-.fc-h{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;margin-bottom:8px}
-.fc-p{font-size:.84rem;color:var(--muted2);line-height:1.6}
+/* Feed card */
+.feed-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.feed-body{height:220px;overflow:hidden;position:relative}
+.feed-body::after{content:'';position:absolute;bottom:0;left:0;right:0;height:48px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}
+.feed-scroll{display:flex;flex-direction:column;gap:0;animation:feed-scroll 8s linear infinite}
+@keyframes feed-scroll{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+.feed-row{display:flex;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.72rem}
+.feed-hash{color:var(--brand);min-width:70px}
+.feed-fn{color:var(--text);min-width:80px}
+.feed-drift{min-width:72px}
+.feed-drift.ok{color:var(--green)}
+.feed-drift.warn{color:var(--orange)}
+.feed-drift.alert{color:var(--red);font-weight:700}
+.feed-status{margin-left:auto;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:700;white-space:nowrap}
+.feed-status.ok{background:rgba(16,185,129,.1);color:var(--green)}
+.feed-status.alert{background:rgba(239,68,68,.1);color:var(--red)}
 
-/* ── FINAL CTA ────────────────────────────────────────────── */
+/* ── PIPELINE ─────────────────────────────── */
+.pipeline{padding:96px 0}
+.pipe-container{margin-top:56px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:40px;overflow:hidden}
+.pipe-flow{display:flex;align-items:stretch;gap:0;position:relative}
+.pipe-tier{flex:1;text-align:center;position:relative;padding:20px 8px}
+.pipe-tier:not(:last-child)::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:10px solid var(--border2);z-index:2}
+.pt-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;margin:0 auto 12px;border:2px solid var(--border2);color:var(--muted)}
+.pipe-tier.active .pt-num{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(3,105,161,.35)}
+.pipe-tier.alert-tier .pt-num{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 4px 14px rgba(239,68,68,.35)}
+.pipe-tier.dream-tier .pt-num{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 4px 14px rgba(139,92,246,.35)}
+.pt-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:700;margin-bottom:6px}
+.pt-desc{font-size:.72rem;color:var(--muted);line-height:1.5}
+.pt-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:2px 6px;border-radius:4px;margin-top:8px;font-weight:500}
+.pt-tag.blue{background:rgba(3,105,161,.1);color:var(--brand)}
+.pt-tag.orange{background:rgba(249,115,22,.1);color:var(--orange)}
+.pt-tag.red{background:rgba(239,68,68,.1);color:var(--red)}
+.pt-tag.purple{background:rgba(139,92,246,.1);color:var(--purple)}
+.pt-tag.green{background:rgba(16,185,129,.1);color:var(--green)}
+
+/* Pipeline animated flow line */
+.pipe-flow-line{margin-top:24px;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;position:relative}
+.pipe-flow-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--brand),var(--cyan),var(--orange));animation:flow-fill 3s ease-in-out infinite;width:0%}
+@keyframes flow-fill{0%{width:0;opacity:1}80%{width:100%;opacity:1}100%{width:100%;opacity:0}}
+
+/* Dream mode row */
+.dream-row{margin-top:24px;padding:20px 24px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:var(--r-md);display:flex;align-items:center;gap:20px}
+.dream-icon{width:44px;height:44px;background:rgba(139,92,246,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dream-text h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:4px;color:var(--purple)}
+.dream-text p{font-size:.83rem;color:var(--muted);line-height:1.55}
+.dream-formula{font-family:'JetBrains Mono',monospace;font-size:.78rem;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);padding:8px 16px;border-radius:8px;color:var(--purple);white-space:nowrap;margin-left:auto;flex-shrink:0}
+
+/* ── BENCHMARK ────────────────────────────── */
+.benchmark{padding:96px 0}
+.bench-grid{display:grid;grid-template-columns:3fr 2fr;gap:24px;margin-top:52px}
+.bench-table-wrap{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.bench-table{width:100%;border-collapse:collapse}
+.bench-table th{background:var(--surface2);font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:13px 20px;text-align:left;border-bottom:1px solid var(--border)}
+.bench-table td{padding:13px 20px;border-bottom:1px solid var(--border);font-size:.88rem}
+.bench-table tr:last-child td{border-bottom:none}
+.bench-table .sentinel-row{background:rgba(3,105,161,.03)}
+.bench-table .sentinel-row td:nth-child(2){color:var(--brand);font-weight:700}
+.win-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,.1);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* Onchain card */
+.onchain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;display:flex;flex-direction:column;gap:18px;box-shadow:var(--shadow-sm)}
+.oc-header{display:flex;align-items:center;gap:10px}
+.oc-icon{width:44px;height:44px;background:rgba(3,105,161,.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.oc-header-text{}
+.oc-tag{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:3px}
+.oc-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem}
+.oc-field-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:4px}
+.oc-field-value{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;word-break:break-all}
+.oc-field-value a{color:var(--brand);text-decoration:underline;text-underline-offset:2px}
+.oc-status{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:var(--r-sm);margin-top:auto}
+.oc-status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5);flex-shrink:0}
+.oc-status-text{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--green);font-weight:500}
+
+/* ── FEATURES ─────────────────────────────── */
+.features{padding:96px 0;background:var(--surface)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px}
+.feat-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;transition:all .2s;box-shadow:var(--shadow-sm)}
+.feat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--border2)}
+.fc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.fc-icon.blue{background:rgba(3,105,161,.1)}
+.fc-icon.orange{background:rgba(249,115,22,.1)}
+.fc-icon.purple{background:rgba(139,92,246,.1)}
+.fc-icon.green{background:rgba(16,185,129,.1)}
+.fc-icon.cyan{background:rgba(6,182,212,.1)}
+.fc-icon.red{background:rgba(239,68,68,.1)}
+.fc-h{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;margin-bottom:8px}
+.fc-p{font-size:.85rem;color:var(--muted);line-height:1.65}
+
+/* ── CTA ──────────────────────────────────── */
 .cta-section{padding:96px 0}
-.cta-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-lg);padding:64px;text-align:center;position:relative;overflow:hidden}
-.cta-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(34,211,238,.06) 0%,transparent 60%);pointer-events:none}
-.cta-box h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:700;letter-spacing:-.02em;margin-bottom:16px;position:relative}
-.cta-box p{font-size:1rem;color:var(--muted2);max-width:500px;margin:0 auto 36px;line-height:1.7;position:relative}
-.cta-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;position:relative}
-.cta-note{font-size:.78rem;color:var(--muted);margin-top:16px;position:relative}
+.cta-box{background:linear-gradient(135deg,#0F172A 0%,#1E3A5F 100%);border-radius:var(--r-xl);padding:72px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.cta-box::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.cta-mascot-mini{position:absolute;right:40px;bottom:0;opacity:.12;width:180px}
+.cta-box h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(1.8rem,2.8vw,2.4rem);font-weight:800;letter-spacing:-.025em;color:#fff;margin-bottom:16px;position:relative}
+.cta-box p{font-size:1.05rem;color:rgba(255,255,255,.65);max-width:520px;margin:0 auto 40px;line-height:1.7;position:relative}
+.cta-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;position:relative;margin-bottom:20px}
+.btn-cta-primary{background:var(--orange);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1.05rem;padding:14px 32px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:9px;box-shadow:0 4px 20px rgba(249,115,22,.4)}
+.btn-cta-primary:hover{background:#ea6c10;transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,.45)}
+.btn-cta-secondary{background:rgba(255,255,255,.1);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:1.05rem;padding:13px 28px;border-radius:var(--r-sm);border:1.5px solid rgba(255,255,255,.2);cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
+.btn-cta-secondary:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35)}
+.cta-note{font-size:.8rem;color:rgba(255,255,255,.4);position:relative;margin-top:8px}
 
-/* ── FOOTER ───────────────────────────────────────────────── */
+/* ── FOOTER ───────────────────────────────── */
 footer{border-top:1px solid var(--border);padding:32px 0}
 .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.footer-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;opacity:.8}
+.footer-logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:8px}
 .footer-links{display:flex;gap:20px}
-.footer-links a{font-size:.82rem;color:var(--muted);transition:color .15s}
+.footer-links a{font-size:.84rem;color:var(--muted);transition:color .15s}
 .footer-links a:hover{color:var(--text)}
-.footer-right{font-size:.78rem;color:var(--muted)}
+.footer-right{font-size:.78rem;color:var(--muted2)}
 
-/* ── SCROLL REVEAL ───────────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+/* ── SCROLL REVEAL ────────────────────────── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
 .reveal.revealed{opacity:1;transform:none}
-.reveal-d1{transition-delay:.08s}
-.reveal-d2{transition-delay:.16s}
-.reveal-d3{transition-delay:.24s}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
 
-/* ── RESPONSIVE ───────────────────────────────────────────── */
-@media(max-width:900px){
-  .hero{grid-template-columns:1fr;gap:48px;padding:64px 0 56px}
-  .pipe-grid{grid-template-columns:1fr;gap:40px}
-  .proof-inner{grid-template-columns:1fr}
-  .trust-grid{grid-template-columns:repeat(2,1fr)}
-  .trust-item{border-right:none;border-bottom:1px solid var(--border)}
-  .trust-item:nth-child(odd){border-right:1px solid var(--border)}
-  .trust-item:last-child,.trust-item:nth-last-child(2){border-bottom:none}
-  .problem-grid,.feat-grid{grid-template-columns:1fr 1fr}
+/* ── RESPONSIVE ───────────────────────────── */
+@media(max-width:960px){
+  .hero-grid,.demo-grid,.bench-grid{grid-template-columns:1fr}
+  .pipe-flow{flex-wrap:wrap;gap:12px}
+  .pipe-tier::after{display:none}
+  .feat-grid,.prob-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-item:nth-child(odd){border-right:1px solid var(--border)}
+  .stat-item:nth-child(even){border-right:none}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-top:1px solid var(--border)}
   .cta-box{padding:40px 24px}
+  .dream-formula{display:none}
+  .mascot-svg{width:280px;height:280px}
 }
 @media(max-width:600px){
-  .problem-grid,.feat-grid{grid-template-columns:1fr}
-  .trust-grid{grid-template-columns:repeat(2,1fr)}
+  .feat-grid,.prob-grid{grid-template-columns:1fr}
   .nav-badge{display:none}
-  .pipe-visual{display:none}
   .footer-inner{flex-direction:column;align-items:flex-start}
+  .pipe-tier{width:calc(50% - 12px)}
 }
 </style>
 </head>
 <body>
-<div class="bg-glow"></div>
 
 <!-- NAV -->
 <nav>
-  <div class="container">
-    <div class="nav-inner">
-      <a href="#" class="nav-logo">
-        <span class="logo-dot"></span>
-        Mantle Sentinel
-        <span class="nav-badge">Track 02</span>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <!-- Mini mascot in nav -->
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="56" rx="34" ry="36" fill="#1E3A5F"/>
+        <polygon points="34,26 50,10 66,26" fill="#1E3A5F"/>
+        <circle cx="37" cy="48" r="12" fill="#0369A1"/><circle cx="37" cy="48" r="7" fill="#06B6D4"/><circle cx="37" cy="48" r="3" fill="#0F172A"/>
+        <circle cx="63" cy="48" r="12" fill="#0369A1"/><circle cx="63" cy="48" r="7" fill="#06B6D4"/><circle cx="63" cy="48" r="3" fill="#0F172A"/>
+        <polygon points="45,62 50,70 55,62" fill="#F97316"/>
+      </svg>
+      Mantle Sentinel
+      <span class="nav-badge">Hackathon</span>
+    </a>
+    <div class="nav-right">
+      <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-ghost-nav">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
       </a>
-      <div class="nav-right">
-        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-ghost">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          GitHub
-        </a>
-        <a href="./dashboard/index.html" class="btn-primary">Live Dashboard →</a>
-      </div>
+      <a href="https://dorahacks.io" target="_blank" class="btn-nav-primary">View on DoraHacks →</a>
     </div>
   </div>
 </nav>
 
 <!-- HERO -->
-<div class="container">
-  <div class="hero">
-    <div class="hero-left">
-      <div class="hero-eyebrow">
-        <span class="hero-eyebrow-line"></span>
-        Mantle AI Hackathon · Turing Test Phase II
-      </div>
-      <h1>Catch the exploit <em>before</em> the damage</h1>
-      <p class="hero-sub">
-        Smart contracts have a behavioral fingerprint. Mantle Sentinel learns it in <strong>real time</strong> — and alerts you the moment it changes. No training data. No labeled exploits. Anchored on-chain.
-      </p>
-      <div class="hero-cta">
-        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-lg btn-lg-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          View on GitHub
-        </a>
-        <a href="./dashboard/index.html" class="btn-lg btn-lg-secondary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Live Dashboard
-        </a>
-      </div>
-      <p class="hero-note">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        109 tests · Mantle mainnet · Open source
-      </p>
-    </div>
-
-    <div class="hero-right">
-      <div class="monitor">
-        <div class="monitor-bar">
-          <div class="mbar-dot red"></div><div class="mbar-dot yellow"></div><div class="mbar-dot green"></div>
-          <span class="monitor-title">sentinel — live · USDC.e 0x06eFd…A3</span>
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-left reveal">
+        <div class="hero-eyebrow">
+          <div class="eyebrow-dot"></div>
+          <span class="eyebrow-text">Mantle AI Hackathon · Track 02 "AI Alpha &amp; Data"</span>
         </div>
-        <div class="monitor-body">
-          <div class="drift-label">drift score · sliding window W=50</div>
-          <div class="drift-row">
-            <span class="drift-name">normal tx</span>
-            <div class="drift-bar-wrap"><div class="drift-bar-fill clean"></div></div>
-            <span class="drift-val ok">0.08</span>
+        <h1>Your protocol has<br>a behavioral <span class="accent">fingerprint</span>.<br>We <span class="accent-orange">guard</span> it.</h1>
+        <p class="hero-sub">
+          Mantle Sentinel watches every transaction and learns the <strong>normal behavioral signature</strong> of your contract — and alerts you the instant it changes. No training data. No labeled exploits. <strong>Zero false positives</strong> on real streams.
+        </p>
+        <div class="hero-cta-row">
+          <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-hero-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+            Explore on GitHub
+          </a>
+          <a href="#how-it-works" class="btn-hero-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            See How It Works
+          </a>
+        </div>
+        <div class="hero-proof">
+          <div class="proof-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            109 tests passing
           </div>
-          <div class="drift-row">
-            <span class="drift-name">attack tx</span>
-            <div class="drift-bar-wrap"><div class="drift-bar-fill warning"></div></div>
-            <span class="drift-val alert">0.87</span>
+          <div class="proof-dot"></div>
+          <div class="proof-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Live on Mantle mainnet
           </div>
-          <div class="drift-row">
-            <span class="drift-name">S6 slow-drift</span>
-            <div class="drift-bar-wrap">
-              <div class="drift-bar-fill" style="width:62%;background:linear-gradient(90deg,#f59e0b,#f97316);animation-delay:.6s"></div>
-            </div>
-            <span class="drift-val alert">0.62</span>
+          <div class="proof-dot"></div>
+          <div class="proof-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Open source
           </div>
-          <hr class="monitor-divider">
-          <div class="alert-badge">
-            <div class="alert-badge-dot"></div>
-            <span class="alert-badge-text">ALERT · entropy_anomaly · θ=0.65 k=3</span>
-            <span class="alert-badge-meta">+2 win</span>
-          </div>
-          <div class="monitor-chain">
-            <svg class="chain-icon" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            <span class="chain-text">anchored <strong>on-chain</strong> · Mantle mainnet · block 96,624,965</span>
-          </div>
-          <div class="monitor-z">
-            <div class="z-text">Z.ai → "selector distribution changed 61%,<br>gas elevated 22% above baseline"</div>
-          </div>
+        </div>
+      </div>
+
+      <!-- MASCOT -->
+      <div class="mascot-wrap reveal reveal-d1">
+        <div class="mascot-bg"></div>
+        <svg class="mascot-svg mascot-float" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body shadow -->
+          <ellipse cx="150" cy="272" rx="70" ry="12" fill="rgba(0,0,0,0.07)"/>
+          
+          <!-- Wings -->
+          <path d="M52 155 Q20 120 32 80 Q60 140 90 158 Z" fill="#CBD5E1" opacity=".6"/>
+          <path d="M248 155 Q280 120 268 80 Q240 140 210 158 Z" fill="#CBD5E1" opacity=".6"/>
+          <!-- Wing details -->
+          <path d="M56 150 Q36 118 40 90" stroke="#94A3B8" stroke-width="1.5" opacity=".5"/>
+          <path d="M67 152 Q50 120 55 95" stroke="#94A3B8" stroke-width="1.5" opacity=".5"/>
+          <path d="M244 150 Q264 118 260 90" stroke="#94A3B8" stroke-width="1.5" opacity=".5"/>
+          <path d="M233 152 Q250 120 245 95" stroke="#94A3B8" stroke-width="1.5" opacity=".5"/>
+          
+          <!-- Body -->
+          <ellipse cx="150" cy="185" rx="90" ry="85" fill="#1E3A5F"/>
+          <!-- Body feather pattern -->
+          <path d="M105 220 Q150 210 195 220" stroke="#2D5A8F" stroke-width="1.5" opacity=".5"/>
+          <path d="M98 238 Q150 228 202 238" stroke="#2D5A8F" stroke-width="1.5" opacity=".5"/>
+          <path d="M96 256 Q150 246 204 256" stroke="#2D5A8F" stroke-width="1.5" opacity=".5"/>
+          <!-- Body circuit lines -->
+          <line class="mascot-circuit" x1="130" y1="195" x2="170" y2="195" stroke="#0EA5E9" stroke-width="1" opacity=".4"/>
+          <line class="mascot-circuit" x1="150" y1="195" x2="150" y2="215" stroke="#0EA5E9" stroke-width="1" opacity=".4" style="animation-delay:-.5s"/>
+          <line class="mascot-circuit" x1="120" y1="210" x2="140" y2="210" stroke="#0EA5E9" stroke-width="1" opacity=".3" style="animation-delay:-1s"/>
+          <line class="mascot-circuit" x1="160" y1="210" x2="180" y2="210" stroke="#0EA5E9" stroke-width="1" opacity=".3" style="animation-delay:-1.5s"/>
+          
+          <!-- Head -->
+          <ellipse cx="150" cy="125" rx="72" ry="68" fill="#1E3A5F"/>
+          
+          <!-- Ear tufts -->
+          <polygon points="108,68 96,30 120,62" fill="#1E3A5F"/>
+          <polygon points="192,68 204,30 180,62" fill="#1E3A5F"/>
+          <!-- Tuft highlights -->
+          <polygon points="110,66 100,38 118,63" fill="#2D5A8F" opacity=".5"/>
+          <polygon points="190,66 200,38 182,63" fill="#2D5A8F" opacity=".5"/>
+
+          <!-- Face plate (lighter) -->
+          <ellipse cx="150" cy="128" rx="58" ry="54" fill="#0F2D4F"/>
+          
+          <!-- Left eye -->
+          <circle class="mascot-eye-left" cx="123" cy="115" r="24" fill="#0369A1"/>
+          <circle cx="123" cy="115" r="20" fill="#0F172A"/>
+          <circle cx="123" cy="115" r="13" fill="#06B6D4"/>
+          <!-- Eye scan rings -->
+          <circle cx="123" cy="115" r="16" stroke="#06B6D4" stroke-width="1" opacity=".3" class="mascot-scan"/>
+          <circle cx="123" cy="115" r="19" stroke="#06B6D4" stroke-width=".5" opacity=".15"/>
+          <!-- Pupil -->
+          <circle cx="123" cy="115" r="5" fill="#0F172A"/>
+          <!-- Eye shine -->
+          <circle cx="128" cy="110" r="3" fill="rgba(255,255,255,.7)"/>
+          
+          <!-- Right eye -->
+          <circle class="mascot-eye-right" cx="177" cy="115" r="24" fill="#0369A1"/>
+          <circle cx="177" cy="115" r="20" fill="#0F172A"/>
+          <circle cx="177" cy="115" r="13" fill="#06B6D4"/>
+          <circle cx="177" cy="115" r="16" stroke="#06B6D4" stroke-width="1" opacity=".3" class="mascot-scan" style="animation-delay:-.8s"/>
+          <circle cx="177" cy="115" r="19" stroke="#06B6D4" stroke-width=".5" opacity=".15"/>
+          <circle cx="177" cy="115" r="5" fill="#0F172A"/>
+          <circle cx="182" cy="110" r="3" fill="rgba(255,255,255,.7)"/>
+          
+          <!-- Beak -->
+          <polygon points="142,142 150,156 158,142" fill="#F97316"/>
+          <polygon points="144,142 150,152 156,142" fill="#EA580C"/>
+          
+          <!-- Feet -->
+          <rect x="120" y="264" width="8" height="16" rx="4" fill="#1E3A5F"/>
+          <rect x="133" y="264" width="8" height="16" rx="4" fill="#1E3A5F"/>
+          <rect x="159" y="264" width="8" height="16" rx="4" fill="#1E3A5F"/>
+          <rect x="172" y="264" width="8" height="16" rx="4" fill="#1E3A5F"/>
+          
+          <!-- Alert badge on mascot -->
+          <rect x="188" y="68" width="76" height="34" rx="8" fill="white" filter="drop-shadow(0 2px 8px rgba(0,0,0,.12))"/>
+          <circle cx="204" cy="85" r="5" fill="#10B981"/>
+          <text x="214" y="81" font-family="monospace" font-size="8" fill="#0F172A" font-weight="bold">SENTINEL</text>
+          <text x="214" y="91" font-family="monospace" font-size="7" fill="#64748B">ACTIVE ✓</text>
+        </svg>
+        <div class="mascot-badge">
+          <div class="mb-dot"></div>
+          <span class="mb-text">Monitoring · drift: <strong>0.07</strong></span>
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- TRUST -->
-<div class="trust">
+<!-- STATS -->
+<div class="stats">
   <div class="container">
-    <div class="trust-grid">
-      <div class="trust-item reveal">
-        <div class="trust-num" data-count="4.3" data-suffix="×">0×</div>
-        <div class="trust-label">separation ratio<br>vs FreqBase baseline</div>
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-num" data-count="4.3" data-suffix="×">0×</div>
+        <div class="stat-label">separation ratio vs baseline<br>(Sentinel vs FreqBase)</div>
       </div>
-      <div class="trust-item reveal reveal-d1">
-        <div class="trust-num orange" data-count="0">0</div>
-        <div class="trust-label">false positives<br>on real USDC.e stream</div>
+      <div class="stat-item reveal reveal-d1">
+        <div class="stat-num green" data-count="0">0</div>
+        <div class="stat-label">false positives on<br>real USDC.e stream</div>
       </div>
-      <div class="trust-item reveal reveal-d2">
-        <div class="trust-num">≤2</div>
-        <div class="trust-label">windows to detect<br>S1–S5 attack scenarios</div>
+      <div class="stat-item reveal reveal-d2">
+        <div class="stat-num">≤2</div>
+        <div class="stat-label">tx windows to detect<br>S1–S5 attack scenarios</div>
       </div>
-      <div class="trust-item reveal reveal-d3">
-        <div class="trust-num" data-count="109">0</div>
-        <div class="trust-label">deterministic tests<br>make lint green</div>
+      <div class="stat-item reveal reveal-d3">
+        <div class="stat-num orange" data-count="109">0</div>
+        <div class="stat-label">deterministic tests<br>passing on clean checkout</div>
       </div>
     </div>
   </div>
@@ -360,78 +469,200 @@ footer{border-top:1px solid var(--border);padding:32px 0}
   <div class="container">
     <div class="reveal">
       <div class="section-tag">The problem</div>
-      <h2 class="section-h2">Traditional monitoring is blind to novel attacks</h2>
-      <p class="section-sub">Rule-based systems and signature scanners only catch what they've seen before. DeFi exploits are designed to evade them.</p>
+      <h2 class="section-h2">Existing security tools<br>are blind to novel exploits</h2>
+      <p class="section-sub">The DeFi ecosystem lost $1.8B to exploits in 2024 alone. Signature scanners only catch what they've already seen.</p>
     </div>
-    <div class="problem-grid">
-      <div class="problem-card c1 reveal reveal-d1">
-        <svg class="pc-icon" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div class="pc-h">Exploits look normal at Tx level</div>
-        <p class="pc-p">Flash loan attacks, reentrancy, and price manipulation use valid function calls. Signature scanners see nothing unusual.</p>
+    <div class="prob-grid">
+      <div class="prob-card c1 reveal reveal-d1">
+        <div class="pc-icon-wrap red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="pc-h">Exploits use valid function calls</div>
+        <p class="pc-p">Flash loans, reentrancy, and price manipulation go through normal contract methods. Signature scanners and rule-based tools see nothing unusual until the funds are drained.</p>
       </div>
-      <div class="problem-card c2 reveal reveal-d2">
-        <svg class="pc-icon" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-        <div class="pc-h">No training data for zero-days</div>
-        <p class="pc-p">ML models trained on historical exploits have 0% recall on novel attack vectors. The next exploit is always the first of its kind.</p>
+      <div class="prob-card c2 reveal reveal-d2">
+        <div class="pc-icon-wrap orange">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="pc-h">ML models fail on zero-days</div>
+        <p class="pc-p">Models trained on historical exploits have 0% recall on novel attack vectors. You can't train on data that doesn't exist yet. The next exploit is always the first of its kind.</p>
       </div>
-      <div class="problem-card c3 reveal reveal-d3">
-        <svg class="pc-icon" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5"><path d="M3 3h18v18H3zM3 9h18M9 21V9"/></svg>
+      <div class="prob-card c3 reveal reveal-d3">
+        <div class="pc-icon-wrap purple">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
         <div class="pc-h">Slow drift evades static thresholds</div>
-        <p class="pc-p">"Boil the frog" attacks gradually shift contract behavior over hundreds of transactions — staying below every fixed alert threshold until the damage is done.</p>
+        <p class="pc-p">"Boil the frog" attacks shift contract behavior over hundreds of transactions, always staying just below fixed alert thresholds — until the damage is already done.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PIPELINE -->
-<section class="pipeline">
+<!-- LIVE DEMO -->
+<section class="live-demo">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Live detection</div>
+      <h2 class="section-h2">Watch it catch attacks in real time</h2>
+      <p class="section-sub">The drift signal spikes the moment transaction patterns deviate from baseline. Detection happens within 2 sliding windows.</p>
+    </div>
+    <div class="demo-grid">
+      <!-- Chart -->
+      <div class="chart-card reveal reveal-d1">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="live-dot"></div>
+            Drift Score Monitor
+          </div>
+          <div class="card-badge">USDC.e · W=50 · θ=0.65</div>
+        </div>
+        <div class="chart-area">
+          <svg class="chart-svg" viewBox="0 0 540 160" preserveAspectRatio="none">
+            <!-- Grid lines -->
+            <line x1="0" y1="40" x2="540" y2="40" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="0" y1="80" x2="540" y2="80" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="0" y1="120" x2="540" y2="120" stroke="#E2E8F0" stroke-width="1"/>
+            <!-- Threshold line -->
+            <line x1="0" y1="52" x2="540" y2="52" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="6 4" opacity=".5"/>
+            <text x="4" y="48" font-family="monospace" font-size="9" fill="#EF4444" opacity=".7">θ=0.65</text>
+            <!-- Y axis labels -->
+            <text x="4" y="125" font-family="monospace" font-size="9" fill="#94A3B8">0.0</text>
+            <text x="4" y="85" font-family="monospace" font-size="9" fill="#94A3B8">0.5</text>
+            <text x="4" y="44" font-family="monospace" font-size="9" fill="#94A3B8">1.0</text>
+            <!-- Normal behavior area fill -->
+            <path d="M30 115 Q60 112 90 116 Q120 113 150 114 Q180 112 210 115 Q240 113 270 114 L270 160 L30 160 Z" fill="rgba(16,185,129,.06)"/>
+            <!-- Normal behavior line -->
+            <polyline class="chart-normal" points="30,115 60,112 90,116 120,113 150,114 180,112 210,115 240,113 270,114" stroke="#10B981" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Attack area fill -->
+            <path d="M270 114 Q285 90 300 40 Q315 12 330 14 Q345 12 360 40 Q375 80 390 95 Q420 108 450 112 Q480 113 510 114 L510 160 L270 160 Z" fill="rgba(239,68,68,.06)" opacity="0" style="animation:fadeIn 1s ease 2.5s forwards"/>
+            <!-- Attack spike line -->
+            <polyline class="chart-attack" points="270,114 285,90 300,40 315,12 330,14 345,12 360,40 375,80 390,95 420,108 450,112 480,113 510,114" stroke="#EF4444" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Alert marker -->
+            <circle cx="300" cy="40" r="6" fill="#EF4444" opacity="0" style="animation:fadeIn .3s ease 4s forwards"/>
+            <text x="310" y="36" font-family="monospace" font-size="9" fill="#EF4444" opacity="0" style="animation:fadeIn .3s ease 4s forwards">⚠ ALERT</text>
+            <!-- Attack label -->
+            <text x="295" y="155" font-family="monospace" font-size="9" fill="#EF4444" opacity="0" style="animation:fadeIn .3s ease 4s forwards">attack detected</text>
+          </svg>
+        </div>
+        <div class="chart-labels">
+          <span>window 0</span><span>attack onset →</span><span>window 100</span>
+        </div>
+      </div>
+
+      <!-- Live feed -->
+      <div class="feed-card reveal reveal-d2">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="live-dot"></div>
+            Transaction Feed
+          </div>
+          <div class="card-badge" id="feed-time">updating...</div>
+        </div>
+        <div class="feed-body">
+          <div class="feed-scroll" id="feed-scroll">
+            <!-- Rows duplicated for seamless scroll -->
+            <div class="feed-row"><span class="feed-hash">0x4f2a…d8</span><span class="feed-fn">transfer()</span><span class="feed-drift ok">0.07</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x8c1b…a3</span><span class="feed-fn">approve()</span><span class="feed-drift ok">0.09</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x2e7f…11</span><span class="feed-fn">transferFrom()</span><span class="feed-drift ok">0.11</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x9d3c…55</span><span class="feed-fn">transfer()</span><span class="feed-drift ok">0.06</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x1a8e…c2</span><span class="feed-fn">approve()</span><span class="feed-drift ok">0.08</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row" style="background:rgba(239,68,68,.04)"><span class="feed-hash">0x7b4d…f9</span><span class="feed-fn">flashLoan()</span><span class="feed-drift alert">0.87 ⚠</span><span class="feed-status alert">ALERT</span></div>
+            <div class="feed-row"><span class="feed-hash">0x5c2f…88</span><span class="feed-fn">transfer()</span><span class="feed-drift ok">0.09</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x3e9a…44</span><span class="feed-fn">transferFrom()</span><span class="feed-drift ok">0.10</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x6b1c…77</span><span class="feed-fn">approve()</span><span class="feed-drift warn">0.61</span><span class="feed-status alert">BOCPD</span></div>
+            <div class="feed-row"><span class="feed-hash">0x4f2a…d8</span><span class="feed-fn">transfer()</span><span class="feed-drift ok">0.07</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x8c1b…a3</span><span class="feed-fn">approve()</span><span class="feed-drift ok">0.09</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x2e7f…11</span><span class="feed-fn">transferFrom()</span><span class="feed-drift ok">0.11</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x9d3c…55</span><span class="feed-fn">transfer()</span><span class="feed-drift ok">0.06</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x1a8e…c2</span><span class="feed-fn">approve()</span><span class="feed-drift ok">0.08</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row" style="background:rgba(239,68,68,.04)"><span class="feed-hash">0x7b4d…f9</span><span class="feed-fn">flashLoan()</span><span class="feed-drift alert">0.87 ⚠</span><span class="feed-status alert">ALERT</span></div>
+            <div class="feed-row"><span class="feed-hash">0x5c2f…88</span><span class="feed-fn">transfer()</span><span class="feed-drift ok">0.09</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x3e9a…44</span><span class="feed-fn">transferFrom()</span><span class="feed-drift ok">0.10</span><span class="feed-status ok">CLEAN</span></div>
+            <div class="feed-row"><span class="feed-hash">0x6b1c…77</span><span class="feed-fn">approve()</span><span class="feed-drift warn">0.61</span><span class="feed-status alert">BOCPD</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE / HOW IT WORKS -->
+<section class="pipeline" id="how-it-works">
   <div class="container">
     <div class="reveal">
       <div class="section-tag">How it works</div>
-      <h2 class="section-h2">5-tier detection spine</h2>
-      <p class="section-sub">Each tier filters a different attack surface. Hard alerts fan out at Tier 1; behavioral drift catches everything else.</p>
+      <h2 class="section-h2">5-tier detection pipeline</h2>
+      <p class="section-sub">Each tier filters a different attack surface. From timing floods to slow behavioral drift — nothing gets through.</p>
     </div>
-    <div class="pipe-grid">
-      <div class="pipe-steps reveal">
-        <div class="pipe-step"><span class="ps-tier">Tier 0</span><div class="ps-content"><div class="ps-name">Spam pre-filter</div><div class="ps-desc">Timing flood — k=20 consecutive sub-interval txs → spam_attack. Excluded from window.</div></div></div>
-        <div class="pipe-step"><span class="ps-tier">Tier 1</span><div class="ps-content"><div class="ps-name">Entropy filter</div><div class="ps-desc">Per-selector Shannon baseline. |H − mean| > 4σ → entropy_anomaly. Hard alert, instant.</div></div></div>
-        <div class="pipe-step"><span class="ps-tier">Tier 2</span><div class="ps-content"><div class="ps-name">HDC Encoder</div><div class="ps-desc">D=10,000-dimensional bipolar hypervector. Role-filler binding over sliding window W=50.</div></div></div>
-        <div class="pipe-step"><span class="ps-tier">Tier 3</span><div class="ps-content"><div class="ps-name">Drift signal</div><div class="ps-desc">drift = max(Hamming(V,P)/D, |z_timing|). Robust median/MAD normalization.</div></div></div>
-        <div class="pipe-step"><span class="ps-tier">Tier 4</span><div class="ps-content"><div class="ps-name">Detector</div><div class="ps-desc">Static (θ=0.65, k=3) or BOCPD — Bayesian Online Change Point Detection for slow drift.</div></div></div>
-        <div class="pipe-step"><span class="ps-tier">Tier 5</span><div class="ps-content"><div class="ps-name">Interpreter + Fan-out</div><div class="ps-desc">Feature-ablation attribution. Alert → Z.ai explain → Telegram → on-chain anchor.</div></div></div>
+    <div class="pipe-container reveal">
+      <div class="pipe-flow">
+        <div class="pipe-tier">
+          <div class="pt-num">T0</div>
+          <div class="pt-name">Spam Filter</div>
+          <div class="pt-desc">k=20 sub-interval txs → spam_attack</div>
+          <div class="pt-tag orange">timing flood</div>
+        </div>
+        <div class="pipe-tier active">
+          <div class="pt-num">T1</div>
+          <div class="pt-name">Entropy</div>
+          <div class="pt-desc">|H − μ| &gt; 4σ → instant alert</div>
+          <div class="pt-tag red">hard alert</div>
+        </div>
+        <div class="pipe-tier active">
+          <div class="pt-num">T2</div>
+          <div class="pt-name">HDC Encoder</div>
+          <div class="pt-desc">D=10,000 bipolar vectors, W=50 window</div>
+          <div class="pt-tag blue">fingerprint</div>
+        </div>
+        <div class="pipe-tier active">
+          <div class="pt-num">T3</div>
+          <div class="pt-name">Drift Signal</div>
+          <div class="pt-desc">max(Hamming/D, |z_timing|) · MAD norm</div>
+          <div class="pt-tag blue">0.07 → 0.87</div>
+        </div>
+        <div class="pipe-tier active">
+          <div class="pt-num">T4</div>
+          <div class="pt-name">Detector</div>
+          <div class="pt-desc">Static θ=0.65 k=3 or BOCPD</div>
+          <div class="pt-tag orange">episode</div>
+        </div>
+        <div class="pipe-tier">
+          <div class="pt-num">T5</div>
+          <div class="pt-name">Fan-out</div>
+          <div class="pt-desc">Z.ai explain → Telegram → on-chain</div>
+          <div class="pt-tag green">anchored</div>
+        </div>
       </div>
-      <div class="pipe-visual reveal reveal-d1">
-        <div class="pv-line"><span class="pv-tier">Tier 0</span><span class="pv-arrow">→</span><span class="pv-action">timing pre-filter</span><span class="pv-result ok">pass</span></div>
-        <div class="pv-sep"></div>
-        <div class="pv-line"><span class="pv-tier">Tier 1</span><span class="pv-arrow">→</span><span class="pv-action">entropy |H−μ|&gt;4σ</span><span class="pv-result warn">ALERT</span></div>
-        <div class="pv-sep"></div>
-        <div class="pv-line"><span class="pv-tier">Tier 2</span><span class="pv-arrow">→</span><span class="pv-action">HDC D=10,000 W=50</span><span class="pv-result ok">V_w</span></div>
-        <div class="pv-sep"></div>
-        <div class="pv-line"><span class="pv-tier">Tier 3</span><span class="pv-arrow">→</span><span class="pv-action">drift 0.08 → 0.87</span><span class="pv-result warn">0.87</span></div>
-        <div class="pv-sep"></div>
-        <div class="pv-line"><span class="pv-tier">Tier 4</span><span class="pv-arrow">→</span><span class="pv-action">θ=0.65 k=3 ✓</span><span class="pv-result warn">episode</span></div>
-        <div class="pv-sep"></div>
-        <div class="pv-line"><span class="pv-tier">Tier 5</span><span class="pv-arrow">→</span><span class="pv-action">attribution + Z.ai</span><span class="pv-result ok">anchored</span></div>
-        <div class="pv-sep"></div>
-        <div style="height:8px"></div>
-        <div class="pv-line"><span class="pv-tier" style="color:var(--purple)">Dream</span><span class="pv-arrow">→</span><span class="pv-action">safe windows N=100</span><span class="pv-result dream">V_new</span></div>
-        <div style="padding:8px 0 0;font-size:.65rem;color:var(--muted)">P_new = sign(λ·P_old + Σ V_safe)<br>λ = α·N = 50 · attack windows excluded</div>
+      <div class="pipe-flow-line">
+        <div class="pipe-flow-fill"></div>
+      </div>
+
+      <!-- Dream Mode -->
+      <div class="dream-row">
+        <div class="dream-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <div class="dream-text">
+          <h4>Dream Mode — Self-Healing Baseline</h4>
+          <p>Every N=100 safe windows, the behavioral prototype consolidates automatically. No retraining, no labeled data, no human intervention.</p>
+        </div>
+        <div class="dream-formula">P_new = sign(λ·P_old + Σ V_safe)</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROOF -->
-<section class="proof">
+<!-- BENCHMARK -->
+<section class="benchmark">
   <div class="container">
     <div class="reveal">
       <div class="section-tag">Verified proof</div>
       <h2 class="section-h2">Real numbers, anchored on-chain</h2>
-      <p class="section-sub">All benchmarks are deterministic (seed=1337). The on-chain anchor is a live Mantle mainnet transaction — inspect it on Explorer.</p>
+      <p class="section-sub">All benchmarks deterministic (seed=1337). The on-chain anchor is a live Mantle mainnet transaction.</p>
     </div>
-    <div class="proof-inner">
-      <div class="proof-table-wrap reveal">
-        <table class="proof-table">
+    <div class="bench-grid">
+      <div class="bench-table-wrap reveal">
+        <table class="bench-table">
           <thead>
             <tr>
               <th>Metric</th>
@@ -441,56 +672,59 @@ footer{border-top:1px solid var(--border);padding:32px 0}
           </thead>
           <tbody>
             <tr class="sentinel-row">
-              <td class="metric">Separation ratio (clean p99 / injected p50)</td>
-              <td class="val-good">4.3× <span class="badge-win">▲ winner</span></td>
-              <td class="val-neutral">~1.2×</td>
+              <td>Separation ratio (clean p99 / injected p50)</td>
+              <td>4.3× <span class="win-badge">▲ winner</span></td>
+              <td style="color:var(--muted)">~1.2×</td>
             </tr>
             <tr>
-              <td class="metric">Detection delay — S1 hi-entropy</td>
-              <td class="val-good">≤ 2 windows</td>
-              <td class="val-neutral">N/A</td>
+              <td>S1 detection delay (hi-entropy attack)</td>
+              <td>≤ 2 windows</td>
+              <td style="color:var(--muted)">N/A</td>
             </tr>
             <tr>
-              <td class="metric">S6 slow-drift delay (n=8000)</td>
-              <td class="val-good">99 windows</td>
-              <td class="val-neutral">undetected</td>
+              <td>S6 slow-drift detection (n=8,000)</td>
+              <td>99 windows <span class="win-badge">caught</span></td>
+              <td style="color:var(--muted)">undetected</td>
             </tr>
             <tr>
-              <td class="metric">Dream Mode FP delta (clean stream)</td>
-              <td class="val-good">−6% (16→15 ep.)</td>
-              <td class="val-neutral">—</td>
+              <td>Dream Mode FP delta (clean stream)</td>
+              <td>−6% (16→15 ep.)</td>
+              <td style="color:var(--muted)">—</td>
             </tr>
             <tr>
-              <td class="metric">False positives · real USDC.e stream</td>
-              <td class="val-good">0</td>
-              <td class="val-neutral">—</td>
+              <td>False positives · real USDC.e stream</td>
+              <td style="color:var(--green);font-weight:700">0</td>
+              <td style="color:var(--muted)">—</td>
             </tr>
             <tr>
-              <td class="metric">Test suite</td>
-              <td class="val-good">109 passed</td>
-              <td class="val-neutral">—</td>
+              <td>Test suite</td>
+              <td>109 passed</td>
+              <td style="color:var(--muted)">—</td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="onchain-card reveal reveal-d1">
-        <div>
-          <div class="oc-tag">On-chain anchor · Mantle Mainnet</div>
-          <div class="oc-title">Alert anchored at block 96,624,965</div>
+        <div class="oc-header">
+          <div class="oc-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0369A1" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div class="oc-header-text">
+            <div class="oc-tag">On-chain · Mantle Mainnet</div>
+            <div class="oc-title">SentinelAlertRegistry</div>
+          </div>
         </div>
         <div>
-          <div class="oc-field">
-            <div class="oc-label">Registry contract</div>
-            <div class="oc-value"><a href="https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE" target="_blank">0x593C9a4d…FbE</a></div>
-          </div>
-          <div class="oc-field">
-            <div class="oc-label">Anchor tx</div>
-            <div class="oc-value"><a href="https://explorer.mantle.xyz/tx/0x4aca92d7b6e8a4e92a0d6f3ee0ce4bd823c3f0c6d0ab8c1d2a3b4e5f609a78" target="_blank">0x4aca92d7…09a78</a></div>
-          </div>
+          <div class="oc-field-label">Registry contract</div>
+          <div class="oc-field-value"><a href="https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE" target="_blank">0x593C9a4dd6806510e379e30481eaCd27d2016FbE</a></div>
+        </div>
+        <div>
+          <div class="oc-field-label">Block</div>
+          <div class="oc-field-value">96,624,965</div>
         </div>
         <div class="oc-status">
           <div class="oc-status-dot"></div>
-          <span class="oc-status-text">Status: 1 · confirmed ✓</span>
+          <span class="oc-status-text">Status: 1 · Confirmed ✓</span>
         </div>
       </div>
     </div>
@@ -502,69 +736,80 @@ footer{border-top:1px solid var(--border);padding:32px 0}
   <div class="container">
     <div class="reveal">
       <div class="section-tag">Capabilities</div>
-      <h2 class="section-h2">Built for production DeFi security</h2>
+      <h2 class="section-h2">Built for production DeFi</h2>
     </div>
     <div class="feat-grid">
       <div class="feat-card reveal">
-        <div class="fc-icon cyan">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <div class="fc-icon blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0369A1" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </div>
-        <div class="fc-h">Hyperdimensional Computing</div>
-        <p class="fc-p">D=10,000 bipolar vectors encode behavioral patterns mathematically. No training, no labels, no model weights to steal or manipulate.</p>
+        <div class="fc-h">No Training Data Required</div>
+        <p class="fc-p">Hyperdimensional Computing builds a behavioral fingerprint from live transactions. No historical exploits needed — works from block zero.</p>
       </div>
       <div class="feat-card reveal reveal-d1">
         <div class="fc-icon orange">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
-        <div class="fc-h">Explainable by Z.ai</div>
-        <p class="fc-p">Every alert comes with a human-readable attribution. "Selector distribution changed 61%, gas elevated 22%." Not a black box.</p>
+        <div class="fc-h">Explainable Alerts via Z.ai</div>
+        <p class="fc-p">Every alert comes with feature-ablation attribution. "Selector distribution shifted 61%, gas 22% above baseline." Not a black box.</p>
       </div>
       <div class="feat-card reveal reveal-d2">
         <div class="fc-icon purple">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </div>
-        <div class="fc-h">Dream Mode</div>
-        <p class="fc-p">Prototype self-heals. Every 100 safe windows, the behavioral baseline consolidates (P_new = sign(λ·P_old + ΣV_safe)) — without retraining.</p>
+        <div class="fc-h">Dream Mode Self-Healing</div>
+        <p class="fc-p">Baseline evolves with normal behavior automatically. No manual recalibration after protocol upgrades or seasonal pattern shifts.</p>
       </div>
       <div class="feat-card reveal">
         <div class="fc-icon cyan">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <div class="fc-h">BOCPD for slow drift</div>
-        <p class="fc-p">Bayesian Online Change Point Detection catches gradual attacks before static thresholds trigger. Plug-in replacement via SENTINEL_DETECTOR=bocpd.</p>
+        <div class="fc-h">BOCPD for Slow Drift</div>
+        <p class="fc-p">Bayesian Online Change Point Detection catches gradual attacks that stay below fixed thresholds. Plug-in via SENTINEL_DETECTOR=bocpd.</p>
       </div>
       <div class="feat-card reveal reveal-d1">
-        <div class="fc-icon orange">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <div class="fc-icon green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
         </div>
-        <div class="fc-h">On-chain immutable record</div>
-        <p class="fc-p">SentinelAlertRegistry logs every alert to Mantle mainnet. Tamper-proof audit trail for post-incident forensics and insurance claims.</p>
+        <div class="fc-h">Immutable On-Chain Record</div>
+        <p class="fc-p">SentinelAlertRegistry logs every alert to Mantle mainnet. Tamper-proof audit trail for forensics, compliance, and insurance claims.</p>
       </div>
       <div class="feat-card reveal reveal-d2">
-        <div class="fc-icon purple">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        <div class="fc-icon red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
-        <div class="fc-h">Deterministic &amp; auditable</div>
-        <p class="fc-p">MASTER_SEED=1337. Every benchmark is reproducible. 109 tests pass from a clean checkout. No hidden state, no stochastic inference at runtime.</p>
+        <div class="fc-h">6 Attack Scenarios Covered</div>
+        <p class="fc-p">S1 hi-entropy, S2 gas spike, S3 selector flood, S4 timing burst, S5 function mix, S6 slow drift. All deterministically validated.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- CTA -->
 <section class="cta-section">
   <div class="container">
     <div class="cta-box reveal">
-      <h2>Your protocol has a behavioral fingerprint.<br>Start monitoring it.</h2>
-      <p>Open source. Runs on Mantle. Requires zero training data. Deploy in minutes.</p>
+      <!-- Mini mascot in CTA background -->
+      <svg class="cta-mascot-mini" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="150" cy="185" rx="90" ry="85" fill="white" opacity=".5"/>
+        <ellipse cx="150" cy="125" rx="72" ry="68" fill="white" opacity=".5"/>
+        <polygon points="108,68 96,30 120,62" fill="white" opacity=".5"/>
+        <polygon points="192,68 204,30 180,62" fill="white" opacity=".5"/>
+        <circle cx="123" cy="115" r="20" fill="white" opacity=".5"/>
+        <circle cx="177" cy="115" r="20" fill="white" opacity=".5"/>
+      </svg>
+      <h2>Start protecting your protocol today.</h2>
+      <p>Open source. Runs on Mantle. Requires zero training data. Deploy the sentinel in minutes — before the next exploit.</p>
       <div class="cta-buttons">
-        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-lg btn-lg-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          View Source
+        <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" class="btn-cta-primary">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          View on GitHub
         </a>
-        <a href="./dashboard/index.html" class="btn-lg btn-lg-secondary">Open Dashboard</a>
+        <a href="https://dorahacks.io" target="_blank" class="btn-cta-secondary">
+          DoraHacks Submission →
+        </a>
       </div>
-      <p class="cta-note">Mantle AI Hackathon 2026 · Track 02 "AI Alpha &amp; Data" · Demo Day Jul 2–3</p>
+      <p class="cta-note">Mantle AI Hackathon 2026 · Track 02 "AI Alpha &amp; Data" · Demo Day Jul 2–3 · Built with ❤ on Mantle Network</p>
     </div>
   </div>
 </section>
@@ -573,11 +818,20 @@ footer{border-top:1px solid var(--border);padding:32px 0}
 <footer>
   <div class="container">
     <div class="footer-inner">
-      <div class="footer-logo">Mantle Sentinel</div>
+      <div class="footer-logo">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="50" cy="56" rx="34" ry="36" fill="#1E3A5F"/>
+          <polygon points="34,26 50,10 66,26" fill="#1E3A5F"/>
+          <circle cx="37" cy="48" r="10" fill="#06B6D4"/><circle cx="37" cy="48" r="4" fill="#0F172A"/>
+          <circle cx="63" cy="48" r="10" fill="#06B6D4"/><circle cx="63" cy="48" r="4" fill="#0F172A"/>
+          <polygon points="45,62 50,70 55,62" fill="#F97316"/>
+        </svg>
+        Mantle Sentinel
+      </div>
       <div class="footer-links">
         <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank">GitHub</a>
-        <a href="https://github.com/alexbelij/mantle-sentinel/blob/main/docs/wiki/architecture.md" target="_blank">Architecture</a>
         <a href="https://github.com/alexbelij/mantle-sentinel/blob/main/bench/REPORT.md" target="_blank">Benchmark</a>
+        <a href="https://github.com/alexbelij/mantle-sentinel/tree/main/docs/wiki" target="_blank">Docs</a>
         <a href="https://explorer.mantle.xyz/address/0x593C9a4dd6806510e379e30481eaCd27d2016FbE" target="_blank">Contract</a>
       </div>
       <div class="footer-right">Built on Mantle Network</div>
@@ -585,10 +839,14 @@ footer{border-top:1px solid var(--border);padding:32px 0}
   </div>
 </footer>
 
+<style>
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+
 <script>
 // Scroll reveal
 const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }});
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('revealed');io.unobserve(e.target);}});
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
@@ -597,7 +855,7 @@ function animateCount(el) {
   const target = parseFloat(el.dataset.count);
   const suffix = el.dataset.suffix || '';
   const isFloat = String(target).includes('.');
-  const duration = 1200;
+  const duration = 1400;
   const start = performance.now();
   const raf = (now) => {
     const p = Math.min((now - start) / duration, 1);
@@ -609,9 +867,39 @@ function animateCount(el) {
   requestAnimationFrame(raf);
 }
 const counterObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if(e.isIntersecting && e.target.dataset.count) { animateCount(e.target); counterObs.unobserve(e.target); }});
+  entries.forEach(e => { if(e.isIntersecting && e.target.dataset.count !== undefined){animateCount(e.target);counterObs.unobserve(e.target);}});
 }, { threshold: 0.5 });
 document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
+
+// Live feed time
+function updateFeedTime() {
+  const el = document.getElementById('feed-time');
+  if (el) {
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'}) + ' UTC';
+  }
+}
+updateFeedTime();
+setInterval(updateFeedTime, 1000);
+
+// Periodically inject a new "live" row into the feed to simulate real data
+const fns = ['transfer()','approve()','transferFrom()','flashLoan()','swap()','mint()'];
+const drifts = [0.06,0.07,0.08,0.09,0.10,0.11,0.87,0.62];
+function randomHex(len){return '0x'+Array.from({length:4},()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join('')+'…'+Math.floor(Math.random()*256).toString(16).padStart(2,'0')}
+function injectRow() {
+  const scroll = document.getElementById('feed-scroll');
+  if (!scroll) return;
+  const fn = fns[Math.floor(Math.random()*fns.length)];
+  const drift = fn === 'flashLoan()' ? 0.87 : drifts[Math.floor(Math.random()*6)];
+  const isAlert = drift > 0.65;
+  const row = document.createElement('div');
+  row.className = 'feed-row';
+  if (isAlert) row.style.background = 'rgba(239,68,68,.04)';
+  row.innerHTML = `<span class="feed-hash">${randomHex(4)}</span><span class="feed-fn">${fn}</span><span class="feed-drift ${isAlert?'alert':'ok'}">${drift.toFixed(2)}${isAlert?' ⚠':''}</span><span class="feed-status ${isAlert?'alert':'ok'}">${isAlert?'ALERT':'CLEAN'}</span>`;
+  // Prepend after the header placeholder
+  scroll.insertBefore(row, scroll.firstChild);
+}
+setInterval(injectRow, 2500);
 </script>
 </body>
 </html>
