@@ -1,12 +1,14 @@
-"""T-09: Tests for attack injectors (S1, S3, S5, S7)."""
+"""T-09 / T-18e: Tests for attack injectors (S1, S3, S5, S6, S7)."""
 from __future__ import annotations
 
 import numpy as np
 
 from bench.injector import (
+    INJECTORS,
     inject_s1_selector_flood,
     inject_s3_gas_shift,
     inject_s5_timing_burst,
+    inject_s6_slow_drift,
     inject_s7_payload_mutation,
 )
 from bench.snapshot import synth_records
@@ -111,6 +113,61 @@ class TestS5TimingBurst:
         ts1 = [r["block_timestamp"] for r in out1 if r.get("label") == "attack"]
         ts2 = [r["block_timestamp"] for r in out2 if r.get("label") == "attack"]
         assert ts1 != ts2
+
+
+# ── S6 slow drift ──────────────────────────────────────────────────────
+
+class TestS6SlowDrift:
+    def test_registered_in_injectors(self):
+        assert INJECTORS.get("S6") is inject_s6_slow_drift
+
+    def test_run_replay_calling_convention(self):
+        # run_replay/CLI call every injector as fn(records, onset_frac=, seed=)
+        base = _base_records()
+        out = inject_s6_slow_drift(base, onset_frac=0.5, seed=0)
+        assert len(out) == len(base)  # in-place mutation, no insertion
+
+    def test_gas_ramps_up_over_span(self):
+        base = _base_records(n=400)
+        out = inject_s6_slow_drift(base, onset_frac=0.5, seed=7)
+        attacks = [r for r in out if r.get("label") == "attack"]
+        assert len(attacks) > 4
+        q = len(attacks) // 4
+        early = float(np.mean([r["gas_used"] for r in attacks[:q]]))
+        late = float(np.mean([r["gas_used"] for r in attacks[-q:]]))
+        assert late > early * 2, f"late gas {late} should ramp well above early {early}"
+
+    def test_calldata_corruption_grows(self):
+        base = _base_records(n=400)
+        original = {r["tx_hash"]: r.get("calldata", "0x") for r in base}
+        out = inject_s6_slow_drift(base, onset_frac=0.5, seed=7)
+        attacks = [r for r in out if r.get("label") == "attack"]
+        # first attack window (p≈0) keeps its calldata; a late one is mutated
+        assert attacks[0]["calldata"] == original[attacks[0]["tx_hash"]]
+        assert attacks[-1]["calldata"] != original[attacks[-1]["tx_hash"]]
+
+    def test_clean_prefix_untouched(self):
+        base = _base_records()
+        original = {r["tx_hash"]: (r["gas_used"], r.get("calldata")) for r in base}
+        out = inject_s6_slow_drift(base, onset_frac=0.5, seed=7)
+        clean = [r for r in out if r.get("label") != "attack"]
+        for r in clean:
+            assert (r["gas_used"], r.get("calldata")) == original[r["tx_hash"]]
+
+    def test_deterministic_with_seed(self):
+        base = _base_records()
+        out1 = inject_s6_slow_drift(base, seed=42)
+        out2 = inject_s6_slow_drift(base, seed=42)
+        assert [r["gas_used"] for r in out1] == [r["gas_used"] for r in out2]
+        assert [r["calldata"] for r in out1] == [r["calldata"] for r in out2]
+
+    def test_different_seeds_differ(self):
+        base = _base_records()
+        out1 = inject_s6_slow_drift(base, seed=1)
+        out2 = inject_s6_slow_drift(base, seed=2)
+        g1 = [r["gas_used"] for r in out1 if r.get("label") == "attack"]
+        g2 = [r["gas_used"] for r in out2 if r.get("label") == "attack"]
+        assert g1 != g2
 
 
 # ── S7 payload mutation ────────────────────────────────────────────────
