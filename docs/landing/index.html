@@ -258,6 +258,35 @@ section{position:relative;z-index:1}
 .anchor .kv .v a{color:var(--amber)}
 .anchor .kv .v a:hover{text-decoration:underline}
 
+/* ============================== FAQ ============================== */
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.faq-item{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:22px 24px;transition:border-color .2s}
+.faq-item:hover{border-color:var(--amber-line)}
+.faq-q{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;display:flex;gap:8px}
+.faq-q::before{content:"Q";color:var(--amber);font-weight:700;flex-shrink:0}
+.faq-a{font-size:13.5px;line-height:1.65;color:var(--muted)}
+.faq-a .amber{color:var(--amber);font-weight:500}
+.faq-a code{font-family:var(--mono);font-size:12px;background:rgba(249,115,22,.08);color:var(--amber);padding:1px 6px;border-radius:3px}
+
+/* ============================== ROADMAP ============================== */
+.rm-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.rm-col{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:24px;position:relative}
+.rm-col.now{border-color:var(--amber-line)}
+.rm-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.rm-label.done{color:var(--ok)}
+.rm-label.next{color:var(--amber)}
+.rm-label.future{color:var(--faint)}
+.rm-label .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.rm-label.done .dot{background:var(--ok)}
+.rm-label.next .dot{background:var(--amber)}
+.rm-label.future .dot{background:var(--faint)}
+.rm-items{list-style:none;padding:0;margin:0}
+.rm-items li{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:7px 0;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:8px}
+.rm-items li:last-child{border-bottom:none}
+.rm-items li .ico{flex-shrink:0;font-size:12px}
+.rm-items li .ico.ok{color:var(--ok)}
+.rm-items li .ico.arr{color:var(--amber)}
+
 /* ============================== CTA ============================== */
 .cta{padding:96px 0;text-align:center;border-bottom:1px solid var(--line)}
 .cta h2{font-size:clamp(28px,4vw,42px);margin-bottom:16px}
@@ -291,6 +320,8 @@ section{position:relative;z-index:1}
   .step.in .artifact,.step .artifact{opacity:1;transform:none}
   .demo{grid-template-columns:1fr}
   .proof{grid-template-columns:1fr}
+  .faq-grid{grid-template-columns:1fr}
+  .rm-cols{grid-template-columns:1fr}
   .zai{flex-direction:column;align-items:flex-start;gap:10px}
 }
 @media(max-width:600px){
@@ -332,6 +363,8 @@ section{position:relative;z-index:1}
       <a href="#pipeline">Pipeline</a>
       <a href="#demo">Live demo</a>
       <a href="#proof">Proof</a>
+      <a href="#faq">FAQ</a>
+      <a href="#roadmap">Roadmap</a>
     </div>
     <div class="nav-cta">
       <a class="ico" href="https://github.com/alexbelij/mantle-sentinel" target="_blank" rel="noopener" aria-label="GitHub repository">
@@ -602,6 +635,82 @@ section{position:relative;z-index:1}
           <div class="kv"><div class="k">Network</div><div class="v">Mantle mainnet &middot; chainid 5000</div></div>
           <div class="kv"><div class="k">Status</div><div class="v"><span class="amber">getAlertCount() = 1 &middot; anchored</span></div></div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">FAQ</span>
+      <h2>Questions we keep hearing.</h2>
+    </div>
+
+    <div class="faq-grid">
+      <div class="faq-item reveal">
+        <div class="faq-q">Is this just a threshold alert?</div>
+        <div class="faq-a">No. HDC encodes behavior into a <span class="amber">10,000-dimensional hypervector</span>. Hamming distance measures semantic behavioral drift — not a number crossing a line.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q">Do you use an LLM for detection?</div>
+        <div class="faq-a">No. Z.ai only explains alerts <span class="amber">after</span> algebraic detection. The model is never in the detection loop. <span class="amber">&lt;1&thinsp;&micro;s</span> per transaction.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q">Can it detect novel / zero-day attacks?</div>
+        <div class="faq-a">Yes. Sentinel detects <span class="amber">behavioral change itself</span> — not known patterns. If an exploit changes how a contract behaves, Sentinel sees it.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q">What if the contract legitimately upgrades?</div>
+        <div class="faq-a">Dream Mode adapts: <code>V_new = sign(&lambda;&middot;V_old + &Sigma; V_safe)</code>. The baseline evolves to match safe behavior without retraining.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q">Can I run it locally?</div>
+        <div class="faq-a">Yes. <code>python bench/self_attack.py --dry-run</code> — zero API keys, zero config. Full pipeline demo in 30 seconds.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROADMAP ===================== -->
+<section class="sec" id="roadmap">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Roadmap</span>
+      <h2>Where we're going.</h2>
+    </div>
+
+    <div class="rm-cols">
+      <div class="rm-col now reveal">
+        <div class="rm-label done"><span class="dot"></span> Now&thinsp;(MVP)</div>
+        <ul class="rm-items">
+          <li><span class="ico ok">&#10003;</span> HDC pipeline (5 tiers)</li>
+          <li><span class="ico ok">&#10003;</span> BOCPD changepoint detection</li>
+          <li><span class="ico ok">&#10003;</span> Dream Mode baseline adaptation</li>
+          <li><span class="ico ok">&#10003;</span> On-chain alert anchoring</li>
+          <li><span class="ico ok">&#10003;</span> Z.ai explanations</li>
+          <li><span class="ico ok">&#10003;</span> Self-attack demo</li>
+        </ul>
+      </div>
+      <div class="rm-col reveal">
+        <div class="rm-label next"><span class="dot"></span> Next</div>
+        <ul class="rm-items">
+          <li><span class="ico arr">&rarr;</span> Multi-contract parallel monitoring</li>
+          <li><span class="ico arr">&rarr;</span> Python SDK (<code>pip install</code>)</li>
+          <li><span class="ico arr">&rarr;</span> Webhook alert delivery</li>
+          <li><span class="ico arr">&rarr;</span> Confidence scoring (BOCPD probability)</li>
+        </ul>
+      </div>
+      <div class="rm-col reveal">
+        <div class="rm-label future"><span class="dot"></span> Future</div>
+        <ul class="rm-items">
+          <li><span class="ico arr">&rarr;</span> Feature attribution heatmap</li>
+          <li><span class="ico arr">&rarr;</span> Alert severity tiers</li>
+          <li><span class="ico arr">&rarr;</span> SaaS dashboard (multi-tenant)</li>
+          <li><span class="ico arr">&rarr;</span> EVM multi-chain expansion</li>
+          <li><span class="ico arr">&rarr;</span> AI agent integration (MCP / Safe)</li>
+        </ul>
       </div>
     </div>
   </div>
