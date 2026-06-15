@@ -49,5 +49,6 @@ SaaS subscription per monitored contract — flat, no per-alert fees. Target cus
 
 ## Links
 - Live demo: https://mntsentinel.xyz/
+- Live dashboard: https://mntsentinel.xyz/dashboard/
 - Code (MIT): https://github.com/alexbelij/mantle-sentinel
 - BUIDL: `<DORAHACKS_BUIDL_URL>`
