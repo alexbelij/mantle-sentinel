@@ -40,6 +40,10 @@
 |---------|-----------|--------|
 | ![Landing](docs/images/landing-hero.png) | ![Dashboard](docs/images/dashboard.png) | ![Mobile](docs/images/dashboard-mobile.png) |
 
+### Self-Attack Detection
+
+![Self-attack dry-run output](docs/images/self-attack-output.png)
+
 ---
 
 ## Live Scan — Top Mantle DeFi Contracts
