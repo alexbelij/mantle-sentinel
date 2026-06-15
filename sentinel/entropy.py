@@ -78,6 +78,8 @@ class EntropyFilter:
         for cell, vals in self._samples.items():
             arr = np.asarray(vals, dtype=float)
             self._stats[cell] = (float(arr.mean()), float(arr.std()), len(arr))
+            # NOTE: std may be 0 for homogeneous cells (e.g. stable ERC-20 transfer);
+            # check() applies a floor via W-ENT-1 fix.
 
     def check(self, calldata: str) -> bool:
         """True ⇒ entropy_anomaly alert; False ⇒ normal or abstain."""
@@ -87,4 +89,5 @@ class EntropyFilter:
             return False  # abstain — unpopulated cell
         mean, std, _ = stats
         h = byte_entropy(body_of(calldata))
-        return abs(h - mean) > self.sigma * std
+        effective_std = max(std, 0.05)  # W-ENT-1: floor prevents FP when all samples identical
+        return abs(h - mean) > self.sigma * effective_std

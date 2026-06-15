@@ -21,7 +21,11 @@ import numpy as np
 
 
 def _sign(acc: np.ndarray) -> np.ndarray:
-    """Bipolar sign with ties (== 0) resolving to +1 (HDC convention)."""
+    """Bipolar sign with ties (== 0) resolving to +1 (HDC convention).
+
+    W-DRM-1: tie→+1 introduces a negligible positive bias (exact ties require
+    all contributing vectors to cancel, probability ≈ 2^{-N} per dimension).
+    """
     return np.where(acc >= 0, 1, -1).astype(np.int8)
 
 

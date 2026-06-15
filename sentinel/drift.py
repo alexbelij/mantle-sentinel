@@ -84,7 +84,7 @@ class DriftTracker:
         return self.space.hamming(v_win, self.prototype) / self.d
 
     def _timing(self, dt: float) -> float:
-        ldt = math.log(max(dt, EPS))
+        ldt = math.log(max(dt, 1.0))  # W-SIG-4: same-block (dt≤1s) → log(1)=0, no -inf spike
         if self._log_dt:
             med = float(np.median(np.fromiter(self._log_dt, dtype=float)))
             dev = abs(ldt - med)
@@ -99,6 +99,9 @@ class DriftTracker:
         t_raw = self._timing(dt)
         h_norm = self._hamming_norm.normalize(h_raw)
         t_norm = self._timing_norm.normalize(t_raw)
+        # Design note (W-SIG-1): max(hamming, timing) is deliberate over weighted sum.
+        # Pro: one LOW channel cannot mask a HIGH channel; no tuning parameter.
+        # Con: joint evidence lost (both at 0.55 → 0.55 < θ=0.65). Accepted tradeoff.
         if t_norm > h_norm:
             branch, drift = "timing", t_norm
         else:

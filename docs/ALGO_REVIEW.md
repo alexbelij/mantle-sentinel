@@ -143,3 +143,31 @@ If all mass in truncated tail, division by zero → NaN. Self-heals via `total=0
 **SHIP.** The codebase is algorithmically sound for a hackathon MVP. No critical bugs found.
 
 If time allows before submission, the single highest-impact fix is **W-ENT-1** (entropy std floor) which would reduce false positives on stable contracts and improve USDC.e health score accuracy. All other warnings are documentation or roadmap items.
+
+---
+
+## Post-Review Fixes Applied
+
+All 9 warnings addressed in a single commit:
+
+| Warning | Fix |
+|---------|-----|
+| W-ENT-1 | `max(std, 0.05)` floor in `entropy.py` + ENTROPY_SIGMA 4→6 (4σ couldn't suppress legit `approve(max_uint256)` outliers at 5.4σ) |
+| W-SIG-4 | `max(dt, 1.0)` in `drift.py` — graded response instead of -20.7 saturation |
+| W-SIG-2 | BOCPD docstring corrected to match `P(r_t < r_map^prev)` implementation |
+| W-NUM-2 | `n_buckets=1` guard in `hdc.py` |
+| W-HDC-1 | Caller 3/7 weight documented in `hdc.py` |
+| W-SIG-1 | `max(hamming, timing)` design choice documented in `drift.py` |
+| W-DRM-1 | Tie-breaking bias documented in `dream.py` |
+| W-SEC-1/2/3/4/5 | `docs/KNOWN_LIMITATIONS.md` created |
+| Reports | Regenerated with entropy fix — USDC.e 62→83, all scores improved |
+
+### Updated Health Scores
+
+| Contract | Before | After |
+|----------|--------|-------|
+| USDC.e   | 62     | 83    |
+| WMNT     | 55     | 74    |
+| USDT     | 45     | 70    |
+| mETH     | 46     | 68    |
+| Lendle   | 81     | 81    |

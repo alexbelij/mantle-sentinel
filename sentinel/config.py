@@ -28,7 +28,7 @@ MIN_INTERVAL_Q = 0.001   # quantile of inter-tx intervals on warm-up
 K_SPAM = 20              # consecutive sub-MIN_INTERVAL intervals to flag spam
 
 # Tier 1 — entropy filter
-ENTROPY_SIGMA = 4.0      # |H - mean| > 4*std
+ENTROPY_SIGMA = 6.0      # |H - mean| > 6*std  (W-ENT-1: 4→6 reduces FP on approve(max_uint))
 ENTROPY_MIN_SAMPLES = 20
 # calldata length buckets (bytes): {0-4, 5-36, 37-100, 101-516, >516}
 LEN_BUCKET_EDGES = (4, 36, 100, 516)

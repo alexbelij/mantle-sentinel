@@ -7,9 +7,10 @@ sit behind the frozen Tier-4 slot without touching the pipeline or config.
 Algorithm: Adams & MacKay (2007) online changepoint detection on the 1-D drift
 signal, with a constant hazard ``H = 1/hazard`` and a Normal–Inverse-Gamma
 conjugate observation model (Student-t posterior predictive). A changepoint is
-declared when the posterior mass on run-length 0, ``P(r_t = 0 | x_{1:t})``,
-exceeds ``p_thresh`` — i.e. the model believes the drift stream just reset to a
-new regime. Episodes are tracked/merged exactly like the static detector.
+declared when the posterior mass below the established run-length collapses:
+``P(r_t < r_map^{prev})`` exceeds ``p_thresh`` AND the new regime has
+higher drift (anomaly, not recovery). Episodes are tracked/merged exactly
+like the static detector.
 
 This module is intentionally self-contained (numpy only) — no ``ruptures`` /
 ``bayesian_changepoint`` runtime dependency, so CI stays hermetic.

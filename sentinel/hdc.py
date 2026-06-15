@@ -78,6 +78,11 @@ class HDCSpace:
         base = self._rand_bipolar("level0", name)
         rng = np.random.default_rng(_seed_from(self.master_seed, "levelperm", name))
         perm = rng.permutation(self.d)
+        if self.n_buckets <= 1:  # W-NUM-2: single bucket → just the base vector
+            table = np.empty((1, self.d), dtype=np.int8)
+            table[0] = self._rand_bipolar("level0", name)
+            self._levels[name] = table
+            return table
         flip_count = self.d // (2 * (self.n_buckets - 1))
         table = np.empty((self.n_buckets, self.d), dtype=np.int8)
         cur = base.copy()
@@ -96,7 +101,13 @@ class HDCSpace:
 
     # --- binding / bundling ----------------------------------------------
     def _terms(self, feat: TxFeatures, ablate: str | None = None):
-        """Yield (group, bound_vector) pairs for a transaction."""
+        """Yield (group, bound_vector) pairs for a transaction.
+
+        Design note (W-HDC-1): caller sub-features (novel, freq, is_contract)
+        collectively hold 3/7 vote weight in the bundle. This is intentional:
+        caller identity is the strongest behavioral axis for contract monitoring.
+        Gas/value/timing/selector each contribute 1/7.
+        """
         if ablate != "selector":
             yield "selector", self.role("selector") * self.item("selector", feat.selector)
         if ablate != "gas":
