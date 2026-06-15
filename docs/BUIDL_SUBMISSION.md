@@ -1,7 +1,7 @@
 # Mantle Sentinel — DoraHacks BUIDL submission (draft)
 
 > Track: Mantle Turing Test Hackathon 2026 · Z.ai integration
-> Placeholders to fill before publishing: `<DORAHACKS_BUIDL_URL>`, `<ALERT_TX_HASH>` (from live run 3a).
+> Placeholder to fill before publishing: `<DORAHACKS_BUIDL_URL>`. (Live alert tx from run 3a is filled in below.)
 
 ## One-liner
 Your smart contracts have a behavioral fingerprint. Mantle Sentinel detects the moment it changes — training-free, deterministic, on-chain.
@@ -30,7 +30,8 @@ Every confirmed alert calls Z.ai (`glm-4.5-flash`, OpenAI-compatible `https://ap
   https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187
 - **Registry v2 — Testnet (5003):** `0x2543Cc701632b105eE3DB75345140a7357664389`
 - **VictimCounter (Mantle Sepolia, self-attack target):** `0x1f88f063C00893642Ca4a74FE4d25Bf20c468E64`
-- **Live self-attack alert tx:** `<ALERT_TX_HASH>` (warm-up → injected anomaly → on-chain `logAlert`)
+- **Live self-attack alert tx:** `0x086cf07ace1ef1623ce43e40dc4a7e0b24f29dd206fdc7142fcd6bc5e79fa91c` (warm-up → injected anomaly → on-chain `logAlert`, mainnet block 96,680,154, `getAlertCount() == 1`)
+  https://mantlescan.xyz/tx/0x086cf07ace1ef1623ce43e40dc4a7e0b24f29dd206fdc7142fcd6bc5e79fa91c
 
 ## Results
 - **4.3×** clean/attack separation on real data (vs ~1.2× signature baseline)

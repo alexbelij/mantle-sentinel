@@ -358,7 +358,9 @@ def run_live(
     mw3 = _w3(MAINNET_RPC)
     tag = ALERT_TYPE_TAG.get(first_alert.alert_type, b"ALRT")
     window_id = int(first_alert.block)
-    drift_score = int(round(min(float(first_alert.drift), 1.0) * 1_000_000))
+    # Contract stores driftScore ×10000 (range 0..10000); see SentinelAlertRegistry.sol
+    # logAlert() reverts InvalidDriftScore if > 10000. drift 1.0 -> 10000.
+    drift_score = int(round(min(float(first_alert.drift), 1.0) * 10_000))
     payload = abi_encode(["uint256", "uint32", "bytes4"], [window_id, drift_score, tag])
     log_data = SEL_LOG_ALERT + payload.hex()
     [anchor_hash] = _send_calls(mw3, acct, MAINNET_REGISTRY, [log_data], gas=200_000)
@@ -378,11 +380,11 @@ def run_live(
         "window_id": window_id,
         "drift_score": drift_score,
         "alert_type_tag": "0x" + tag.hex(),
-        "explorer_url": f"https://explorer.mantle.xyz/tx/{anchor_hash}",
+        "explorer_url": f"https://mantlescan.xyz/tx/{anchor_hash}",
     })
     print(f"      ✅ anchored: {anchor_hash} (status {int(arcpt['status'])}, "
           f"registry count now {count})")
-    print(f"      🔗 https://explorer.mantle.xyz/tx/{anchor_hash}")
+    print(f"      🔗 https://mantlescan.xyz/tx/{anchor_hash}")
     return result
 
 

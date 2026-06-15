@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # glm-4.5-flash is free; glm-4.6 / glm-4.5-air require a paid resource package (429).
 ZAI_BASE_URL = os.getenv("ZAI_BASE_URL", "https://api.z.ai/api/paas/v4")
 ZAI_MODEL = os.getenv("ZAI_MODEL", "glm-4.5-flash")
-_TIMEOUT = 10  # seconds
+_TIMEOUT = 30  # seconds (glm-4.5-flash is a reasoning model; 10s truncates the live call)
 
 
 def _canned(alert: Alert) -> str:

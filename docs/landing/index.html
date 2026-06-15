@@ -371,7 +371,7 @@ section{position:relative;z-index:1}
       <div class="hero-visual">
         <div class="mascot-stage">
           <img class="mascot" id="mascot" src="assets/mascot-hero.png" alt="Sentinel — on-chain anomaly detection mascot" />
-          <span class="mascot-tag">// watching window 96,624,968</span>
+          <span class="mascot-tag">// watching window 39,972,940</span>
         </div>
       </div>
     </div>
@@ -539,7 +539,7 @@ section{position:relative;z-index:1}
           <span class="tag">T5 &middot; Anchor</span>
           <h3>Write it on-chain</h3>
           <p>The alert — window id, drift score, type — is logged to the Sentinel registry contract on Mantle mainnet. Tamper-proof, queryable, real.</p>
-          <div class="artifact"><div class="al">logAlert(window, drift, type)<br>&rarr; tx <span class="hl">0x4aca92d7…09a78</span> <span class="ck">anchored</span></div></div>
+          <div class="artifact"><div class="al">logAlert(window, drift, type)<br>&rarr; tx <span class="hl">0x086cf07a…fa91c</span> <span class="ck">anchored</span></div></div>
         </div>
       </div>
     </div>
@@ -561,9 +561,14 @@ section{position:relative;z-index:1}
         <canvas id="chart" width="660" height="300" aria-label="Drift score over time chart"></canvas>
       </div>
       <div class="card">
-        <div class="card-h"><span class="t">Transaction feed</span><span class="live"><span class="pulse"></span>USDC.e</span></div>
+        <div class="card-h"><span class="t">Transaction feed</span><span class="live"><span class="pulse"></span>VictimCounter</span></div>
         <div class="feed" id="feed"></div>
       </div>
+    </div>
+
+    <div class="zai reveal" style="margin-top:22px">
+      <span class="z">Z.ai GLM-4.5 brief &middot; auto-generated for this alert</span>
+      <p>The contract <b>0x1f88…68e64</b> showed completely unusual activity patterns at block <b>39,972,940</b>, with maximum unpredictability in how it's being called. This anomaly is primarily driven by unexpected variations in function selection and data input patterns.</p>
     </div>
   </div>
 </section>
@@ -583,9 +588,9 @@ section{position:relative;z-index:1}
         <tbody>
           <tr><td>Anomaly separation</td><td><span class="big">4.3&times;</span></td><td>Attack drift vs. clean p99</td></tr>
           <tr><td>False positives</td><td><span class="big">0</span></td><td>Across the full benchmark</td></tr>
-          <tr><td>Test suite</td><td><span class="big">84</span></td><td>Passing, deterministic</td></tr>
+          <tr><td>Test suite</td><td><span class="big">109</span></td><td>Passing, deterministic</td></tr>
           <tr><td>Time to alert</td><td><span class="big">&le;2</span></td><td>Windows after onset</td></tr>
-          <tr><td>Anchor block</td><td><span class="big num">96,624,965</span></td><td>Mantle mainnet</td></tr>
+          <tr><td>Anchor block</td><td><span class="big num">96,680,154</span></td><td>Mantle mainnet</td></tr>
         </tbody>
       </table>
 
@@ -593,7 +598,7 @@ section{position:relative;z-index:1}
         <div class="ah"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V8M5 12a7 7 0 0 0 14 0M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke-linecap="round" stroke-linejoin="round"/></svg> On-chain anchor</div>
         <div class="ab">
           <div class="kv"><div class="k">Registry contract</div><div class="v"><a href="https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187" target="_blank" rel="noopener">0x0899E1507CFfefF8620455721F5bd528Bb072187</a></div></div>
-          <div class="kv"><div class="k">Alert transaction</div><div class="v"><a href="https://mantlescan.xyz/tx/0x4aca92d7" target="_blank" rel="noopener">0x4aca92d7…09a78</a></div></div>
+          <div class="kv"><div class="k">Alert transaction</div><div class="v"><a href="https://mantlescan.xyz/tx/0x086cf07ace1ef1623ce43e40dc4a7e0b24f29dd206fdc7142fcd6bc5e79fa91c" target="_blank" rel="noopener">0x086cf07a…fa91c</a></div></div>
           <div class="kv"><div class="k">Network</div><div class="v">Mantle mainnet &middot; chainid 5000</div></div>
           <div class="kv"><div class="k">Status</div><div class="v"><span class="amber">getAlertCount() = 1 &middot; anchored</span></div></div>
         </div>
@@ -668,14 +673,14 @@ section{position:relative;z-index:1}
   var termBody = document.getElementById("termBody");
   var mascot = document.getElementById("mascot");
   var LOG = [
-    {b:"96624961", m:"monitoring USDC.e", d:"0.05", s:"OK"},
-    {b:"96624963", m:"monitoring USDC.e", d:"0.09", s:"OK"},
-    {b:"96624965", m:"monitoring USDC.e", d:"0.07", s:"OK"},
-    {b:"96624967", m:"monitoring USDC.e", d:"0.31", s:"WARN"},
-    {b:"96624968", m:"ANOMALY DETECTED  entropy_anomaly", d:"0.87", s:"ALERT"},
-    {b:"96624968", m:"logAlert() \u2192 tx 0x4aca\u202609a78", d:"\u2014", s:"ANCHOR"},
-    {b:"96624970", m:"manifold re-baselined", d:"0.12", s:"OK"},
-    {b:"96624972", m:"monitoring USDC.e", d:"0.06", s:"OK"}
+    {b:"39972928", m:"monitoring VictimCounter", d:"0.05", s:"OK"},
+    {b:"39972930", m:"monitoring VictimCounter", d:"0.08", s:"OK"},
+    {b:"39972931", m:"monitoring VictimCounter", d:"0.07", s:"OK"},
+    {b:"39972939", m:"high-entropy calldata", d:"0.42", s:"WARN"},
+    {b:"39972940", m:"ANOMALY DETECTED  entropy_anomaly", d:"1.00", s:"ALERT"},
+    {b:"39972940", m:"logAlert() \u2192 mainnet tx 0x086c\u2026fa91c", d:"\u2014", s:"ANCHOR"},
+    {b:"39972941", m:"manifold re-baselined", d:"0.11", s:"OK"},
+    {b:"39972942", m:"monitoring VictimCounter", d:"0.06", s:"OK"}
   ];
   function cls(s){ return s==="OK"?"st-ok":s==="WARN"?"st-warn":s==="ALERT"?"st-alert":"st-anchor"; }
   function mark(s){ return s==="ALERT"?" \u25cf":""; }
@@ -774,7 +779,7 @@ section{position:relative;z-index:1}
     }
   }
   function feedRow(i){
-    var v = SERIES[i], t = tagFor(v), blk = 96624958 + i;
+    var v = SERIES[i], t = tagFor(v), blk = 39972926 + i;
     var d = document.createElement("div"); d.className="f";
     d.innerHTML = '<span class="bk">'+blk.toLocaleString()+'</span><span class="ds">drift '+v.toFixed(2)+(t==="alert"?' \u00b7 entropy_anomaly':'')+'</span><span class="tg '+t+'">'+t.toUpperCase()+'</span>';
     return d;
