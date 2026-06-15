@@ -188,6 +188,58 @@ tr.row:hover{background:rgba(249,115,22,.04)}
 .skel-hide{transition:opacity .3s ease}
 .skel-hide.loaded{opacity:0;position:absolute;pointer-events:none}
 
+/* ============================== HEALTH CARDS ============================== */
+.hc-section{margin-bottom:32px}
+.hc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.hc-row2{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.hc-row2 .hcard:nth-child(3){visibility:hidden;pointer-events:none} /* ghost to center 2 cards */
+.hcard{
+  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:border-color .2s,transform .2s;position:relative;overflow:hidden;
+}
+.hcard:hover{border-color:var(--line-hi);transform:translateY(-2px)}
+.hcard::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--amber);opacity:0;transition:opacity .2s;
+}
+.hcard:hover::before{opacity:1}
+
+/* Mini ring */
+.hc-ring{position:relative;width:72px;height:72px}
+.hc-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hc-ring .track{fill:none;stroke:var(--line-2);stroke-width:5}
+.hc-ring .fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.hc-ring .score{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);
+}
+
+.hc-name{font-family:var(--display);font-size:15px;font-weight:700;color:var(--ink);text-align:center}
+.hc-type{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;border:1px solid var(--line-2);color:var(--muted);
+}
+.hc-alerts{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.hc-alerts b{color:var(--ink)}
+.hc-drift{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:2px;text-align:center;line-height:1.6}
+.hc-link{
+  font-family:var(--mono);font-size:10.5px;color:var(--amber);
+  display:inline-flex;align-items:center;gap:4px;margin-top:4px;transition:color .15s;
+}
+.hc-link:hover{color:var(--amber-bright);text-decoration:underline}
+.hc-link svg{width:11px;height:11px}
+
+@media(max-width:880px){
+  .hc-grid{grid-template-columns:repeat(2,1fr)}
+  .hc-row2{grid-template-columns:repeat(2,1fr)}
+  .hc-row2 .hcard:nth-child(3){display:none}
+}
+@media(max-width:480px){
+  .hc-grid{grid-template-columns:1fr}
+  .hc-row2{grid-template-columns:1fr}
+}
+
 /* ============================== MOBILE MENU ============================== */
 .hamburger{display:none;background:none;border:1px solid var(--line-2);border-radius:var(--r-sm);width:36px;height:36px;cursor:pointer;align-items:center;justify-content:center;color:var(--muted);transition:border-color .15s,color .15s;padding:0}
 .hamburger:hover{border-color:var(--amber);color:var(--ink)}
@@ -269,6 +321,77 @@ tr.row:hover{background:rgba(249,115,22,.04)}
       <h1>On-chain Alert Registry</h1>
       <p>Real-time view of the Sentinel registry contract on Mantle mainnet. Polls <code style="font-family:var(--mono);font-size:13px;color:var(--amber)">getAlertCount()</code> every 10 seconds via public RPC.</p>
     </div>
+
+    <!-- ============= MONITORED CONTRACTS ============= -->
+    <section class="hc-section">
+      <span class="eyebrow">Monitored Contracts</span>
+      <div class="hc-grid">
+        <!-- USDC.e -->
+        <div class="hcard">
+          <div class="hc-ring" data-score="83" data-color="#22c55e">
+            <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="fill" cx="36" cy="36" r="30"/></svg>
+            <span class="score">83</span>
+          </div>
+          <div class="hc-name">USDC.e</div>
+          <span class="hc-type">Stablecoin</span>
+          <div class="hc-alerts"><b>4</b> alerts · <b>4</b> selectors</div>
+          <div class="hc-drift">drift med 0.222 · p99 0.730</div>
+          <a class="hc-link" href="https://mantlescan.xyz/address/0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9" target="_blank" rel="noopener">0x09bc4e…0df9 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+        </div>
+        <!-- WMNT -->
+        <div class="hcard">
+          <div class="hc-ring" data-score="74" data-color="#f59e0b">
+            <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="fill" cx="36" cy="36" r="30"/></svg>
+            <span class="score">74</span>
+          </div>
+          <div class="hc-name">WMNT</div>
+          <span class="hc-type">Wrapped</span>
+          <div class="hc-alerts"><b>6</b> alerts · <b>10</b> selectors</div>
+          <div class="hc-drift">drift med 0.282 · p99 0.778</div>
+          <a class="hc-link" href="https://mantlescan.xyz/address/0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8" target="_blank" rel="noopener">0x78c1b0…4cb8 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+        </div>
+        <!-- USDT -->
+        <div class="hcard">
+          <div class="hc-ring" data-score="70" data-color="#f59e0b">
+            <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="fill" cx="36" cy="36" r="30"/></svg>
+            <span class="score">70</span>
+          </div>
+          <div class="hc-name">USDT</div>
+          <span class="hc-type">Stablecoin</span>
+          <div class="hc-alerts"><b>12</b> alerts · <b>2</b> selectors</div>
+          <div class="hc-drift">drift med 0.153 · p99 0.656</div>
+          <a class="hc-link" href="https://mantlescan.xyz/address/0x201eba5cc46d216ce6dc03f6a759e8e766e956ae" target="_blank" rel="noopener">0x201eba…56ae <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+        </div>
+      </div>
+      <div class="hc-row2">
+        <!-- mETH -->
+        <div class="hcard">
+          <div class="hc-ring" data-score="68" data-color="#f59e0b">
+            <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="fill" cx="36" cy="36" r="30"/></svg>
+            <span class="score">68</span>
+          </div>
+          <div class="hc-name">mETH</div>
+          <span class="hc-type">LST</span>
+          <div class="hc-alerts"><b>4</b> alerts · <b>2</b> selectors</div>
+          <div class="hc-drift">drift med 0.274 · p99 0.978</div>
+          <a class="hc-link" href="https://mantlescan.xyz/address/0xcda86a272531e8640cd7f1a92c01839911b90bb0" target="_blank" rel="noopener">0xcda86a…bb0 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+        </div>
+        <!-- Lendle Pool -->
+        <div class="hcard">
+          <div class="hc-ring" data-score="81" data-color="#22c55e">
+            <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="fill" cx="36" cy="36" r="30"/></svg>
+            <span class="score">81</span>
+          </div>
+          <div class="hc-name">Lendle Pool</div>
+          <span class="hc-type">Lending</span>
+          <div class="hc-alerts"><b>4</b> alerts · <b>5</b> selectors</div>
+          <div class="hc-drift">drift med 0.317 · p99 0.706</div>
+          <a class="hc-link" href="https://mantlescan.xyz/address/0xcfa5ae7c2ce8fadc6426c1ff872ca45378fb7cf3" target="_blank" rel="noopener">0xcfA5aE…7cf3 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+        </div>
+        <!-- ghost spacer for centering -->
+        <div class="hcard" style="visibility:hidden"></div>
+      </div>
+    </section>
 
     <div class="grid">
       <!-- LEFT: gauge + stats -->
@@ -484,6 +607,22 @@ tr.row:hover{background:rgba(249,115,22,.04)}
   }
   window.addEventListener("scroll", updateScroll, {passive:true}); updateScroll();
   if(scrollBtn) scrollBtn.addEventListener("click", function(){ window.scrollTo({top:0,behavior:"smooth"}); });
+
+  /* ---------- Health-card rings ---------- */
+  document.querySelectorAll(".hc-ring").forEach(function(el){
+    var score = parseInt(el.dataset.score,10);
+    var color = el.dataset.color;
+    var circle = el.querySelector(".fill");
+    if(!circle) return;
+    var CIRC_R = 2 * Math.PI * 30; // r=30
+    circle.style.stroke = color;
+    circle.style.strokeDasharray = CIRC_R;
+    circle.style.strokeDashoffset = CIRC_R;
+    // Animate after a small delay
+    setTimeout(function(){
+      circle.style.strokeDashoffset = CIRC_R * (1 - score/100);
+    }, 200);
+  });
 })();
 </script>
 </body>
