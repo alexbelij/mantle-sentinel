@@ -25,7 +25,7 @@ def compute_health_score(
 
     Formula (deterministic — same data ⇒ same score):
         base = 100
-        - min(50, num_episodes * 5)          # alert episodes
+        - min(30, num_episodes * 2)          # alert episodes
         - min(25, 50 * max(0, drift_p99 - 0.5))  # high drift spikes
         - min(15, 30 * max(0, drift_median - 0.3))  # sustained drift
     """
@@ -34,7 +34,7 @@ def compute_health_score(
     n_episodes = len(episodes)
 
     penalty = 0.0
-    penalty += min(50, n_episodes * 5)
+    penalty += min(30, n_episodes * 2)
     penalty += min(25, 50 * max(0.0, drift_p99 - 0.5))
     penalty += min(15, 30 * max(0.0, drift_median - 0.3))
 
@@ -149,13 +149,15 @@ def scan_contract(
     n_txs: int = 2000,
     explain: bool = False,
 ) -> dict:
-    """Fetch txs from Etherscan, run pipeline, return report dict."""
+    """Fetch txs from Etherscan (or Routescan fallback), run pipeline, return report dict."""
     key = os.environ.get("ETHERSCAN_KEY", "")
-    if not key:
-        print("ERROR: set ETHERSCAN_KEY env var (free at etherscan.io)", file=sys.stderr)
-        sys.exit(1)
+    if key:
+        txs = fetch_txlist(address, n_txs, key)
+    else:
+        # Routescan fallback (no API key needed)
+        from sentinel.watch import fetch_txlist_from_block
 
-    txs = fetch_txlist(address, n_txs, key)
+        txs = fetch_txlist_from_block(address, start_block=0, n=n_txs)
     raw = to_raw(txs, address)
     if len(raw) < 100:
         print(

@@ -5,7 +5,7 @@
   "txs_fetched": 2997,
   "txs_warmup": 1198,
   "txs_analyzed": 1799,
-  "health_score": 26,
+  "health_score": 46,
   "drift_median": 0.2742,
   "drift_p99": 0.9832,
   "unique_selectors": 2,

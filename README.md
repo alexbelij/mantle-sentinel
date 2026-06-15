@@ -4,7 +4,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 ![Mantle Mainnet](https://img.shields.io/badge/Mantle-Mainnet-8B5CF6)
-![118 tests](https://img.shields.io/badge/tests-118%20passed-brightgreen)
+![127 tests](https://img.shields.io/badge/tests-127%20passed-brightgreen)
 
 > Your smart contracts have a behavioral fingerprint. Sentinel knows when it changes.
 
@@ -47,11 +47,11 @@ python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
 
 | Contract | Protocol | Health | Drift (median) | Drift (p99) | Selectors | Alerts |
 |----------|----------|--------|----------------|-------------|-----------|--------|
-| 0x09bc4e… | USDC.e | 38/100 | 0.222 | 0.748 | 4 | 14 |
-| 0x78c1b0… | WMNT | 35/100 | 0.282 | 0.796 | 10 | 23 |
-| 0x201eba… | USDT | 25/100 | 0.150 | 1.000 | 2 | 24 |
-| 0xcda86a… | mETH | 26/100 | 0.274 | 0.983 | 2 | 82 |
-| 0xcfa5ae… | Lendle Pool | 69/100 | 0.312 | 0.707 | 5 | 4 |
+| 0x09bc4e… | USDC.e | 62/100 | 0.222 | 0.748 | 4 | 14 |
+| 0x78c1b0… | WMNT | 55/100 | 0.282 | 0.796 | 10 | 23 |
+| 0x201eba… | USDT | 45/100 | 0.150 | 1.000 | 2 | 24 |
+| 0xcda86a… | mETH | 46/100 | 0.274 | 0.983 | 2 | 82 |
+| 0xcfa5ae… | Lendle Pool | 81/100 | 0.317 | 0.706 | 5 | 4 |
 
 Full reports: [`bench/reports/`](bench/reports/) · Summary: [`bench/reports/SUMMARY.md`](bench/reports/SUMMARY.md)
 
