@@ -6,7 +6,7 @@
 
 **[Slide 1 — Title, 20 sec]**
 
-Hi everyone. I'm [Name], and this is Mantle Sentinel — a training-free behavioral anomaly detector for smart contracts on Mantle.
+Hi everyone. I'm Aleksandr, and this is Mantle Sentinel — a training-free behavioral anomaly detector for smart contracts on Mantle.
 
 **[Slide 2 — Problem, 30 sec]**
 
