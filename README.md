@@ -34,6 +34,12 @@
 | S5 timing burst   | Near-zero inter-tx interval     | ✅       | 2 windows |
 | S7 payload mutation | Randomized calldata           | ✅       | 4 windows |
 
+## Screenshots
+
+| Landing | Dashboard | Mobile |
+|---------|-----------|--------|
+| ![Landing](docs/images/landing-hero.png) | ![Dashboard](docs/images/dashboard.png) | ![Mobile](docs/images/dashboard-mobile.png) |
+
 ---
 
 ## Live Scan — Top Mantle DeFi Contracts
