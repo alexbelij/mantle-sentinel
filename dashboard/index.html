@@ -177,6 +177,17 @@ tr.row:hover{background:rgba(249,115,22,.04)}
 .foot-in a:hover{color:var(--prose)}
 .foot-copy{text-align:center;padding:14px var(--gut) 0;font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em}
 
+/* ============================== SKELETON ============================== */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skel{border-radius:var(--r-sm);background:linear-gradient(90deg,var(--line) 0%,var(--line-2) 40%,var(--line) 80%);background-size:800px 100%;animation:shimmer 1.6s ease-in-out infinite}
+.skel-line{height:14px;margin:6px 0}
+.skel-box{height:40px;margin:6px 0}
+.skel-circle{width:220px;height:130px;margin:24px auto 16px;border-radius:50%/40%}
+.skel-row{display:flex;gap:10px;padding:6px 14px}
+.skel-row .skel{flex:1;height:16px}
+.skel-hide{transition:opacity .3s ease}
+.skel-hide.loaded{opacity:0;position:absolute;pointer-events:none}
+
 /* ============================== MOBILE MENU ============================== */
 .hamburger{display:none;background:none;border:1px solid var(--line-2);border-radius:var(--r-sm);width:36px;height:36px;cursor:pointer;align-items:center;justify-content:center;color:var(--muted);transition:border-color .15s,color .15s;padding:0}
 .hamburger:hover{border-color:var(--amber);color:var(--ink)}
@@ -262,36 +273,64 @@ tr.row:hover{background:rgba(249,115,22,.04)}
     <div class="grid">
       <!-- LEFT: gauge + stats -->
       <div>
-        <div class="card">
-          <div class="card-h"><span class="t">Latest drift score</span><span class="live"><span class="pulse"></span>polling</span></div>
-          <div class="gauge-wrap">
-            <div class="gauge">
-              <svg viewBox="0 0 220 130">
-                <path d="M18 120 A92 92 0 0 1 202 120" fill="none" stroke="var(--line-2)" stroke-width="14" stroke-linecap="round"/>
-                <path id="gaugeArc" d="M18 120 A92 92 0 0 1 202 120" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" style="stroke-dasharray:289;stroke-dashoffset:289;transition:stroke-dashoffset .8s ease"/>
-                <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--ok)"/><stop offset=".55" stop-color="var(--warn)"/><stop offset="1" stop-color="var(--danger)"/></linearGradient></defs>
-              </svg>
-              <div class="gval"><div class="num" id="gaugeNum">—</div><div class="lab">drift / 1.0</div></div>
+        <div class="card" style="position:relative">
+          <!-- Skeleton overlay -->
+          <div class="skel-hide" id="skelGauge">
+            <div class="card-h"><span class="t">Latest drift score</span><span class="live"><span class="pulse"></span>connecting</span></div>
+            <div class="skel skel-circle"></div>
+            <div style="padding:16px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="stat"><div class="k">Total alerts</div><div class="skel skel-line" style="width:60%"></div></div>
+                <div class="stat"><div class="k">Last block</div><div class="skel skel-line" style="width:70%"></div></div>
+              </div>
+              <div class="stat full" style="margin-top:10px"><div class="k">Registry contract</div><div class="skel skel-line" style="width:80%"></div></div>
             </div>
-            <div class="gscale"><span>0.0</span><span>0.5</span><span>1.0</span></div>
           </div>
-          <div class="stats">
-            <div class="stat"><div class="k">Total alerts</div><div class="v" id="alertCount">—</div></div>
-            <div class="stat"><div class="k">Last block</div><div class="v" id="lastBlock">—</div></div>
-            <div class="stat full"><div class="k">Registry contract</div><div class="v"><a id="contractLink" target="_blank" rel="noopener">—</a></div></div>
+          <!-- Real content (hidden until loaded) -->
+          <div id="gaugeReal" style="opacity:0;transition:opacity .3s ease">
+            <div class="card-h"><span class="t">Latest drift score</span><span class="live"><span class="pulse"></span>polling</span></div>
+            <div class="gauge-wrap">
+              <div class="gauge">
+                <svg viewBox="0 0 220 130">
+                  <path d="M18 120 A92 92 0 0 1 202 120" fill="none" stroke="var(--line-2)" stroke-width="14" stroke-linecap="round"/>
+                  <path id="gaugeArc" d="M18 120 A92 92 0 0 1 202 120" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" style="stroke-dasharray:289;stroke-dashoffset:289;transition:stroke-dashoffset .8s ease"/>
+                  <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--ok)"/><stop offset=".55" stop-color="var(--warn)"/><stop offset="1" stop-color="var(--danger)"/></linearGradient></defs>
+                </svg>
+                <div class="gval"><div class="num" id="gaugeNum">—</div><div class="lab">drift / 1.0</div></div>
+              </div>
+              <div class="gscale"><span>0.0</span><span>0.5</span><span>1.0</span></div>
+            </div>
+            <div class="stats">
+              <div class="stat"><div class="k">Total alerts</div><div class="v" id="alertCount">—</div></div>
+              <div class="stat"><div class="k">Last block</div><div class="v" id="lastBlock">—</div></div>
+              <div class="stat full"><div class="k">Registry contract</div><div class="v"><a id="contractLink" target="_blank" rel="noopener">—</a></div></div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- RIGHT: alert table -->
       <div>
-        <div class="card">
-          <div class="card-h"><span class="t">Last 5 alerts</span><span class="live"><span class="pulse"></span>live</span></div>
-          <div style="padding:4px 0">
-            <table>
-              <thead><tr><th>#</th><th>Type</th><th>Window</th><th>Drift</th><th>Reporter</th><th>Time (UTC)</th></tr></thead>
-              <tbody id="alertRows"><tr><td colspan="6" class="empty">loading…</td></tr></tbody>
-            </table>
+        <div class="card" style="position:relative">
+          <!-- Skeleton overlay -->
+          <div class="skel-hide" id="skelTable">
+            <div class="card-h"><span class="t">Last 5 alerts</span><span class="live"><span class="pulse"></span>connecting</span></div>
+            <div style="padding:12px 14px"><div class="skel skel-line" style="width:100%"></div></div>
+            <div class="skel-row"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+            <div class="skel-row"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+            <div class="skel-row"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+            <div class="skel-row"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+            <div class="skel-row" style="padding-bottom:14px"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+          </div>
+          <!-- Real content -->
+          <div id="tableReal" style="opacity:0;transition:opacity .3s ease">
+            <div class="card-h"><span class="t">Last 5 alerts</span><span class="live"><span class="pulse"></span>live</span></div>
+            <div style="padding:4px 0">
+              <table>
+                <thead><tr><th>#</th><th>Type</th><th>Window</th><th>Drift</th><th>Reporter</th><th>Time (UTC)</th></tr></thead>
+                <tbody id="alertRows"><tr><td colspan="6" class="empty">loading…</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -384,6 +423,16 @@ tr.row:hover{background:rgba(249,115,22,.04)}
     return '<tr class="row"><td style="color:var(--faint)">'+i+'</td><td><span class="pill '+pillClass(t)+'">'+t+'</span></td><td>'+a.windowId.toString()+'</td><td><div class="drift-cell"><span>'+drift.toFixed(3)+'</span><span class="bar"><i style="width:'+Math.min(100,drift*100)+'%"></i></span></div></td><td><a style="color:var(--muted)" href="'+EXPLORER+'/address/'+a.reporter+'" target="_blank" rel="noopener">'+short(a.reporter)+'</a></td><td style="color:var(--faint)">'+dt+'</td></tr>';
   }
 
+  var skelDismissed=false;
+  function dismissSkel(){
+    if(skelDismissed) return; skelDismissed=true;
+    var sg=$("skelGauge"),st=$("skelTable"),gr=$("gaugeReal"),tr=$("tableReal");
+    if(sg) sg.classList.add("loaded");
+    if(st) st.classList.add("loaded");
+    if(gr) gr.style.opacity="1";
+    if(tr) tr.style.opacity="1";
+  }
+
   async function refresh(){
     try{
       var res=await Promise.all([registry.getAlertCount(),provider.getBlockNumber()]);
@@ -394,7 +443,7 @@ tr.row:hover{background:rgba(249,115,22,.04)}
 
       if(count===0){
         setGauge(0); $("alertRows").innerHTML='<tr><td colspan="6" class="empty">No alerts yet — registry armed and watching.</td></tr>';
-        setStatus(true,"live · awaiting alerts"); return;
+        setStatus(true,"live · awaiting alerts"); dismissSkel(); return;
       }
       var start=Math.max(0,count-5), idx=[];
       for(var i=count-1;i>=start;i--) idx.push(i);
@@ -402,6 +451,7 @@ tr.row:hover{background:rgba(249,115,22,.04)}
       setGauge(Number(alerts[0].driftScore)/1e6);
       $("alertRows").innerHTML=idx.map(function(i,k){ return row(i,alerts[k]); }).join("");
       setStatus(true,"live · "+new Date().toLocaleTimeString());
+      dismissSkel();
     }catch(e){
       console.error(e); setStatus(false,"rpc error — retrying");
     }
