@@ -48,6 +48,6 @@ Every confirmed alert calls Z.ai (`glm-4.5-flash`, OpenAI-compatible `https://ap
 SaaS subscription per monitored contract — flat, no per-alert fees. Target customers: DeFi protocols, bridges, DAO treasuries.
 
 ## Links
-- Live demo: https://mantle-sentinel-rho.vercel.app/
+- Live demo: https://mntsentinel.xyz/
 - Code (MIT): https://github.com/alexbelij/mantle-sentinel
 - BUIDL: `<DORAHACKS_BUIDL_URL>`

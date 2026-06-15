@@ -10,7 +10,7 @@ microsecond updates — using a 10,000-dimensional hyperdimensional (HDC)
 behavioral signature, and only *then* asks Z.ai to explain the confirmed alert
 in plain English. The model is **never** in the detection loop.
 
-**Live demo:** https://mantle-sentinel-rho.vercel.app/
+**Live demo:** https://mntsentinel.xyz/
 
 ---
 

@@ -1,6 +1,6 @@
 # DECISIONS.md — Spec-Gap Decision Log
 
-Format: `D-NN | date | gap | choice | rationale` (one line each). Curator audits this file every review.
+Format: `D-NN | date | gap | choice | rationale` (one line each).
 
 D-01 | 2026-06-13 | Tier 5 attribution method unspecified | Feature-ablation contribution (MVP_MATH_SPEC §5) | avoids unbinding complexity; testable per scenario
 D-02 | 2026-06-13 | HDC dimension | D=10,000 (was 4,096 in first spec draft) | panel consensus; cost negligible at MVP scale
