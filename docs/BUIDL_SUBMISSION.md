@@ -46,7 +46,7 @@ Every confirmed alert calls Z.ai (`glm-4.5-flash`, OpenAI-compatible `https://ap
 - **4.3×** clean/attack separation on real data (vs ~1.2× signature baseline)
 - **0** false-positive episodes across the full benchmark
 - **≤2 windows** (≤100 txs) detection delay
-- **109** Python tests + **6** Foundry tests, all passing & deterministic
+- **129** Python tests + **6** Foundry tests, all passing & deterministic
 - Benchmarked on **3,993 real Mantle USDC.e transactions** (`0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9`)
 
 ## Why us vs incumbents
