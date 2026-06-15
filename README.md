@@ -4,7 +4,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 ![Mantle Mainnet](https://img.shields.io/badge/Mantle-Mainnet-8B5CF6)
-![109 tests](https://img.shields.io/badge/tests-109%20passed-brightgreen)
+![118 tests](https://img.shields.io/badge/tests-118%20passed-brightgreen)
 
 > Your smart contracts have a behavioral fingerprint. Sentinel knows when it changes.
 
@@ -33,6 +33,27 @@
 | S3 gas shift      | Gas 5× above baseline           | ✅       | 3 windows |
 | S5 timing burst   | Near-zero inter-tx interval     | ✅       | 2 windows |
 | S7 payload mutation | Randomized calldata           | ✅       | 4 windows |
+
+---
+
+## Live Scan — Top Mantle DeFi Contracts
+
+One command, zero config. `sentinel scan` fetches on-chain history and runs the
+full HDC pipeline:
+
+```bash
+python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
+```
+
+| Contract | Protocol | Health | Drift (median) | Drift (p99) | Selectors | Alerts |
+|----------|----------|--------|----------------|-------------|-----------|--------|
+| 0x09bc4e… | USDC.e | 38/100 | 0.222 | 0.748 | 4 | 14 |
+| 0x78c1b0… | WMNT | 35/100 | 0.282 | 0.796 | 10 | 23 |
+| 0x201eba… | USDT | 25/100 | 0.150 | 1.000 | 2 | 24 |
+| 0xcda86a… | mETH | 26/100 | 0.274 | 0.983 | 2 | 82 |
+| 0xcfa5ae… | Lendle Pool | 69/100 | 0.312 | 0.707 | 5 | 4 |
+
+Full reports: [`bench/reports/`](bench/reports/) · Summary: [`bench/reports/SUMMARY.md`](bench/reports/SUMMARY.md)
 
 ---
 
@@ -92,6 +113,9 @@ pip install -r requirements.txt
 
 # self-attack demo — works immediately, zero config:
 python bench/self_attack.py --dry-run
+
+# scan any Mantle contract (needs ETHERSCAN_KEY):
+python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
 ```
 
 To replay the real USDC.e snapshot (gitignored — fetch it first):
@@ -152,7 +176,7 @@ alert. Prompt template + schema: [`docs/zai_prompt.md`](docs/zai_prompt.md).
 ## Tests
 
 ```
-python -m pytest tests/ -q     # 109 passed
+python -m pytest tests/ -q     # 118 passed
 forge test                     # 6 passed  (contracts/SentinelAlertRegistry.sol)
 ```
 
@@ -172,13 +196,14 @@ sentinel/          Python package — Tiers T0–T5 pipeline
   detector.py      T3  static / BOCPD detector
   bocpd.py             Bayesian online change-point detector
   interpreter.py   T4  feature-ablation attribution
-  explain_zai.py   T5  Z.ai explainer (dry-run safe)
+  explain_zai.py   T5  Z.ai explainer + contract profiler (dry-run safe)
+  scan.py              one-command behavioral audit
   notify_telegram.py   Telegram fan-out
   replay.py            snapshot replay harness
 contracts/         SentinelAlertRegistry.sol (v2) + VictimCounter.sol + ABI/deployments
 test/              Foundry tests (forge)
 tests/             pytest suite
-bench/             self_attack.py demo + real snapshot data
+bench/             self_attack.py demo + real snapshot data + scan reports
 dashboard/         static on-chain alert viewer
 docs/landing/      marketing site (Vercel)
 ```

@@ -1,0 +1,843 @@
+{
+  "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+  "chain": "mantle",
+  "chain_id": 5000,
+  "txs_fetched": 2997,
+  "txs_warmup": 1198,
+  "txs_analyzed": 1799,
+  "health_score": 26,
+  "drift_median": 0.2742,
+  "drift_p99": 0.9832,
+  "unique_selectors": 2,
+  "top_selectors": {
+    "0x095ea7b3": 0.6393,
+    "0xa9059cbb": 0.3607
+  },
+  "gas_median": 53601,
+  "gas_p99": 255905335,
+  "alerts": 82,
+  "alert_details": [
+    {
+      "alert_id": "regime_shift-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94586639",
+      "ts": "2026-04-27T15:26:30Z",
+      "block": 94586639,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "regime_shift",
+      "drift": 0.967181,
+      "branch": "hamming",
+      "episode_id": "regime-1"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94743249",
+      "ts": "2026-05-01T06:26:50Z",
+      "block": 94743249,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-1"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94745047",
+      "ts": "2026-05-01T07:26:46Z",
+      "block": 94745047,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-2"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94763617",
+      "ts": "2026-05-01T17:45:46Z",
+      "block": 94763617,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-3"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94942668",
+      "ts": "2026-05-05T21:14:08Z",
+      "block": 94942668,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-4"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94943293",
+      "ts": "2026-05-05T21:34:58Z",
+      "block": 94943293,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-5"
+    },
+    {
+      "alert_id": "regime_shift-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94943293",
+      "ts": "2026-05-05T21:34:58Z",
+      "block": 94943293,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "regime_shift",
+      "drift": 0.828559,
+      "branch": "hamming",
+      "episode_id": "regime-2"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94943788",
+      "ts": "2026-05-05T21:51:28Z",
+      "block": 94943788,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-6"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94943908",
+      "ts": "2026-05-05T21:55:28Z",
+      "block": 94943908,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-6"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94944397",
+      "ts": "2026-05-05T22:11:46Z",
+      "block": 94944397,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-7"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94944543",
+      "ts": "2026-05-05T22:16:38Z",
+      "block": 94944543,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-7"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94944586",
+      "ts": "2026-05-05T22:18:04Z",
+      "block": 94944586,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-7"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94944626",
+      "ts": "2026-05-05T22:19:24Z",
+      "block": 94944626,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-7"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94944729",
+      "ts": "2026-05-05T22:22:50Z",
+      "block": 94944729,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-7"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945171",
+      "ts": "2026-05-05T22:37:34Z",
+      "block": 94945171,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945217",
+      "ts": "2026-05-05T22:39:06Z",
+      "block": 94945217,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945265",
+      "ts": "2026-05-05T22:40:42Z",
+      "block": 94945265,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945314",
+      "ts": "2026-05-05T22:42:20Z",
+      "block": 94945314,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945361",
+      "ts": "2026-05-05T22:43:54Z",
+      "block": 94945361,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945409",
+      "ts": "2026-05-05T22:45:30Z",
+      "block": 94945409,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945458",
+      "ts": "2026-05-05T22:47:08Z",
+      "block": 94945458,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945509",
+      "ts": "2026-05-05T22:48:50Z",
+      "block": 94945509,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945759",
+      "ts": "2026-05-05T22:57:10Z",
+      "block": 94945759,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94945805",
+      "ts": "2026-05-05T22:58:42Z",
+      "block": 94945805,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946006",
+      "ts": "2026-05-05T23:05:24Z",
+      "block": 94946006,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946055",
+      "ts": "2026-05-05T23:07:02Z",
+      "block": 94946055,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946106",
+      "ts": "2026-05-05T23:08:44Z",
+      "block": 94946106,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946202",
+      "ts": "2026-05-05T23:11:56Z",
+      "block": 94946202,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946347",
+      "ts": "2026-05-05T23:16:46Z",
+      "block": 94946347,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946401",
+      "ts": "2026-05-05T23:18:34Z",
+      "block": 94946401,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946502",
+      "ts": "2026-05-05T23:21:56Z",
+      "block": 94946502,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946552",
+      "ts": "2026-05-05T23:23:36Z",
+      "block": 94946552,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946656",
+      "ts": "2026-05-05T23:27:04Z",
+      "block": 94946656,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946760",
+      "ts": "2026-05-05T23:30:32Z",
+      "block": 94946760,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946808",
+      "ts": "2026-05-05T23:32:08Z",
+      "block": 94946808,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946854",
+      "ts": "2026-05-05T23:33:40Z",
+      "block": 94946854,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94946902",
+      "ts": "2026-05-05T23:35:16Z",
+      "block": 94946902,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947144",
+      "ts": "2026-05-05T23:43:20Z",
+      "block": 94947144,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947195",
+      "ts": "2026-05-05T23:45:02Z",
+      "block": 94947195,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947246",
+      "ts": "2026-05-05T23:46:44Z",
+      "block": 94947246,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947390",
+      "ts": "2026-05-05T23:51:32Z",
+      "block": 94947390,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947440",
+      "ts": "2026-05-05T23:53:12Z",
+      "block": 94947440,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947531",
+      "ts": "2026-05-05T23:56:14Z",
+      "block": 94947531,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947582",
+      "ts": "2026-05-05T23:57:56Z",
+      "block": 94947582,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947678",
+      "ts": "2026-05-06T00:01:08Z",
+      "block": 94947678,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94947778",
+      "ts": "2026-05-06T00:04:28Z",
+      "block": 94947778,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-8"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94948518",
+      "ts": "2026-05-06T00:29:08Z",
+      "block": 94948518,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94948681",
+      "ts": "2026-05-06T00:34:34Z",
+      "block": 94948681,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94948943",
+      "ts": "2026-05-06T00:43:18Z",
+      "block": 94948943,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94949228",
+      "ts": "2026-05-06T00:52:48Z",
+      "block": 94949228,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94949326",
+      "ts": "2026-05-06T00:56:04Z",
+      "block": 94949326,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94949375",
+      "ts": "2026-05-06T00:57:42Z",
+      "block": 94949375,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94949470",
+      "ts": "2026-05-06T01:00:52Z",
+      "block": 94949470,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94949568",
+      "ts": "2026-05-06T01:04:08Z",
+      "block": 94949568,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94949810",
+      "ts": "2026-05-06T01:12:12Z",
+      "block": 94949810,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-9"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94951509",
+      "ts": "2026-05-06T02:08:50Z",
+      "block": 94951509,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-10"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-94959015",
+      "ts": "2026-05-06T06:19:02Z",
+      "block": 94959015,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-11"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-95016144",
+      "ts": "2026-05-07T14:03:20Z",
+      "block": 95016144,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-12"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-95230805",
+      "ts": "2026-05-12T13:18:42Z",
+      "block": 95230805,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-13"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-95248657",
+      "ts": "2026-05-12T23:13:46Z",
+      "block": 95248657,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-14"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-95921403",
+      "ts": "2026-05-28T12:58:38Z",
+      "block": 95921403,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-15"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96139740",
+      "ts": "2026-06-02T14:16:32Z",
+      "block": 96139740,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-16"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96437178",
+      "ts": "2026-06-09T11:31:08Z",
+      "block": 96437178,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-17"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96437192",
+      "ts": "2026-06-09T11:31:36Z",
+      "block": 96437192,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-17"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96437515",
+      "ts": "2026-06-09T11:42:22Z",
+      "block": 96437515,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-18"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96442928",
+      "ts": "2026-06-09T14:42:48Z",
+      "block": 96442928,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-19"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96443132",
+      "ts": "2026-06-09T14:49:36Z",
+      "block": 96443132,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-19"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96443678",
+      "ts": "2026-06-09T15:07:48Z",
+      "block": 96443678,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-20"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96443885",
+      "ts": "2026-06-09T15:14:42Z",
+      "block": 96443885,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-20"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96446377",
+      "ts": "2026-06-09T16:37:46Z",
+      "block": 96446377,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-21"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96450974",
+      "ts": "2026-06-09T19:11:00Z",
+      "block": 96450974,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-22"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96454473",
+      "ts": "2026-06-09T21:07:38Z",
+      "block": 96454473,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-23"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96457935",
+      "ts": "2026-06-09T23:03:02Z",
+      "block": 96457935,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-24"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96477293",
+      "ts": "2026-06-10T09:48:18Z",
+      "block": 96477293,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-25"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96486107",
+      "ts": "2026-06-10T14:42:06Z",
+      "block": 96486107,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-26"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96486302",
+      "ts": "2026-06-10T14:48:36Z",
+      "block": 96486302,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-26"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96510933",
+      "ts": "2026-06-11T04:29:38Z",
+      "block": 96510933,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-27"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96523533",
+      "ts": "2026-06-11T11:29:38Z",
+      "block": 96523533,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-28"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96532370",
+      "ts": "2026-06-11T16:24:12Z",
+      "block": 96532370,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-29"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96540975",
+      "ts": "2026-06-11T21:11:02Z",
+      "block": 96540975,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-30"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96575558",
+      "ts": "2026-06-12T16:23:48Z",
+      "block": 96575558,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-31"
+    },
+    {
+      "alert_id": "entropy_anomaly-0xcda86a272531e8640cd7f1a92c01839911b90bb0-96654177",
+      "ts": "2026-06-14T12:04:26Z",
+      "block": 96654177,
+      "contract": "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      "alert_type": "entropy_anomaly",
+      "drift": 1.0,
+      "branch": "entropy",
+      "episode_id": "entropy-32"
+    }
+  ],
+  "protocol": "mETH",
+  "type": "LST"
+}
