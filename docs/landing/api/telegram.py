@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import urllib.request
 from http.server import BaseHTTPRequestHandler
 
@@ -26,6 +27,8 @@ CONTRACTS = {
 
 def _supabase_get(path: str) -> list[dict]:
     """GET from Supabase REST API."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return []
     url = SUPABASE_URL.rstrip("/") + "/rest/v1/" + path
     req = urllib.request.Request(url, headers={"apikey": SUPABASE_KEY})
     with urllib.request.urlopen(req, timeout=8) as resp:
@@ -34,6 +37,8 @@ def _supabase_get(path: str) -> list[dict]:
 
 def _send_tg(chat_id: int, text: str) -> None:
     """Send a Telegram message (HTML parse mode)."""
+    if not TG_TOKEN:
+        return
     url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
     body = json.dumps({
         "chat_id": chat_id,
@@ -42,7 +47,10 @@ def _send_tg(chat_id: int, text: str) -> None:
         "disable_web_page_preview": True,
     }).encode()
     req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
-    urllib.request.urlopen(req, timeout=8)
+    try:
+        urllib.request.urlopen(req, timeout=8)
+    except Exception:
+        pass  # don't crash the webhook on TG send failure
 
 
 def _bar(score: int, width: int = 10) -> str:
@@ -158,28 +166,34 @@ class handler(BaseHTTPRequestHandler):
     """Vercel Python runtime handler."""
 
     def do_POST(self):  # noqa: N802
-        length = int(self.headers.get("Content-Length", 0))
-        body = json.loads(self.rfile.read(length)) if length else {}
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length)) if length else {}
 
-        msg = body.get("message", {})
-        chat_id = msg.get("chat", {}).get("id")
-        text = (msg.get("text") or "").strip()
+            msg = body.get("message", {})
+            chat_id = msg.get("chat", {}).get("id")
+            text = (msg.get("text") or "").strip()
 
-        if chat_id and text:
-            cmd = text.split()[0].lower().split("@")[0]  # strip @botname
-            try:
-                if cmd in ("/start", "/help"):
-                    _handle_start(chat_id)
-                elif cmd == "/health":
-                    _handle_health(chat_id)
-                elif cmd == "/scan":
-                    _handle_scan(chat_id, text)
-                elif cmd == "/status":
-                    _handle_status(chat_id)
-                else:
-                    _send_tg(chat_id, "Unknown command. Try /help")
-            except Exception as e:
-                _send_tg(chat_id, f"\u26a0\ufe0f Error: {e}")
+            if chat_id and text:
+                cmd = text.split()[0].lower().split("@")[0]  # strip @botname
+                try:
+                    if cmd in ("/start", "/help"):
+                        _handle_start(chat_id)
+                    elif cmd == "/health":
+                        _handle_health(chat_id)
+                    elif cmd == "/scan":
+                        _handle_scan(chat_id, text)
+                    elif cmd == "/status":
+                        _handle_status(chat_id)
+                    else:
+                        _send_tg(chat_id, "Unknown command. Try /help")
+                except Exception as e:
+                    try:
+                        _send_tg(chat_id, f"\u26a0\ufe0f Error: {e}")
+                    except Exception:
+                        pass
+        except Exception as exc:
+            print(f"[telegram] unhandled: {exc}", file=sys.stderr)
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
