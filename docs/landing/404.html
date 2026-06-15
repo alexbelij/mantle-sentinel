@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 — Page not found | MNTSentinel</title>
+<meta name="description" content="The page you're looking for doesn't exist." />
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+:root{--void:#090909;--panel:#111111;--line:#1f1f1f;--line-2:#2a2a2a;--amber:#f97316;--amber-bright:#fb923c;--ink:#fafafa;--prose:#d9d9d9;--muted:#9a9a9a;--faint:#6a6a6a;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;--display:"Space Grotesk",system-ui,sans-serif;--sans:"Inter",system-ui,sans-serif;--r:6px;--r-sm:4px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--prose);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;opacity:.16;-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 80%)}
+a{color:inherit;text-decoration:none}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1;padding:40px 24px;text-align:center}
+.code{font-family:var(--mono);font-size:clamp(80px,15vw,160px);font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.04em;opacity:.12}
+.msg{font-family:var(--display);font-size:clamp(20px,3vw,28px);font-weight:700;color:var(--ink);margin-top:8px}
+.sub{color:var(--muted);font-size:15px;max-width:40ch;margin-top:12px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.02em;padding:12px 24px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:background .15s,transform .15s;margin-top:32px;background:var(--amber);color:#0a0a0a}
+.btn:hover{background:var(--amber-bright);transform:translateY(-1px)}
+.mascot{width:64px;height:auto;margin-bottom:16px;opacity:.6}
+.foot{padding:24px;text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em;position:relative;z-index:1}
+</style>
+</head>
+<body>
+<div class="center">
+  <img src="/assets/mascot-logo.png" alt="" class="mascot" />
+  <div class="code">404</div>
+  <div class="msg">Page not found</div>
+  <p class="sub">The address doesn't match any known contract in our registry. Maybe it drifted too far.</p>
+  <a class="btn" href="/">← Back to Sentinel</a>
+</div>
+<div class="foot">&copy; 2025 MNTSentinel. All rights reserved.</div>
+</body>
+</html>

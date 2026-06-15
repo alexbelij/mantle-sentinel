@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sentinel — On-chain anomaly detection for Mantle</title>
 <meta name="description" content="Sentinel catches exploits that pass every validity check. Hyperdimensional drift detection on Mantle — zero training data, zero GPU. Euler lost $197M in valid calls; Sentinel saw it coming." />
+<meta property="og:title" content="Sentinel — On-chain anomaly detection for Mantle" />
+<meta property="og:description" content="Hyperdimensional drift detection that catches exploits passing every validity check. Zero training data, zero GPU." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://mntsentinel.xyz/" />
+<meta property="og:image" content="https://mntsentinel.xyz/assets/mascot-hero.png" />
+<meta property="og:site_name" content="MNTSentinel" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Sentinel — On-chain anomaly detection for Mantle" />
+<meta name="twitter:description" content="Hyperdimensional drift detection that catches exploits passing every validity check." />
+<meta name="twitter:image" content="https://mntsentinel.xyz/assets/mascot-hero.png" />
+<meta name="theme-color" content="#f97316" />
+<link rel="canonical" href="https://mntsentinel.xyz/" />
 <link rel="icon" type="image/png" href="assets/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -107,6 +119,8 @@ section{position:relative;z-index:1}
 .nav-links{display:flex;gap:24px;margin-left:8px}
 .nav-links a{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.02em;transition:color .15s}
 .nav-links a:hover{color:var(--ink)}
+.nav-links a.dash{color:var(--amber)}
+.nav-links a.dash:hover{color:var(--ink)}
 .nav-cta{margin-left:auto;display:flex;gap:10px;align-items:center}
 .nav-cta .ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--line-2);border-radius:var(--r-sm);color:var(--muted);transition:border-color .15s,color .15s}
 .nav-cta .ico:hover{border-color:var(--amber);color:var(--ink)}
@@ -395,6 +409,9 @@ section{position:relative;z-index:1}
   .mascot{filter:drop-shadow(0 0 22px rgba(34,211,238,.18));animation:none}
 }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Mantle Sentinel","url":"https://mntsentinel.xyz","applicationCategory":"DeveloperApplication","operatingSystem":"Linux","description":"On-chain anomaly detection for Mantle using hyperdimensional computing. Zero training data, zero GPU, deterministic.","license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","name":"MNTSentinel","url":"https://mntsentinel.xyz"}}
+</script>
 </head>
 <body>
 
@@ -413,7 +430,7 @@ section{position:relative;z-index:1}
       <a href="#proof">Proof</a>
       <a href="#faq">FAQ</a>
       <a href="#roadmap">Roadmap</a>
-      <a href="/dashboard/">Dashboard</a>
+      <a href="/dashboard/" class="dash">Dashboard</a>
     </div>
     <div class="nav-cta">
       <button class="hamburger" id="mobOpen" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
@@ -438,7 +455,7 @@ section{position:relative;z-index:1}
   <a href="#proof" class="mob-link">Proof</a>
   <a href="#faq" class="mob-link">FAQ</a>
   <a href="#roadmap" class="mob-link">Roadmap</a>
-  <a href="/dashboard/" class="mob-link">Dashboard</a>
+  <a href="/dashboard/" class="mob-link" style="color:var(--amber)">Dashboard</a>
 </div>
 
 <span id="top"></span>
