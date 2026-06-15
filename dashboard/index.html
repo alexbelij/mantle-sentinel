@@ -3,236 +3,361 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mantle Sentinel — Live Alert Dashboard</title>
+<title>Dashboard — Mantle Sentinel</title>
+<meta name="description" content="Live on-chain alert dashboard for Mantle Sentinel. Polls the registry contract on Mantle mainnet every 10 seconds." />
+<link rel="icon" type="image/png" href="../assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --bg: #07090e;
-    --panel: #0e131c;
-    --panel-2: #131a26;
-    --line: #1d2736;
-    --txt: #e7eef7;
-    --muted: #7d8aa0;
-    --accent: #4fd1c5;
-    --accent-2: #7aa2ff;
-    --danger: #ff5d6c;
-    --warn: #ffb454;
-    --ok: #45d18a;
-    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: radial-gradient(1200px 600px at 80% -10%, #122033 0%, var(--bg) 60%);
-    color: var(--txt); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    min-height: 100vh; padding: 28px clamp(16px, 4vw, 56px);
-  }
-  header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:26px; }
-  .brand { display:flex; align-items:center; gap:14px; }
-  .logo {
-    width:42px; height:42px; border-radius:11px; flex:0 0 auto;
-    background: conic-gradient(from 200deg, var(--accent), var(--accent-2), var(--accent));
-    box-shadow: 0 0 0 1px #ffffff10, 0 8px 30px #4fd1c530; position:relative;
-  }
-  .logo::after { content:""; position:absolute; inset:8px; border-radius:7px; background:var(--bg); }
-  h1 { font-size: 19px; margin:0; letter-spacing:.2px; }
-  h1 span { color: var(--accent); }
-  .sub { color: var(--muted); font-size: 12.5px; margin-top:2px; }
-  .status { display:flex; align-items:center; gap:9px; font-size:13px; color:var(--muted);
-    background:var(--panel); border:1px solid var(--line); padding:9px 14px; border-radius:999px; }
-  .dot { width:9px; height:9px; border-radius:50%; background:var(--ok); box-shadow:0 0 0 0 #45d18a90; animation:pulse 2s infinite; }
-  .dot.err { background:var(--danger); animation:none; }
-  @keyframes pulse { 0%{box-shadow:0 0 0 0 #45d18a70;} 70%{box-shadow:0 0 0 8px #45d18a00;} 100%{box-shadow:0 0 0 0 #45d18a00;} }
+/* ============================== TOKENS (from landing) ============================== */
+:root{
+  --void:#090909;
+  --panel:#111111;
+  --panel-2:#0d0d0d;
+  --line:#1f1f1f;
+  --line-2:#2a2a2a;
+  --line-hi:#3a3a3a;
+  --amber:#f97316;
+  --amber-bright:#fb923c;
+  --amber-dim:#c2570f;
+  --amber-line:rgba(249,115,22,.30);
+  --amber-wash:rgba(249,115,22,.07);
+  --cyan:#22d3ee;
+  --ink:#fafafa;
+  --prose:#d9d9d9;
+  --muted:#9a9a9a;
+  --faint:#6a6a6a;
+  --ok:#5b8c63;
+  --warn:#c79a3a;
+  --danger:#e05252;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Space Grotesk",system-ui,sans-serif;
+  --sans:"Inter",system-ui,sans-serif;
+  --r:6px;
+  --r-sm:4px;
+  --maxw:1120px;
+  --gut:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);color:var(--prose);
+  font-family:var(--sans);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;min-height:100vh;
+  display:flex;flex-direction:column;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;opacity:.16;
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 80%);
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 80%);
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--display);font-weight:700;color:var(--ink);line-height:1.15;letter-spacing:-.02em}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);position:relative;z-index:1}
 
-  .grid { display:grid; grid-template-columns: 360px 1fr; gap:20px; align-items:start; }
-  @media (max-width: 880px){ .grid { grid-template-columns: 1fr; } }
-  .panel { background:linear-gradient(180deg, var(--panel) 0%, #0b1018 100%);
-    border:1px solid var(--line); border-radius:16px; padding:22px; }
-  .panel h2 { font-size:12px; text-transform:uppercase; letter-spacing:1.4px; color:var(--muted); margin:0 0 18px; font-weight:600; }
+/* ============================== NAV ============================== */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(9,9,9,.82);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:14px var(--gut);display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:26px;height:30px;object-fit:contain}
+.brand b{font-family:var(--display);font-weight:700;font-size:17px;color:var(--ink);letter-spacing:.01em}
+.brand b span{color:var(--amber)}
+.nav-links{display:flex;gap:24px;margin-left:8px}
+.nav-links a{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.02em;transition:color .15s}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.active{color:var(--amber)}
+.nav-cta{margin-left:auto;display:flex;gap:10px;align-items:center}
+.nav-cta .ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--line-2);border-radius:var(--r-sm);color:var(--muted);transition:border-color .15s,color .15s}
+.nav-cta .ico:hover{border-color:var(--amber);color:var(--ink)}
+.nav-cta .ico svg{width:17px;height:17px}
+.status-pill{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:7px 14px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(91,140,99,.6);animation:pulse 2s infinite}
+.status-dot.err{background:var(--danger);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(91,140,99,.6)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
 
-  /* gauge */
-  .gauge-wrap { display:flex; flex-direction:column; align-items:center; }
-  .gauge { position:relative; width:240px; height:140px; }
-  .gauge svg { width:100%; height:100%; overflow:visible; }
-  .gval { position:absolute; bottom:6px; left:0; right:0; text-align:center; }
-  .gval .num { font-family:var(--mono); font-size:42px; font-weight:600; line-height:1; }
-  .gval .lab { color:var(--muted); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; margin-top:6px; }
-  .gscale { display:flex; justify-content:space-between; width:240px; color:var(--muted); font-size:10.5px; font-family:var(--mono); margin-top:4px; }
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.02em;
+  padding:12px 18px;border-radius:var(--r-sm);border:1px solid transparent;
+  cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s;
+}
+.btn-primary{background:var(--amber);color:#0a0a0a;font-weight:700}
+.btn-primary:hover{background:var(--amber-bright);transform:translateY(-1px)}
+.btn-primary svg{width:15px;height:15px}
 
-  .stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
-  .stat { background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:13px 14px; }
-  .stat .k { color:var(--muted); font-size:10.5px; letter-spacing:1px; text-transform:uppercase; }
-  .stat .v { font-family:var(--mono); font-size:17px; margin-top:5px; word-break:break-all; }
-  .stat.full { grid-column:1 / -1; }
-  .addr a { color:var(--accent-2); text-decoration:none; }
-  .addr a:hover { text-decoration:underline; }
+/* ============================== MAIN ============================== */
+main{flex:1;padding:40px 0 60px}
+.page-head{margin-bottom:36px}
+.page-head h1{font-size:clamp(24px,3vw,32px);margin-bottom:8px}
+.page-head p{color:var(--muted);font-size:15px;max-width:52ch}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--faint);
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:6px;
+}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--amber);display:inline-block}
 
-  table { width:100%; border-collapse:collapse; font-size:13.5px; }
-  th { text-align:left; color:var(--muted); font-weight:600; font-size:10.5px; letter-spacing:1px;
-    text-transform:uppercase; padding:0 12px 12px; border-bottom:1px solid var(--line); }
-  td { padding:14px 12px; border-bottom:1px solid #131a26; font-family:var(--mono); }
-  tr:last-child td { border-bottom:none; }
-  tr.row { transition:background .15s; }
-  tr.row:hover { background:#101725; }
-  .pill { display:inline-block; padding:3px 9px; border-radius:6px; font-size:11.5px; letter-spacing:.5px;
-    border:1px solid; }
-  .pill.ENTR { color:var(--warn); border-color:#ffb45440; background:#ffb4540f; }
-  .pill.DFT, .pill.HAMM { color:var(--accent); border-color:#4fd1c540; background:#4fd1c50f; }
-  .pill.SPAM { color:var(--danger); border-color:#ff5d6c40; background:#ff5d6c0f; }
-  .pill.other { color:var(--accent-2); border-color:#7aa2ff40; background:#7aa2ff0f; }
-  .drift-cell { display:flex; align-items:center; gap:9px; }
-  .bar { width:64px; height:6px; border-radius:99px; background:#1b2433; overflow:hidden; }
-  .bar > i { display:block; height:100%; border-radius:99px;
-    background:linear-gradient(90deg, var(--ok), var(--warn), var(--danger)); }
-  .muted { color:var(--muted); }
-  .empty { text-align:center; color:var(--muted); padding:36px 0; font-style:italic; }
-  footer { margin-top:24px; color:var(--muted); font-size:11.5px; text-align:center; }
-  footer code { font-family:var(--mono); color:#9fb0c8; }
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+
+/* ============================== PANEL ============================== */
+.card{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line)}
+.card-h .t{font-family:var(--mono);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.card-h .live{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--amber)}
+.card-h .live .pulse{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse-amber 1.6s ease-in-out infinite}
+@keyframes pulse-amber{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+
+/* gauge */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 16px 16px}
+.gauge{position:relative;width:220px;height:130px}
+.gauge svg{width:100%;height:100%;overflow:visible}
+.gval{position:absolute;bottom:4px;left:0;right:0;text-align:center}
+.gval .num{font-family:var(--mono);font-size:38px;font-weight:700;line-height:1;color:var(--ink)}
+.gval .lab{color:var(--faint);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px}
+.gscale{display:flex;justify-content:space-between;width:220px;color:var(--faint);font-size:10px;font-family:var(--mono);margin-top:4px}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px}
+.stat{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.stat .k{color:var(--faint);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.stat .v{font-family:var(--mono);font-size:16px;color:var(--ink);margin-top:4px;word-break:break-all}
+.stat.full{grid-column:1/-1}
+.stat a{color:var(--amber);transition:color .15s}
+.stat a:hover{color:var(--amber-bright);text-decoration:underline}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--faint);font-weight:500;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:0 14px 12px;border-bottom:1px solid var(--line)}
+td{padding:13px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);color:var(--prose)}
+tr:last-child td{border-bottom:none}
+tr.row{transition:background .15s}
+tr.row:hover{background:rgba(249,115,22,.04)}
+.pill{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;border:1px solid}
+.pill.ENTR{color:var(--warn);border-color:rgba(199,154,58,.3);background:rgba(199,154,58,.06)}
+.pill.DFT,.pill.HAMM{color:var(--amber);border-color:var(--amber-line);background:var(--amber-wash)}
+.pill.SPAM{color:var(--danger);border-color:rgba(224,82,82,.3);background:rgba(224,82,82,.06)}
+.pill.other{color:var(--muted);border-color:var(--line-2);background:transparent}
+.drift-cell{display:flex;align-items:center;gap:9px}
+.bar{width:60px;height:5px;border-radius:99px;background:var(--line-2);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ok),var(--warn),var(--danger))}
+.empty{text-align:center;color:var(--faint);padding:36px 0;font-style:italic;font-family:var(--mono);font-size:12px}
+
+/* ============================== HOW IT WORKS ============================== */
+.how{margin-top:24px}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:16px}
+.how-step{border:1px solid var(--line);border-radius:var(--r);padding:16px;position:relative}
+.how-step .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.how-step .ht{font-family:var(--display);font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.how-step p{font-size:12.5px;color:var(--muted);line-height:1.55}
+.how-step code{font-family:var(--mono);font-size:11px;background:var(--amber-wash);color:var(--amber);padding:1px 5px;border-radius:3px}
+
+/* ============================== FOOTER ============================== */
+.foot{padding:34px 0;color:var(--faint);border-top:1px solid var(--line)}
+.foot-in{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.foot-in .brand b{font-size:14px}
+.foot-in .sp{margin-left:auto;display:flex;gap:20px}
+.foot-in a:hover{color:var(--prose)}
+.foot-copy{text-align:center;padding:14px var(--gut) 0;font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em}
+
+/* ============================== RESPONSIVE ============================== */
+@media(max-width:880px){
+  .grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .how-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  :root{--gut:18px}
+  .foot-in{flex-direction:column;text-align:center}
+  .foot-in .sp{margin-left:0;justify-content:center;flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo"></div>
+
+<!-- ===================== NAV ===================== -->
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/">
+      <img src="../assets/mascot-logo.png" alt="Sentinel mascot" />
+      <b>SENT<span>I</span>NEL</b>
+    </a>
+    <div class="nav-links">
+      <a href="/">Landing</a>
+      <a href="/dashboard/" class="active">Dashboard</a>
+    </div>
+    <div class="nav-cta">
+      <div class="status-pill"><span class="status-dot" id="dot"></span><span id="statusText">connecting…</span></div>
+      <a class="ico" href="https://github.com/alexbelij/mantle-sentinel" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5 18 5.3 18 5.3c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="https://dorahacks.io/" target="_blank" rel="noopener">DoraHacks
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<main>
+  <div class="wrap">
+    <div class="page-head">
+      <span class="eyebrow">Live Dashboard</span>
+      <h1>On-chain Alert Registry</h1>
+      <p>Real-time view of the Sentinel registry contract on Mantle mainnet. Polls <code style="font-family:var(--mono);font-size:13px;color:var(--amber)">getAlertCount()</code> every 10 seconds via public RPC.</p>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: gauge + stats -->
       <div>
-        <h1>Mantle <span>Sentinel</span></h1>
-        <div class="sub">HDC Behavioral-DNA anomaly registry · Mantle mainnet</div>
+        <div class="card">
+          <div class="card-h"><span class="t">Latest drift score</span><span class="live"><span class="pulse"></span>polling</span></div>
+          <div class="gauge-wrap">
+            <div class="gauge">
+              <svg viewBox="0 0 220 130">
+                <path d="M18 120 A92 92 0 0 1 202 120" fill="none" stroke="var(--line-2)" stroke-width="14" stroke-linecap="round"/>
+                <path id="gaugeArc" d="M18 120 A92 92 0 0 1 202 120" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" style="stroke-dasharray:289;stroke-dashoffset:289;transition:stroke-dashoffset .8s ease"/>
+                <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--ok)"/><stop offset=".55" stop-color="var(--warn)"/><stop offset="1" stop-color="var(--danger)"/></linearGradient></defs>
+              </svg>
+              <div class="gval"><div class="num" id="gaugeNum">—</div><div class="lab">drift / 1.0</div></div>
+            </div>
+            <div class="gscale"><span>0.0</span><span>0.5</span><span>1.0</span></div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="k">Total alerts</div><div class="v" id="alertCount">—</div></div>
+            <div class="stat"><div class="k">Last block</div><div class="v" id="lastBlock">—</div></div>
+            <div class="stat full"><div class="k">Registry contract</div><div class="v"><a id="contractLink" target="_blank" rel="noopener">—</a></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: alert table -->
+      <div>
+        <div class="card">
+          <div class="card-h"><span class="t">Last 5 alerts</span><span class="live"><span class="pulse"></span>live</span></div>
+          <div style="padding:4px 0">
+            <table>
+              <thead><tr><th>#</th><th>Type</th><th>Window</th><th>Drift</th><th>Reporter</th><th>Time (UTC)</th></tr></thead>
+              <tbody id="alertRows"><tr><td colspan="6" class="empty">loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- How it works mini-section -->
+        <div class="card how">
+          <div class="card-h"><span class="t">How it works</span></div>
+          <div class="how-grid">
+            <div class="how-step">
+              <div class="n">Step 1</div>
+              <div class="ht">Encode</div>
+              <p>Each tx window is encoded into a <code>10,000-dim</code> hypervector — the contract's behavioral DNA.</p>
+            </div>
+            <div class="how-step">
+              <div class="n">Step 2</div>
+              <div class="ht">Detect</div>
+              <p>Hamming distance from the safe manifold → drift score. Threshold + BOCPD confirms anomaly.</p>
+            </div>
+            <div class="how-step">
+              <div class="n">Step 3</div>
+              <div class="ht">Anchor</div>
+              <p>Alert is written on-chain via <code>logAlert()</code>. Immutable, queryable, verifiable on Mantlescan.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="status"><span class="dot" id="dot"></span><span id="statusText">connecting…</span></div>
-  </header>
-
-  <div class="grid">
-    <!-- LEFT: gauge + stats -->
-    <section class="panel">
-      <h2>Latest drift score</h2>
-      <div class="gauge-wrap">
-        <div class="gauge">
-          <svg viewBox="0 0 240 140">
-            <path d="M20 130 A100 100 0 0 1 220 130" fill="none" stroke="#1b2433" stroke-width="16" stroke-linecap="round"/>
-            <path id="gaugeArc" d="M20 130 A100 100 0 0 1 220 130" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round"/>
-            <defs>
-              <linearGradient id="gg" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#45d18a"/><stop offset="0.6" stop-color="#ffb454"/><stop offset="1" stop-color="#ff5d6c"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div class="gval"><div class="num" id="gaugeNum">—</div><div class="lab">drift / 1.0</div></div>
-        </div>
-        <div class="gscale"><span>0.0</span><span>0.5</span><span>1.0</span></div>
-      </div>
-
-      <div class="stats">
-        <div class="stat"><div class="k">Total alerts</div><div class="v" id="alertCount">—</div></div>
-        <div class="stat"><div class="k">Last block</div><div class="v" id="lastBlock">—</div></div>
-        <div class="stat full addr"><div class="k">Registry contract</div>
-          <div class="v"><a id="contractLink" target="_blank" rel="noopener">—</a></div></div>
-      </div>
-    </section>
-
-    <!-- RIGHT: alert feed -->
-    <section class="panel">
-      <h2>Last 5 alerts</h2>
-      <table>
-        <thead><tr><th>#</th><th>Type</th><th>Window</th><th>Drift</th><th>Reporter</th><th>Time (UTC)</th></tr></thead>
-        <tbody id="alertRows"><tr><td colspan="6" class="empty">loading…</td></tr></tbody>
-      </table>
-    </section>
   </div>
+</main>
 
-  <footer>
-    Polling <code id="rpcLabel">rpc.mantle.xyz</code> every 10s · read-only ·
-    <code>getAlertCount()</code> / <code>getAlert(i)</code> via ethers.js
-  </footer>
+<!-- ===================== FOOTER ===================== -->
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a class="brand" href="/"><img src="../assets/mascot-logo.png" alt="" width="20" height="23" /> <b>SENT<span style="color:var(--amber)">I</span>NEL</b></a>
+    <span style="color:var(--faint)">On-chain anomaly detection for Mantle</span>
+    <span class="sp">
+      <a href="/">Landing</a>
+      <a href="https://github.com/alexbelij/mantle-sentinel" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://dorahacks.io/" target="_blank" rel="noopener">DoraHacks</a>
+      <span style="color:var(--line-hi)">MIT License</span>
+    </span>
+  </div>
+  <div class="wrap foot-copy">&copy; 2025 MNTSentinel. All rights reserved.</div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
-  const RPC = "https://rpc.mantle.xyz";
-  const REGISTRY = "0x0899E1507CFfefF8620455721F5bd528Bb072187";
-  const EXPLORER = "https://mantlescan.xyz";
-  const ABI = [
+(function(){
+  "use strict";
+  var RPC = "https://rpc.mantle.xyz";
+  var REGISTRY = "0x0899E1507CFfefF8620455721F5bd528Bb072187";
+  var EXPLORER = "https://mantlescan.xyz";
+  var ABI = [
     "function getAlertCount() view returns (uint256)",
     "function getAlert(uint256) view returns (address reporter, uint256 windowId, uint32 driftScore, bytes4 alertType, uint64 timestamp)"
   ];
 
-  const provider = new ethers.JsonRpcProvider(RPC, undefined, { staticNetwork: true });
-  const registry = new ethers.Contract(REGISTRY, ABI, provider);
+  var provider = new ethers.JsonRpcProvider(RPC, undefined, {staticNetwork:true});
+  var registry = new ethers.Contract(REGISTRY, ABI, provider);
 
-  const $ = (id) => document.getElementById(id);
-  const short = (a) => a ? a.slice(0, 6) + "…" + a.slice(-4) : "—";
-  const tag = (b4) => {
-    // bytes4 hex -> ASCII (e.g. 0x454e5452 -> "ENTR")
-    const hex = (b4 || "0x").replace(/^0x/, "");
-    let s = "";
-    for (let i = 0; i < hex.length; i += 2) {
-      const c = parseInt(hex.substr(i, 2), 16);
-      if (c >= 32 && c < 127) s += String.fromCharCode(c);
-    }
-    return s.trim() || (b4 || "—");
-  };
-  const ARC_LEN = 314.159; // length of the 100r semicircle path
+  var $ = function(id){ return document.getElementById(id); };
+  var short = function(a){ return a ? a.slice(0,6)+"…"+a.slice(-4) : "—"; };
+  var ARC_LEN = 289;
 
-  function setStatus(ok, text) {
-    $("dot").className = "dot" + (ok ? "" : " err");
-    $("statusText").textContent = text;
+  function tag(b4){
+    var hex = (b4||"0x").replace(/^0x/,""), s="";
+    for(var i=0;i<hex.length;i+=2){ var c=parseInt(hex.substr(i,2),16); if(c>=32&&c<127)s+=String.fromCharCode(c); }
+    return s.trim()||(b4||"—");
   }
-  function setGauge(drift) {
-    const d = Math.max(0, Math.min(1, drift));
-    $("gaugeNum").textContent = drift == null ? "—" : d.toFixed(3);
-    $("gaugeArc").style.strokeDasharray = ARC_LEN;
-    $("gaugeArc").style.strokeDashoffset = ARC_LEN * (1 - d);
+  function pillClass(t){ return ["ENTR","DFT","HAMM","SPAM"].indexOf(t)>=0?t:"other"; }
+
+  function setStatus(ok,text){
+    $("dot").className="status-dot"+(ok?"":" err");
+    $("statusText").textContent=text;
   }
-  function pillClass(t) {
-    return ["ENTR", "DFT", "HAMM", "SPAM"].includes(t) ? t : "other";
+  function setGauge(drift){
+    var d=Math.max(0,Math.min(1,drift));
+    $("gaugeNum").textContent=drift==null?"—":d.toFixed(3);
+    $("gaugeArc").style.strokeDashoffset=ARC_LEN*(1-d);
   }
-  function row(i, a) {
-    const drift = Number(a.driftScore) / 1e6;
-    const ts = Number(a.timestamp);
-    const dt = ts > 0 ? new Date(ts * 1000).toISOString().replace("T", " ").slice(0, 19) : "pending";
-    const t = tag(a.alertType);
-    return `<tr class="row">
-      <td class="muted">${i}</td>
-      <td><span class="pill ${pillClass(t)}">${t}</span></td>
-      <td>${a.windowId.toString()}</td>
-      <td><div class="drift-cell"><span>${drift.toFixed(3)}</span>
-          <span class="bar"><i style="width:${Math.min(100, drift * 100)}%"></i></span></div></td>
-      <td><a class="muted" style="color:inherit" href="${EXPLORER}/address/${a.reporter}" target="_blank" rel="noopener">${short(a.reporter)}</a></td>
-      <td class="muted">${dt}</td>
-    </tr>`;
+  function row(i,a){
+    var drift=Number(a.driftScore)/1e6;
+    var ts=Number(a.timestamp);
+    var dt=ts>0?new Date(ts*1000).toISOString().replace("T"," ").slice(0,19):"pending";
+    var t=tag(a.alertType);
+    return '<tr class="row"><td style="color:var(--faint)">'+i+'</td><td><span class="pill '+pillClass(t)+'">'+t+'</span></td><td>'+a.windowId.toString()+'</td><td><div class="drift-cell"><span>'+drift.toFixed(3)+'</span><span class="bar"><i style="width:'+Math.min(100,drift*100)+'%"></i></span></div></td><td><a style="color:var(--muted)" href="'+EXPLORER+'/address/'+a.reporter+'" target="_blank" rel="noopener">'+short(a.reporter)+'</a></td><td style="color:var(--faint)">'+dt+'</td></tr>';
   }
 
-  async function refresh() {
-    try {
-      const [countBN, block] = await Promise.all([registry.getAlertCount(), provider.getBlockNumber()]);
-      const count = Number(countBN);
-      $("alertCount").textContent = count.toLocaleString();
-      $("lastBlock").textContent = block.toLocaleString();
-      const link = $("contractLink");
-      link.textContent = short(REGISTRY);
-      link.href = `${EXPLORER}/address/${REGISTRY}`;
+  async function refresh(){
+    try{
+      var res=await Promise.all([registry.getAlertCount(),provider.getBlockNumber()]);
+      var count=Number(res[0]), block=res[1];
+      $("alertCount").textContent=count.toLocaleString();
+      $("lastBlock").textContent=block.toLocaleString();
+      var link=$("contractLink"); link.textContent=short(REGISTRY); link.href=EXPLORER+"/address/"+REGISTRY;
 
-      if (count === 0) {
-        setGauge(null);
-        $("alertRows").innerHTML = `<tr><td colspan="6" class="empty">No alerts logged yet — registry is armed and watching.</td></tr>`;
-        setStatus(true, "live · awaiting alerts");
-        return;
+      if(count===0){
+        setGauge(0); $("alertRows").innerHTML='<tr><td colspan="6" class="empty">No alerts yet — registry armed and watching.</td></tr>';
+        setStatus(true,"live · awaiting alerts"); return;
       }
-
-      const start = Math.max(0, count - 5);
-      const idx = [];
-      for (let i = count - 1; i >= start; i--) idx.push(i);            // newest first
-      const alerts = await Promise.all(idx.map((i) => registry.getAlert(i)));
-
-      setGauge(Number(alerts[0].driftScore) / 1e6);
-      $("alertRows").innerHTML = idx.map((i, k) => row(i, alerts[k])).join("");
-      setStatus(true, "live · updated " + new Date().toLocaleTimeString());
-    } catch (e) {
-      console.error(e);
-      setStatus(false, "rpc error — retrying");
+      var start=Math.max(0,count-5), idx=[];
+      for(var i=count-1;i>=start;i--) idx.push(i);
+      var alerts=await Promise.all(idx.map(function(i){ return registry.getAlert(i); }));
+      setGauge(Number(alerts[0].driftScore)/1e6);
+      $("alertRows").innerHTML=idx.map(function(i,k){ return row(i,alerts[k]); }).join("");
+      setStatus(true,"live · "+new Date().toLocaleTimeString());
+    }catch(e){
+      console.error(e); setStatus(false,"rpc error — retrying");
     }
   }
 
-  $("rpcLabel").textContent = new URL(RPC).host;
   refresh();
-  setInterval(refresh, 10000);
+  setInterval(refresh,10000);
+})();
 </script>
 </body>
 </html>
