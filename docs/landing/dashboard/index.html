@@ -240,6 +240,30 @@ tr.row:hover{background:rgba(249,115,22,.04)}
   .hc-row2{grid-template-columns:1fr}
 }
 
+/* ============================== DRIFT CHART ============================== */
+.chart-section{margin-bottom:32px}
+.chart-wrap{
+  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:0;overflow:hidden;margin-top:16px;
+}
+.chart-wrap .card-h{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line)}
+.chart-canvas-wrap{position:relative;padding:20px 16px 12px;min-height:320px}
+.chart-canvas-wrap canvas{width:100%;height:280px;display:block;cursor:crosshair}
+.chart-tooltip{
+  position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;
+  background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--prose);z-index:10;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);white-space:nowrap;
+}
+.chart-legend{display:flex;flex-wrap:wrap;gap:16px;padding:8px 16px 14px;justify-content:center}
+.chart-legend-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.chart-legend-item .dot{width:10px;height:10px;border-radius:2px}
+.chart-empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:12px;padding:60px 0;font-style:italic}
+@media(max-width:600px){
+  .chart-canvas-wrap canvas{height:200px}
+  .chart-canvas-wrap{min-height:240px}
+}
+
 /* ============================== MOBILE MENU ============================== */
 .hamburger{display:none;background:none;border:1px solid var(--line-2);border-radius:var(--r-sm);width:36px;height:36px;cursor:pointer;align-items:center;justify-content:center;color:var(--muted);transition:border-color .15s,color .15s;padding:0}
 .hamburger:hover{border-color:var(--amber);color:var(--ink)}
@@ -393,6 +417,19 @@ tr.row:hover{background:rgba(249,115,22,.04)}
       </div>
     </section>
 
+    <!-- ============= HEALTH SCORE TIMELINE ============= -->
+    <section class="chart-section">
+      <span class="eyebrow">Health Score Timeline</span>
+      <div class="chart-wrap">
+        <div class="card-h"><span class="t">Health scores over time</span><span class="live" id="chartStatus"><span class="pulse"></span>loading</span></div>
+        <div class="chart-canvas-wrap" id="chartWrap">
+          <canvas id="driftChart"></canvas>
+          <div class="chart-tooltip" id="chartTooltip"></div>
+        </div>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+    </section>
+
     <div class="grid">
       <!-- LEFT: gauge + stats -->
       <div>
@@ -503,6 +540,11 @@ tr.row:hover{background:rgba(249,115,22,.04)}
   <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
 
+<script>
+  // Supabase config (anon key = read-only, safe for frontend via RLS)
+  window.__SENTINEL_SB_URL = "";
+  window.__SENTINEL_SB_KEY = "";
+</script>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
 (function(){
@@ -607,6 +649,214 @@ tr.row:hover{background:rgba(249,115,22,.04)}
   }
   window.addEventListener("scroll", updateScroll, {passive:true}); updateScroll();
   if(scrollBtn) scrollBtn.addEventListener("click", function(){ window.scrollTo({top:0,behavior:"smooth"}); });
+
+  /* ---------- Drift Chart (Supabase) ---------- */
+  (function(){
+    var SB_URL = window.__SENTINEL_SB_URL || "";
+    var SB_KEY = window.__SENTINEL_SB_KEY || "";
+    var COLORS = {
+      "0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9": {name:"USDC.e", color:"#22d3ee"},
+      "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8": {name:"WMNT",   color:"#f97316"},
+      "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae": {name:"USDT",   color:"#5b8c63"},
+      "0xcda86a272531e8640cd7f1a92c01839911b90bb0": {name:"mETH",   color:"#c79a3a"},
+      "0xcfa5ae7c2ce8fadc6426c1ff872ca45378fb7cf3": {name:"Lendle", color:"#e05252"},
+    };
+    var canvas = document.getElementById("driftChart");
+    var ctx = canvas ? canvas.getContext("2d") : null;
+    var tooltip = document.getElementById("chartTooltip");
+    var wrap = document.getElementById("chartWrap");
+    var legend = document.getElementById("chartLegend");
+    var statusEl = document.getElementById("chartStatus");
+    var chartData = null;
+    var PAD = {top:20,right:20,bottom:36,left:48};
+    var THRESHOLD = 60;
+
+    function setChartStatus(text){if(statusEl) statusEl.innerHTML='<span class="pulse"></span>'+text;}
+
+    // Build legend
+    if(legend){
+      Object.keys(COLORS).forEach(function(addr){
+        var c=COLORS[addr];
+        var el=document.createElement("div"); el.className="chart-legend-item";
+        el.innerHTML='<span class="dot" style="background:'+c.color+'"></span>'+c.name;
+        legend.appendChild(el);
+      });
+    }
+
+    async function fetchHistory(){
+      if(!SB_URL||!SB_KEY){
+        // Try reading from meta tag or inline config
+        var metaUrl=document.querySelector('meta[name="sb-url"]');
+        var metaKey=document.querySelector('meta[name="sb-key"]');
+        if(metaUrl) SB_URL=metaUrl.content;
+        if(metaKey) SB_KEY=metaKey.content;
+      }
+      if(!SB_URL||!SB_KEY){
+        document.getElementById("chartWrap").innerHTML='<div class="chart-empty">Supabase not configured — chart will appear after first scan.</div>';
+        setChartStatus("offline");
+        return null;
+      }
+      var url=SB_URL.replace(/\/$/,"")+"/rest/v1/scan_history?order=scanned_at.desc&limit=500";
+      var resp=await fetch(url,{headers:{"apikey":SB_KEY}});
+      if(!resp.ok) throw new Error("Supabase "+resp.status);
+      return resp.json();
+    }
+
+    function processData(rows){
+      // Group by contract, sort by time
+      var series={};
+      rows.forEach(function(r){
+        var addr=r.contract;
+        if(!COLORS[addr]) return;
+        if(!series[addr]) series[addr]=[];
+        series[addr].push({t:new Date(r.scanned_at),score:r.health_score,name:r.contract_name||COLORS[addr].name});
+      });
+      // Sort ascending by time
+      Object.keys(series).forEach(function(addr){
+        series[addr].sort(function(a,b){return a.t-b.t;});
+      });
+      return series;
+    }
+
+    function drawChart(series){
+      if(!canvas||!ctx) return;
+      var dpr=window.devicePixelRatio||1;
+      var rect=canvas.getBoundingClientRect();
+      canvas.width=rect.width*dpr;
+      canvas.height=rect.height*dpr;
+      ctx.scale(dpr,dpr);
+      var W=rect.width, H=rect.height;
+      var plotW=W-PAD.left-PAD.right, plotH=H-PAD.top-PAD.bottom;
+
+      // Find time range
+      var tMin=Infinity, tMax=-Infinity;
+      Object.keys(series).forEach(function(addr){
+        series[addr].forEach(function(p){
+          var ms=p.t.getTime();
+          if(ms<tMin)tMin=ms;
+          if(ms>tMax)tMax=ms;
+        });
+      });
+      if(tMin>=tMax) tMax=tMin+86400000; // 1 day min
+
+      var yMin=0, yMax=100;
+      function xPos(t){return PAD.left+((t.getTime()-tMin)/(tMax-tMin))*plotW;}
+      function yPos(v){return PAD.top+plotH-(v-yMin)/(yMax-yMin)*plotH;}
+
+      // Clear
+      ctx.clearRect(0,0,W,H);
+
+      // Grid lines
+      ctx.strokeStyle="#1f1f1f";ctx.lineWidth=1;
+      for(var y=0;y<=100;y+=20){
+        var yy=yPos(y);
+        ctx.beginPath();ctx.moveTo(PAD.left,yy);ctx.lineTo(W-PAD.right,yy);ctx.stroke();
+        ctx.fillStyle="#6a6a6a";ctx.font="10px JetBrains Mono,monospace";ctx.textAlign="right";
+        ctx.fillText(y,PAD.left-8,yy+3);
+      }
+
+      // Threshold line at 60
+      ctx.save();ctx.setLineDash([6,4]);ctx.strokeStyle="rgba(224,82,82,0.5)";ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(PAD.left,yPos(THRESHOLD));ctx.lineTo(W-PAD.right,yPos(THRESHOLD));ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle="#e05252";ctx.font="9px JetBrains Mono,monospace";ctx.textAlign="left";
+      ctx.fillText("threshold",W-PAD.right+4,yPos(THRESHOLD)+3);
+
+      // X-axis labels
+      var nLabels=Math.min(6,Math.ceil((tMax-tMin)/86400000));
+      if(nLabels<2)nLabels=2;
+      ctx.fillStyle="#6a6a6a";ctx.font="10px JetBrains Mono,monospace";ctx.textAlign="center";
+      for(var i=0;i<=nLabels;i++){
+        var ms=tMin+i/nLabels*(tMax-tMin);
+        var d=new Date(ms);
+        var label=(d.getMonth()+1)+"/"+d.getDate();
+        var xx=PAD.left+i/nLabels*plotW;
+        ctx.fillText(label,xx,H-PAD.bottom+20);
+        // Tick
+        ctx.strokeStyle="#2a2a2a";ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(xx,H-PAD.bottom);ctx.lineTo(xx,H-PAD.bottom+4);ctx.stroke();
+      }
+
+      // Draw series
+      var allPoints=[];
+      Object.keys(series).forEach(function(addr){
+        var pts=series[addr];
+        if(pts.length<1)return;
+        var c=COLORS[addr];
+        ctx.strokeStyle=c.color;ctx.lineWidth=2;ctx.lineJoin="round";
+        ctx.beginPath();
+        pts.forEach(function(p,i){
+          var x=xPos(p.t),y=yPos(p.score);
+          if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+          allPoints.push({x:x,y:y,score:p.score,name:c.name,color:c.color,time:p.t});
+        });
+        ctx.stroke();
+        // Dots
+        pts.forEach(function(p){
+          var x=xPos(p.t),y=yPos(p.score);
+          ctx.fillStyle=c.color;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+        });
+      });
+      return allPoints;
+    }
+
+    // Tooltip on hover
+    var allPts=[];
+    function handleMove(e){
+      if(!allPts.length||!tooltip||!wrap) return;
+      var rect=canvas.getBoundingClientRect();
+      var mx=e.clientX-rect.left, my=e.clientY-rect.top;
+      var best=null,bestD=Infinity;
+      allPts.forEach(function(p){
+        var d=Math.sqrt((p.x-mx)**2+(p.y-my)**2);
+        if(d<bestD){bestD=d;best=p;}
+      });
+      if(best&&bestD<30){
+        var dt=best.time;
+        var ts=dt.toISOString().slice(0,16).replace("T"," ");
+        tooltip.innerHTML='<span style="color:'+best.color+'">'+best.name+'</span><br>Score: <b>'+best.score+'</b><br>'+ts;
+        tooltip.style.opacity="1";
+        // Position tooltip
+        var tx=best.x+16, ty=best.y-10;
+        var wr=wrap.getBoundingClientRect();
+        if(tx+160>wr.width-16) tx=best.x-170;
+        if(ty<0)ty=10;
+        tooltip.style.left=tx+"px"; tooltip.style.top=ty+"px";
+      } else {
+        tooltip.style.opacity="0";
+      }
+    }
+    if(canvas){
+      canvas.addEventListener("mousemove",handleMove);
+      canvas.addEventListener("mouseleave",function(){if(tooltip)tooltip.style.opacity="0";});
+    }
+
+    // Resize handler
+    var resizeTimer;
+    function onResize(){
+      clearTimeout(resizeTimer);
+      resizeTimer=setTimeout(function(){
+        if(chartData) allPts=drawChart(chartData)||[];
+      },150);
+    }
+    window.addEventListener("resize",onResize);
+
+    // Init
+    fetchHistory().then(function(rows){
+      if(!rows||!rows.length){
+        setChartStatus("no data");
+        return;
+      }
+      chartData=processData(rows);
+      allPts=drawChart(chartData)||[];
+      setChartStatus("live · "+Object.keys(chartData).length+" contracts");
+    }).catch(function(err){
+      console.error("Chart error:",err);
+      if(document.getElementById("chartWrap"))
+        document.getElementById("chartWrap").innerHTML='<div class="chart-empty">Failed to load chart data.</div>';
+      setChartStatus("error");
+    });
+  })();
 
   /* ---------- Health-card rings ---------- */
   document.querySelectorAll(".hc-ring").forEach(function(el){
