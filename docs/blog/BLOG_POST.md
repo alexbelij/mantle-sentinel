@@ -14,7 +14,7 @@ This raises a fundamental question: can we detect an anomaly *without* knowing t
 
 With Mantle Sentinel, the answer is yes.
 
-![Hero — Dashboard showing live health scores](IMAGE_PLACEHOLDER_1)
+![Hero — Dashboard showing live health scores](../images/dashboard.png)
 
 ---
 
@@ -48,7 +48,7 @@ The key insight: this requires **zero training data, zero GPU, and zero knowledg
 
 Mantle Sentinel processes transactions through a six-tier pipeline. Each tier is deterministic and algebraically verifiable.
 
-![Pipeline diagram — T0 through T5 flow](IMAGE_PLACEHOLDER_2)
+![Pipeline diagram — T0 through T5 flow](../images/pipeline-diagram.png)
 
 ### T0: Shannon Entropy Pre-filter
 
@@ -122,7 +122,7 @@ We scanned the top five Mantle DeFi contracts by TVL using Sentinel's one-comman
 python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
 ```
 
-![Health scores table for top 5 Mantle contracts](IMAGE_PLACEHOLDER_3)
+![Health scores table for top 5 Mantle contracts](../images/self-attack-output.png)
 
 | Contract | Protocol    | Health  | Alerts |
 |----------|-------------|---------|--------|
@@ -138,7 +138,7 @@ Our injection benchmark — seven synthetic attack scenarios (selector flood, ga
 
 Every alert is anchored on-chain to our `SentinelAlertRegistry` on Mantle mainnet at `0x0899E1507CFfefF8620455721F5bd528Bb072187`. Not a database entry — an immutable, verifiable record on Mantlescan.
 
-![On-chain alert transaction on Mantlescan](IMAGE_PLACEHOLDER_4)
+> 🔗 **On-chain proof:** [View alert transaction on Mantlescan](https://mantlescan.xyz/tx/0x086cf07ace1ef1623ce43e40dc4a7e0b24f29dd206fdc7142fcd6bc5e79fa91c) — immutable anchor at block 96,680,154.
 
 ---
 
