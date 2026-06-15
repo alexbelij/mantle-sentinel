@@ -73,6 +73,16 @@ The model is **never** in the detection loop.
 
 ---
 
+## Key Features
+
+- **Training-free anomaly detection** — 10,000-dim HDC behavioral fingerprint, zero GPU, zero retraining
+- **On-chain proof** — every alert is anchored to the Sentinel registry contract on Mantle mainnet
+- **Telegram alerts** — real-time notifications via [@MantleSentinelBot](https://t.me/MantleSentinelBot)
+- **Z.ai explanations** — confirmed alerts get a plain-English brief from Z.ai GLM
+- **Live dashboard** — real-time drift gauge and alert table at [mntsentinel.xyz/dashboard](https://mntsentinel.xyz/dashboard/)
+
+---
+
 ## How It Works
 
 ```
@@ -124,10 +134,12 @@ python bench/self_attack.py --dry-run
 python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
 ```
 
+Set `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` in `.env` to enable Telegram alerts via [@MantleSentinelBot](https://t.me/MantleSentinelBot).
+
 To replay the real USDC.e snapshot (gitignored — fetch it first):
 
 ```bash
-cp .env.example .env                    # add ETHERSCAN_KEY
+cp .env.example .env                    # add ETHERSCAN_KEY + TELEGRAM_*
 python bench/capture_etherscan.py       # downloads raw.jsonl (~4k txs)
 
 python -m sentinel replay \

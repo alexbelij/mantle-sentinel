@@ -12,13 +12,22 @@ Signature-based monitors (Chainalysis-style) only catch *known* exploit patterns
 ## Solution
 Sentinel builds a 10,000-dimensional hyperdimensional (HDC) "behavioral DNA" signature for a contract from its live transaction stream, then measures drift per window. When drift crosses threshold it (1) attributes the shift to a specific feature algebraically, (2) anchors an immutable alert on Mantle mainnet, and (3) asks Z.ai to translate the structured finding into a plain-English brief. Same algorithm, same thresholds, any EVM contract, zero GPU, zero retraining.
 
-## How it works (T0–T5 pipeline)
+## Key Features
+
+- Training-free 10,000-dim HDC anomaly detection — zero GPU, zero retraining
+- On-chain alert anchoring on Mantle mainnet
+- **Telegram alerts** — real-time notifications via [@MantleSentinelBot](https://t.me/MantleSentinelBot)
+- Z.ai plain-English explanations for every confirmed alert
+- Live dashboard at [mntsentinel.xyz/dashboard](https://mntsentinel.xyz/dashboard/)
+
+## How it works (T0–T6 pipeline)
 - **T0** Entropy pre-filter over calldata selector distribution
 - **T1** HDC encoder → 10,000-dim bipolar hypervector per window
 - **T2** Drift = max(Hamming distance, timing deviation)
 - **T3** Detector: static threshold or Bayesian online change-point (BOCPD)
 - **T4** Feature-ablation attribution (recompute bundle without feature *f*)
 - **T5** Z.ai GLM natural-language explanation — restates T4 findings only
+- **T6** Telegram notification via [@MantleSentinelBot](https://t.me/MantleSentinelBot)
 
 The LLM is **never** in the detection loop: the structured explanation exists with or without Z.ai, so detection stays deterministic and reproducible byte-for-byte.
 
@@ -47,8 +56,9 @@ Every confirmed alert calls Z.ai (`glm-4.5-flash`, OpenAI-compatible `https://ap
 ## Business model
 SaaS subscription per monitored contract — flat, no per-alert fees. Target customers: DeFi protocols, bridges, DAO treasuries.
 
-## Links
+## What's Built
 - Live demo: https://mntsentinel.xyz/
 - Live dashboard: https://mntsentinel.xyz/dashboard/
+- Telegram bot: [@MantleSentinelBot](https://t.me/MantleSentinelBot) — real-time alert notifications
 - Code (MIT): https://github.com/alexbelij/mantle-sentinel
 - BUIDL: `<DORAHACKS_BUIDL_URL>`
