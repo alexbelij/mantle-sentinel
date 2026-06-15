@@ -1,92 +1,16 @@
 # Mantle Sentinel — HDC Behavioral DNA Agent
 
 [![Tests](https://github.com/alexbelij/mantle-sentinel/actions/workflows/pytest.yml/badge.svg)](https://github.com/alexbelij/mantle-sentinel/actions/workflows/pytest.yml)
+![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
+![License MIT](https://img.shields.io/badge/license-MIT-green)
+![Mantle Mainnet](https://img.shields.io/badge/Mantle-Mainnet-8B5CF6)
+![109 tests](https://img.shields.io/badge/tests-109%20passed-brightgreen)
 
 > Your smart contracts have a behavioral fingerprint. Sentinel knows when it changes.
 
-Signature-based tools miss novel attacks. Pure-LLM monitors are slow and
-expensive. Sentinel detects **change itself** — deterministic, per-transaction,
-microsecond updates — using a 10,000-dimensional hyperdimensional (HDC)
-behavioral signature, and only *then* asks Z.ai to explain the confirmed alert
-in plain English. The model is **never** in the detection loop.
+**Built for [Mantle AI Hackathon — Turing Test Phase II](https://dorahacks.io/hackathon/mantle-ai/detail), Track 02: AI Alpha & Data**
 
-**Live demo:** https://mntsentinel.xyz/
-
----
-
-## Pipeline
-
-```
-  [Mantle RPC]
-      |
-  T0  Entropy pre-filter (calldata selector distribution)
-      |
-  T1  HDC Encoder — 10,000-dim bipolar hypervector per window
-      |
-  T2  Drift = max(Hamming distance, timing deviation)
-      |
-  T3  Detector — static threshold or BOCPD regime-change
-      |
-  T4  Feature attribution (ablation: recompute bundle without feature f)
-      |
-  T5  Z.ai natural-language explanation (restates Tier-4 findings only)
-      |
-  [Telegram alert  +  on-chain logAlert()  +  Dashboard]
-```
-
-Attribution is computed **algebraically before** Z.ai is ever called — the
-structured explanation exists with or without the LLM.
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/alexbelij/mantle-sentinel
-cd mantle-sentinel
-cp .env.example .env            # add keys (ZAI_API_KEY optional — dry-run without it)
-pip install -r requirements.txt
-
-# version check
-python -m sentinel --version
-
-# replay a real snapshot through the full pipeline (with an injected attack)
-python -m sentinel replay \
-  --snapshot bench/data/0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9/raw.jsonl \
-  --inject S1
-
-# self-attack demo (synthetic, no RPC):
-python bench/self_attack.py --dry-run
-```
-
-Live on-chain mode (warm up on a victim contract, inject anomalies, anchor the
-alert on Mantle mainnet) additionally needs the `live` extras and a funded key:
-
-```bash
-pip install web3 eth-account          # or: pip install ".[live]"
-export MANTLE_PRIVATE_KEY=0x...        # Sentinel agent wallet (see .env.example)
-python bench/self_attack.py --victim 0x1f88f063C00893642Ca4a74FE4d25Bf20c468E64 \
-                            --rpc https://rpc.sepolia.mantle.xyz
-```
-
----
-
-## Contract — `SentinelAlertRegistry` v2
-
-Immutable, owner-gated on-chain registry for behavioral-drift alerts. Source:
-[`contracts/SentinelAlertRegistry.sol`](contracts/SentinelAlertRegistry.sol).
-
-| Network            | Chain ID | Address                                      |
-| ------------------ | -------- | -------------------------------------------- |
-| **Mantle Mainnet** | 5000     | `0x0899E1507CFfefF8620455721F5bd528Bb072187` |
-| Mantle Testnet     | 5003     | `0x2543Cc701632b105eE3DB75345140a7357664389` |
-
-Explorer: https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187
-
-`driftScore` is stored x10000 (`0.87` → `8700`). Events carry the storage
-`alertIndex` so any off-chain consumer reconstructs the timeline without
-array scans. Reads (`getAlertCount`, `getAlert`, `getLatestAlerts`) are O(1)
-or bounded-gas.
+[Live Demo](https://mntsentinel.xyz) · [Dashboard](https://mntsentinel.xyz/dashboard/) · [Contract on Mantlescan](https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187)
 
 ---
 
@@ -110,12 +34,105 @@ or bounded-gas.
 | S5 timing burst   | Near-zero inter-tx interval     | ✅       | 2 windows |
 | S7 payload mutation | Randomized calldata           | ✅       | 4 windows |
 
-### Tests
+---
+
+## The Problem
+
+Signature-based tools miss novel attacks. Pure-LLM monitors are slow and expensive.
+Sentinel detects **change itself** — deterministic, per-transaction, microsecond
+updates — using a 10,000-dimensional hyperdimensional (HDC) behavioral signature,
+and only *then* asks Z.ai to explain the confirmed alert in plain English.
+The model is **never** in the detection loop.
+
+---
+
+## How It Works
 
 ```
-python -m pytest tests/ -q     # 109 passed
-forge test                     # 6 passed  (contracts/SentinelAlertRegistry.sol)
+  [Mantle RPC]
+      │
+  T0  Entropy pre-filter (calldata selector distribution)
+      │
+  T1  HDC Encoder — 10,000-dim bipolar hypervector per window
+      │
+  T2  Drift = max(Hamming distance, timing deviation)
+      │
+  T3  Detector — static threshold or BOCPD regime-change
+      │
+  T4  Feature attribution (ablation: recompute bundle without feature f)
+      │
+  T5  Z.ai natural-language explanation (restates Tier-4 findings only)
+      │
+  [Telegram alert  +  on-chain logAlert()  +  Dashboard]
 ```
+
+Attribution is computed **algebraically before** Z.ai is ever called — the
+structured explanation exists with or without the LLM.
+
+---
+
+## Comparison
+
+|                 | Sentinel       | Forta         | Chainalysis    | LLM monitor   |
+|-----------------|----------------|---------------|----------------|---------------|
+| **Training**    | None           | Per-bot       | Signatures     | Fine-tune     |
+| **Detection**   | Algebraic      | Rule / ML     | Pattern DB     | Prompt        |
+| **Speed**       | <1 µs/tx       | Seconds       | Batch          | 1–5 s/tx      |
+| **GPU**         | No             | Optional      | No             | Required      |
+| **Novel attacks** | ✅           | ❌            | ❌             | Partial       |
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/alexbelij/mantle-sentinel
+cd mantle-sentinel
+pip install -r requirements.txt
+
+# self-attack demo — works immediately, zero config:
+python bench/self_attack.py --dry-run
+```
+
+To replay the real USDC.e snapshot (gitignored — fetch it first):
+
+```bash
+cp .env.example .env                    # add ETHERSCAN_KEY
+python bench/capture_etherscan.py       # downloads raw.jsonl (~4k txs)
+
+python -m sentinel replay \
+  --snapshot bench/data/0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9/raw.jsonl \
+  --inject S1
+```
+
+Live on-chain mode (warm up, inject anomalies, anchor alert on Mantle):
+
+```bash
+pip install web3 eth-account
+export MANTLE_PRIVATE_KEY=0x...         # see .env.example
+python bench/self_attack.py \
+  --victim 0x1f88f063C00893642Ca4a74FE4d25Bf20c468E64 \
+  --rpc https://rpc.sepolia.mantle.xyz
+```
+
+---
+
+## Contract — `SentinelAlertRegistry` v2
+
+Immutable, owner-gated on-chain registry for behavioral-drift alerts.
+Source: [`contracts/SentinelAlertRegistry.sol`](contracts/SentinelAlertRegistry.sol).
+
+| Network            | Chain ID | Address                                      |
+| ------------------ | -------- | -------------------------------------------- |
+| **Mantle Mainnet** | 5000     | `0x0899E1507CFfefF8620455721F5bd528Bb072187` |
+| Mantle Testnet     | 5003     | `0x2543Cc701632b105eE3DB75345140a7357664389` |
+
+Explorer: [mantlescan.xyz/address/0x0899…72187](https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187)
+
+`driftScore` is stored ×10 000 (`0.87` → `8700`). Events carry the storage
+`alertIndex` so any off-chain consumer reconstructs the timeline without
+array scans. Reads (`getAlertCount`, `getAlert`, `getLatestAlerts`) are O(1)
+or bounded-gas.
 
 ---
 
@@ -132,23 +149,16 @@ alert. Prompt template + schema: [`docs/zai_prompt.md`](docs/zai_prompt.md).
 
 ---
 
-## Why Sentinel
+## Tests
 
-Unlike Forta (rule-based, requires model training) or Chainalysis (signature
-databases), Sentinel is **training-free**: same algorithm, same thresholds, any
-EVM contract, zero GPU. Detection is algebraic; the LLM is only a translator.
+```
+python -m pytest tests/ -q     # 109 passed
+forge test                     # 6 passed  (contracts/SentinelAlertRegistry.sol)
+```
 
-**Target customers:** DeFi protocols, bridges, DAO treasuries.
-**Business model:** SaaS subscription per monitored contract — no per-alert fees.
-
----
-
-## CI
-
-GitHub Actions runs the Python suite on every push / PR:
-[`.github/workflows/pytest.yml`](.github/workflows/pytest.yml) →
-`python -m pytest tests/ -q`. Contract tests run locally via Foundry
-(`forge test`).
+CI: GitHub Actions runs the Python suite on every push / PR:
+[`.github/workflows/pytest.yml`](.github/workflows/pytest.yml).
+Contract tests run locally via Foundry (`forge test`).
 
 ---
 
@@ -172,3 +182,7 @@ bench/             self_attack.py demo + real snapshot data
 dashboard/         static on-chain alert viewer
 docs/landing/      marketing site (Vercel)
 ```
+
+---
+
+**Track:** AI Alpha & Data · **Hackathon:** [Mantle Turing Test Phase II](https://dorahacks.io/hackathon/mantle-ai/detail)
