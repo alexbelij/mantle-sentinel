@@ -10,7 +10,7 @@
 
 **Built for [Mantle AI Hackathon — Turing Test Phase II](https://dorahacks.io/hackathon/mantle-ai/detail), Track 02: AI Alpha & Data**
 
-[Live Demo](https://mntsentinel.xyz) · [Dashboard](https://mntsentinel.xyz/dashboard/) · [Contract on Mantlescan](https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187)
+[Live Demo](https://mntsentinel.xyz) · [Dashboard](https://mntsentinel.xyz/dashboard/) · [Contract on Mantlescan](https://mantlescan.xyz/address/0x0899E1507CFfefF8620455721F5bd528Bb072187) · [Blog](https://alexbelij.medium.com/how-we-detect-smart-contract-exploits-without-training-data-using-hyperdimensional-computing-on-e94d5d83e6b8) · [X Thread](https://x.com/alexbelij/status/2066546074576109803)
 
 ---
 
@@ -270,4 +270,4 @@ docs/landing/      marketing site (Vercel)
 
 ---
 
-**Track:** AI Alpha & Data · **Hackathon:** [Mantle Turing Test Phase II](https://dorahacks.io/hackathon/mantle-ai/detail)
+**Blog:** [How We Detect Smart Contract Exploits Without Training Data](https://alexbelij.medium.com/how-we-detect-smart-contract-exploits-without-training-data-using-hyperdimensional-computing-on-e94d5d83e6b8) · **Video:** [YouTube Demo](https://www.youtube.com/watch?v=s-OED4oZ8ho) · **Track:** AI Alpha & Data · **Hackathon:** [Mantle Turing Test Phase II](https://dorahacks.io/hackathon/mantle-ai/detail)

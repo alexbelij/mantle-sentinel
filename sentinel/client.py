@@ -13,7 +13,6 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import asdict, dataclass, field
-from typing import Optional
 
 
 class SentinelHealthError(Exception):
@@ -40,7 +39,7 @@ class ScanReport:
     alerts: list[dict] = field(default_factory=list)
     selector_count: int = 0
     window_count: int = 0
-    z_ai_brief: Optional[str] = None
+    z_ai_brief: str | None = None
 
     @property
     def is_healthy(self) -> bool:
