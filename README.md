@@ -157,6 +157,27 @@ pip install pre-commit && pre-commit install
 python -m sentinel scan <addr> --min-health 60
 ```
 
+## Python SDK
+
+```python
+from sentinel import SentinelClient
+
+client = SentinelClient()
+report = client.scan("0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9")
+
+print(f"Health: {report.health_score}/100")
+print(f"Alerts: {report.alert_count}")
+print(f"Healthy: {report.is_healthy}")
+
+# Scan multiple contracts
+reports = client.scan_multiple([
+    "0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9",  # USDC.e
+    "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8",  # WMNT
+])
+for r in reports:
+    print(f"{r.address[:10]}… → {r.health_score}/100")
+```
+
 To replay the real USDC.e snapshot (gitignored — fetch it first):
 
 ```bash

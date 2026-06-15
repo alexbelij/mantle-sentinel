@@ -1,7 +1,7 @@
 [project]
 name = "mantle-sentinel"
 version = "0.1.0"
-description = "HDC Behavioral DNA agent for Mantle smart-contract anomaly detection"
+description = "Training-free behavioral anomaly detection for Mantle smart contracts"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -19,6 +19,9 @@ live = [
     "web3>=7.0",
     "eth-account>=0.13",
 ]
+
+[project.scripts]
+sentinel = "sentinel.__main__:main"
 
 [build-system]
 requires = ["setuptools>=68"]
