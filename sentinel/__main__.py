@@ -43,6 +43,11 @@ def _build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--out", default=None, help="write JSON report to path (default: bench/reports/<addr>.json)")
     scan.add_argument("--json", action="store_true", help="output JSON instead of human-readable")
 
+    watch = sub.add_parser("watch", help="live behavioral monitoring of a Mantle contract")
+    watch.add_argument("address", help="contract address (0x...)")
+    watch.add_argument("--interval", type=int, default=30, help="polling interval in seconds")
+    watch.add_argument("--warmup", type=int, default=500, help="number of txs for warmup phase")
+
     return parser
 
 
@@ -52,6 +57,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.version or args.command is None:
         print(f"mantle-sentinel {__version__}")
+        return 0
+
+    if args.command == "watch":
+        from sentinel.watch import watch
+
+        watch(args.address, interval=args.interval, warmup_n=args.warmup)
         return 0
 
     if args.command == "scan":
