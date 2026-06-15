@@ -1,6 +1,6 @@
 """Tests for sentinel.explain_zai — T-19."""
 from sentinel.alert import Alert, FeatureContribution
-from sentinel.explain_zai import explain_alert
+from sentinel.explain_zai import explain_alert, profile_contract
 
 
 def _make_alert(**overrides) -> Alert:
@@ -47,3 +47,34 @@ def test_dry_run_no_features():
     result = explain_alert(alert, dry_run=True)
     assert isinstance(result, str)
     assert len(result) > 0
+
+
+def test_profile_contract_dry():
+    """profile_contract dry-run returns a summary with health score."""
+    report = {
+        "contract": "0xtest123456",
+        "txs_analyzed": 500,
+        "health_score": 92,
+        "unique_selectors": 4,
+        "drift_median": 0.08,
+        "drift_p99": 0.14,
+        "alerts": 0,
+    }
+    result = profile_contract(report, dry_run=True)
+    assert "92" in result
+    assert "stable" in result
+
+
+def test_profile_contract_elevated():
+    """profile_contract dry-run shows elevated risk for mid scores."""
+    report = {
+        "contract": "0xtest999999",
+        "txs_analyzed": 300,
+        "health_score": 55,
+        "unique_selectors": 6,
+        "drift_median": 0.35,
+        "drift_p99": 0.7,
+        "alerts": 5,
+    }
+    result = profile_contract(report, dry_run=True)
+    assert "elevated risk" in result
