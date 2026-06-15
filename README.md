@@ -233,6 +233,28 @@ alert. Prompt template + schema: [`docs/zai_prompt.md`](docs/zai_prompt.md).
 
 ---
 
+## 🤖 Telegram Bot
+
+Interactive monitoring via [@MantleSentinelBot](https://t.me/MantleSentinelBot):
+
+| Command | Description |
+|---------|-------------|
+| `/health` | Health scores for all monitored contracts |
+| `/scan <address>` | Latest scan for a specific contract |
+| `/status` | Monitoring uptime and stats |
+| `/help` | List of commands |
+
+The bot reads from a Supabase database updated every 4 hours
+via GitHub Actions ([`.github/workflows/scan-cron.yml`](.github/workflows/scan-cron.yml)).
+
+**Webhook setup** (one-time):
+```bash
+curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
+  -d "url=https://mntsentinel.xyz/api/telegram"
+```
+
+---
+
 ## Tests
 
 ```
@@ -264,8 +286,10 @@ contracts/         SentinelAlertRegistry.sol (v2) + VictimCounter.sol + ABI/depl
 test/              Foundry tests (forge)
 tests/             pytest suite
 bench/             self_attack.py demo + real snapshot data + scan reports
+scripts/           scan_to_supabase.py — data pipeline for Supabase
 dashboard/         static on-chain alert viewer
-docs/landing/      marketing site (Vercel)
+docs/landing/      marketing site + Telegram webhook (Vercel)
+docs/landing/api/  Vercel Python serverless functions
 ```
 
 ---
