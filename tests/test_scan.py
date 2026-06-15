@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from bench.injector import inject_s1_selector_flood
 from bench.snapshot import synth_records
+from sentinel.__main__ import main as cli_main
 from sentinel.scan import analyze_records, compute_health_score
 
 
@@ -66,3 +67,36 @@ class TestAnalyzeRecords:
             "alerts", "alert_details",
         }
         assert expected_keys.issubset(report.keys())
+
+
+class TestMinHealthFlag:
+    """Tests for --min-health CI gate flag (CLI-level)."""
+
+    def test_min_health_pass(self, monkeypatch, tmp_path):
+        """--min-health below actual score → exit 0."""
+        from unittest.mock import patch
+
+        records = synth_records(1000, seed=42)
+        address = records[0]["contract"]
+        report = analyze_records(records, address)
+        # report health_score > 80 for clean data
+
+        with patch("sentinel.scan.scan_contract", return_value=report):
+            rc = cli_main(["scan", address, "--min-health", "50",
+                           "--out", str(tmp_path / "r.json")])
+        assert rc == 0
+
+    def test_min_health_fail(self, monkeypatch, tmp_path):
+        """--min-health above actual score → exit 1."""
+        from unittest.mock import patch
+
+        # Force a low-health report
+        records = synth_records(1000, seed=42)
+        address = records[0]["contract"]
+        report = analyze_records(records, address)
+        report["health_score"] = 40  # simulate unhealthy
+
+        with patch("sentinel.scan.scan_contract", return_value=report):
+            rc = cli_main(["scan", address, "--min-health", "60",
+                           "--out", str(tmp_path / "r.json")])
+        assert rc == 1

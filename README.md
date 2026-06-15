@@ -136,6 +136,23 @@ python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
 
 Set `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` in `.env` to enable Telegram alerts via [@MantleSentinelBot](https://t.me/MantleSentinelBot).
 
+## CI/CD Integration
+
+Sentinel runs as a health gate in your pipeline:
+
+**GitHub Actions** — scheduled weekly scan with `--min-health` threshold.
+See [`.github/workflows/sentinel-scan.yml`](.github/workflows/sentinel-scan.yml).
+
+**Pre-commit** — block pushes if contract health drops below threshold.
+```bash
+pip install pre-commit && pre-commit install
+```
+
+**Any CI** — exit code 0 = healthy, 1 = below threshold:
+```bash
+python -m sentinel scan <addr> --min-health 60
+```
+
 To replay the real USDC.e snapshot (gitignored — fetch it first):
 
 ```bash

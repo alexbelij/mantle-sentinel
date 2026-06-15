@@ -42,6 +42,8 @@ def _build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--explain", action="store_true", help="include Z.ai behavioral profile")
     scan.add_argument("--out", default=None, help="write JSON report to path (default: bench/reports/<addr>.json)")
     scan.add_argument("--json", action="store_true", help="output JSON instead of human-readable")
+    scan.add_argument("--min-health", type=int, default=None, metavar="N",
+                      help="exit 1 if health score < N (CI gate mode)")
 
     watch = sub.add_parser("watch", help="live behavioral monitoring of a Mantle contract")
     watch.add_argument("address", help="contract address (0x...)")
@@ -77,6 +79,16 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print_report(report)
             print(f"Report saved: {out_path}")
+
+        # CI gate: exit 1 if health score below threshold
+        if args.min_health is not None:
+            score = report["health_score"]
+            if score < args.min_health:
+                print(
+                    f"FAIL: health {score} < threshold {args.min_health}",
+                    file=sys.stderr,
+                )
+                return 1
         return 0
 
     if args.command == "replay":

@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: sentinel-health
+        name: Sentinel Health Gate
+        entry: python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9 --min-health 60
+        language: python
+        pass_filenames: false
+        stages: [push]
+        always_run: true
