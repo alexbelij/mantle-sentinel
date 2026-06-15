@@ -4,7 +4,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 ![Mantle Mainnet](https://img.shields.io/badge/Mantle-Mainnet-8B5CF6)
-![129 tests](https://img.shields.io/badge/tests-129%20passed-brightgreen)
+![137 tests](https://img.shields.io/badge/tests-137%20passed-brightgreen)
 
 > Your smart contracts have a behavioral fingerprint. Sentinel knows when it changes.
 
@@ -84,6 +84,7 @@ The model is **never** in the detection loop.
 - **Telegram alerts** — real-time notifications via [@MantleSentinelBot](https://t.me/MantleSentinelBot)
 - **Z.ai explanations** — confirmed alerts get a plain-English brief from Z.ai GLM
 - **Live dashboard** — real-time drift gauge and alert table at [mntsentinel.xyz/dashboard](https://mntsentinel.xyz/dashboard/)
+- **Supabase data pipeline** — automated scan → Supabase → historical drift charts on the dashboard
 
 ---
 
@@ -145,7 +146,7 @@ Set `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` in `.env` to enable Telegram alert
 Sentinel runs as a health gate in your pipeline:
 
 **GitHub Actions** — scheduled weekly scan with `--min-health` threshold.
-See [`.github/workflows/sentinel-scan.yml`](.github/workflows/sentinel-scan.yml).
+See [`.github/workflows/scan-cron.yml`](.github/workflows/scan-cron.yml).
 
 **Pre-commit** — block pushes if contract health drops below threshold.
 ```bash
@@ -258,7 +259,7 @@ curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
 ## Tests
 
 ```
-python -m pytest tests/ -q     # 129 passed
+python -m pytest tests/ -q     # 137 passed
 forge test                     # 6 passed  (contracts/SentinelAlertRegistry.sol)
 ```
 
