@@ -3,11 +3,15 @@
 Usage:
     python -m sentinel --version
     python -m sentinel replay --snapshot bench/data/<contract>/raw.jsonl [--inject S1]
+    python -m sentinel scan 0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9
+    python -m sentinel scan 0x09bc4e... --explain
 """
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
 
 from sentinel import __version__
 
@@ -31,6 +35,14 @@ def _build_parser() -> argparse.ArgumentParser:
         "--dream-mode", action="store_true",
         help="enable Dream-Mode prototype consolidation (every N=100 safe windows)",
     )
+
+    scan = sub.add_parser("scan", help="behavioral audit of any Mantle contract")
+    scan.add_argument("address", help="contract address (0x...)")
+    scan.add_argument("--n", type=int, default=2000, help="max transactions to fetch")
+    scan.add_argument("--explain", action="store_true", help="include Z.ai behavioral profile")
+    scan.add_argument("--out", default=None, help="write JSON report to path (default: bench/reports/<addr>.json)")
+    scan.add_argument("--json", action="store_true", help="output JSON instead of human-readable")
+
     return parser
 
 
@@ -40,6 +52,20 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.version or args.command is None:
         print(f"mantle-sentinel {__version__}")
+        return 0
+
+    if args.command == "scan":
+        from sentinel.scan import print_report, scan_contract
+
+        report = scan_contract(args.address, n_txs=args.n, explain=args.explain)
+        out_path = args.out or f"bench/reports/{args.address.lower()}.json"
+        Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(out_path).write_text(json.dumps(report, indent=2) + "\n")
+        if args.json:
+            print(json.dumps(report, indent=2))
+        else:
+            print_report(report)
+            print(f"Report saved: {out_path}")
         return 0
 
     if args.command == "replay":
