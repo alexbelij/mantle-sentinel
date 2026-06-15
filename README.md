@@ -4,7 +4,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 ![Mantle Mainnet](https://img.shields.io/badge/Mantle-Mainnet-8B5CF6)
-![127 tests](https://img.shields.io/badge/tests-127%20passed-brightgreen)
+![129 tests](https://img.shields.io/badge/tests-129%20passed-brightgreen)
 
 > Your smart contracts have a behavioral fingerprint. Sentinel knows when it changes.
 
@@ -215,7 +215,7 @@ alert. Prompt template + schema: [`docs/zai_prompt.md`](docs/zai_prompt.md).
 ## Tests
 
 ```
-python -m pytest tests/ -q     # 118 passed
+python -m pytest tests/ -q     # 129 passed
 forge test                     # 6 passed  (contracts/SentinelAlertRegistry.sol)
 ```
 
