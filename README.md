@@ -1,10 +1,12 @@
 # Mantle Sentinel — HDC Behavioral DNA Agent
 
-[![Tests](https://github.com/alexbelij/mantle-sentinel/actions/workflows/pytest.yml/badge.svg)](https://github.com/alexbelij/mantle-sentinel/actions/workflows/pytest.yml)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 ![Mantle Mainnet](https://img.shields.io/badge/Mantle-Mainnet-8B5CF6)
 ![137 tests](https://img.shields.io/badge/tests-137%20passed-brightgreen)
+[![Tests](https://github.com/alexbelij/mantle-sentinel/actions/workflows/pytest.yml/badge.svg)](https://github.com/alexbelij/mantle-sentinel/actions/workflows/pytest.yml)
+[![Sentinel Health Scan](https://github.com/alexbelij/mantle-sentinel/actions/workflows/scan-cron.yml/badge.svg)](https://github.com/alexbelij/mantle-sentinel/actions/workflows/scan-cron.yml)
+[![CI](https://github.com/alexbelij/mantle-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/alexbelij/mantle-sentinel/actions/workflows/ci.yml)
 
 > Your smart contracts have a behavioral fingerprint. Sentinel knows when it changes.
 
