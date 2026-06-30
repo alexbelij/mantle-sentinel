@@ -275,7 +275,7 @@ class AlertLog:
         try:
             return asdict(alert)
         except TypeError:
-            raise TypeError(
+            raise TypeError(  # noqa: B904
                 f"Cannot serialise alert of type {type(alert).__name__}. "
                 "Pass a dict, a dataclass, or an object with .to_dict()."
             )

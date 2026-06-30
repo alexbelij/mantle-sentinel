@@ -8,14 +8,12 @@ from __future__ import annotations
 
 import json
 import threading
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import pytest
 
 from sentinel.plugins.alert_log import AlertLog
-
 
 # ---------------------------------------------------------------------------
 # Fixtures & helpers

@@ -45,8 +45,9 @@ import os
 import threading
 import time
 import tracemalloc
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -239,7 +240,7 @@ class _MeasureContext:
         self._t0: float = 0.0
         self._mem_before: int = 0
 
-    def __enter__(self) -> "_MeasureContext":
+    def __enter__(self) -> _MeasureContext:
         self._t0 = time.perf_counter()
         try:
             if not tracemalloc.is_tracing():

@@ -14,7 +14,6 @@ import pytest
 
 from sentinel.plugins.metrics import MetricSample, MetricsCollector, track_metrics
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
