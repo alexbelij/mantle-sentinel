@@ -1,7 +1,7 @@
 # Mantle Sentinel — DoraHacks BUIDL submission (draft)
 
 > Track: Mantle Turing Test Hackathon 2026 · Z.ai integration
-> Placeholder to fill before publishing: `<DORAHACKS_BUIDL_URL>`. (Live alert tx from run 3a is filled in below.)
+> Placeholder to fill before publishing: `https://dorahacks.io/buidl/45170`. (Live alert tx from run 3a is filled in below.)
 
 ## One-liner
 Your smart contracts have a behavioral fingerprint. Mantle Sentinel detects the moment it changes — training-free, deterministic, on-chain.
@@ -61,4 +61,4 @@ SaaS subscription per monitored contract — flat, no per-alert fees. Target cus
 - Live dashboard: https://mntsentinel.xyz/dashboard/
 - Telegram bot: [@MantleSentinelBot](https://t.me/MantleSentinelBot) — real-time alert notifications
 - Code (MIT): https://github.com/alexbelij/mantle-sentinel
-- BUIDL: `<DORAHACKS_BUIDL_URL>`
+- BUIDL: `https://dorahacks.io/buidl/45170`

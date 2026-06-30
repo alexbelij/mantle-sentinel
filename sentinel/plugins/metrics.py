@@ -252,7 +252,7 @@ class _MeasureContext:
             self._mem_before = 0
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         latency = time.perf_counter() - self._t0
         mem_after = 0
         try:
@@ -261,7 +261,6 @@ class _MeasureContext:
         except Exception as exc:  # noqa: BLE001
             logger.warning("tracemalloc snapshot failed: %s", exc)
 
-        is_interrupt = exc_type in (KeyboardInterrupt, SystemExit)
         is_error = exc_type is not None
 
         sample = MetricSample(
@@ -272,10 +271,7 @@ class _MeasureContext:
         )
         self._collector.record(sample)
 
-        if is_interrupt:
-            return False  # re-raise KeyboardInterrupt / SystemExit
-
-        return False  # always propagate other exceptions
+        # Return None — always propagate exceptions (KeyboardInterrupt, SystemExit, others)
 
 
 # ---------------------------------------------------------------------------
