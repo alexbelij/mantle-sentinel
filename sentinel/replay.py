@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from sentinel.pipeline import build_pipeline, split_warmup
+from sentinel.pipeline import Pipeline, build_pipeline, split_warmup
 
 
 def _load(path: str | Path) -> list[dict]:
@@ -31,10 +31,11 @@ def run_replay(
 
         if inject not in INJECTORS:
             raise ValueError(f"unknown injector {inject!r}; have {sorted(INJECTORS)}")
-        test = INJECTORS[inject](test, onset_frac=onset_frac, seed=seed)
+        fn = INJECTORS[inject]
+        test = fn(test, onset_frac=onset_frac, seed=seed)  # type: ignore[operator]
 
     contract = records[0].get("contract", "0x") if records else "0x"
-    pipe = build_pipeline(contract, warmup, detector=detector, dream_mode=dream_mode)
+    pipe: Pipeline = build_pipeline(contract, warmup, detector=detector, dream_mode=dream_mode)
     alerts: list[dict] = []
     for r in test:
         for a in pipe.process_tx(r):

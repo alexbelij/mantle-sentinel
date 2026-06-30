@@ -64,6 +64,8 @@ class WebhookNotifier:
         secret_header: str | None = None,
         secret_value: str | None = None,
     ) -> None:
+        if not url.startswith(("https://", "http://")):
+            raise ValueError(f"WebhookNotifier: url must start with https:// or http://, got {url!r}")
         self._cfg = WebhookConfig(
             url=url,
             timeout=timeout,

@@ -188,7 +188,8 @@ class AlertLog:
         for col, val in [("contract", contract), ("alert_type", alert_type),
                          ("branch", branch), ("fp_flag", fp_flag)]:
             if val is not None:
-                assert col in _VALID_COLUMNS  # belt-and-suspenders
+                if col not in _VALID_COLUMNS:  # belt-and-suspenders
+                    raise ValueError(f"Invalid column name: {col!r}")
                 clauses.append(f"{col} = ?")
                 params.append(val)
 
