@@ -258,6 +258,55 @@ curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
 
 ---
 
+## Plugins
+
+Optional self-contained modules in `sentinel/plugins/`. Drop-in — no changes to core pipeline required.
+
+### `alert_log` — Persistent Alert Log
+
+Append-only NDJSON file + SQLite index for every alert emitted by the pipeline.
+
+```python
+from sentinel.plugins import AlertLog
+
+log = AlertLog("/var/lib/sentinel/logs")
+log.append(alert)                          # Alert dataclass or dict
+results = log.query(contract="0xABC", limit=50)
+log.mark_fp("spam_attack-0xabc-12345")     # operator marks false positive
+```
+
+Features: atomic NDJSON append (fsync), WAL-mode SQLite index, SQL-injection–safe queries,
+overfill guard (`OverflowError` at configurable `max_bytes`), thread-safe (RLock + 50-thread tested).
+
+→ Full API: [`docs/plugins/alert_log.md`](docs/plugins/alert_log.md)
+
+### `metrics` — Per-Transaction Performance Metrics
+
+Decorator + context manager that records latency (wall-clock) and memory delta (RSS) per operation.
+
+```python
+from sentinel.plugins import MetricsCollector, track_metrics
+
+collector = MetricsCollector()
+
+@track_metrics(collector)
+def process_tx(tx):
+    ...
+
+with collector.measure("encode_hd"):
+    encode(tx)
+
+print(collector.summary())           # min/mean/p95/p99 latency, memory stats
+collector.export_json("metrics.json")
+```
+
+Features: ring-buffer storage (configurable size), `KeyboardInterrupt`/`SystemExit` safe,
+overfill guard on export, thread-safe (RLock + 50-thread tested).
+
+→ Full API: [`docs/plugins/metrics.md`](docs/plugins/metrics.md)
+
+---
+
 ## Tests
 
 ```
